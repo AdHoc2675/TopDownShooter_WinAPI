@@ -3,6 +3,7 @@
 
 CCameraController::CCameraController()
 {
+	//test
 }
 
 CCameraController::~CCameraController()
