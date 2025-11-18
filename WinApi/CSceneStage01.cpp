@@ -26,6 +26,8 @@ void CSceneStage01::Init()
 	AddGameObject(monster);
 
 	CCameraController* controller = new CCameraController();
+	// 카메라가 따라갈 플레이어를 전달
+	controller->SetPlayer(player);
 	AddGameObject(controller);
 
 	CSoundController* sound = new CSoundController();
