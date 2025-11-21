@@ -1,11 +1,14 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CWeapon.h"
 #include "CMissile.h"
+#include "CGame.h"
+
+using namespace std;
 
 CWeapon::CWeapon()
 {
-	name  = TEXT("¹«±â");
-	scale = Vec2(30, 100);
+	name  = TEXT("ë¬´ê¸°");
+	scale = Vec2(10, 25);
 }
 
 CWeapon::~CWeapon()
@@ -14,6 +17,8 @@ CWeapon::~CWeapon()
 
 void CWeapon::Init()
 {
+	fireSound = LOADSOUND(TEXT("GunFire"), TEXT("Sound\\gun_fire.wav"));
+	reloadSound = LOADSOUND(TEXT("GunReload"), TEXT("Sound\\gun_reload.wav"));
 }
 
 void CWeapon::OnEnable()
@@ -22,32 +27,158 @@ void CWeapon::OnEnable()
 
 void CWeapon::Update()
 {
-	// Äğ´Ù¿î °¨¼Ò
+	// ì¿¨ë‹¤ìš´ ê°ì†Œ
 	if (curCooldown > 0.f)
-		curCooldown -= DT;
+		curCooldown = curCooldown - DT;
 
-	// ¿ŞÂÊ ¸¶¿ì½º ¹öÆ° Å¬¸¯ ½Ã ´Ü¹ß
-	if (curCooldown <= 0.f && INPUT->ButtonDown(VK_LBUTTON))
+	// ì¬ì¥ì „ ì§„í–‰ ì¤‘ì´ë©´ íƒ€ì´ë¨¸ ê°±ì‹ 
+	if (curReloadTime > 0.f)
 	{
-		FireToCursor();
-		curCooldown = fireCooldown;
+		curReloadTime = curReloadTime - DT;
+		if (curReloadTime <= 0.f)
+		{
+			curReloadTime = 0.f;
+			curChamberSize = maxChamberSize; // ì¬ì¥ì „ ì™„ë£Œ
+		}
+		return; // ì¬ì¥ì „ ì¤‘ì—ëŠ” ë°œì‚¬ ë¶ˆê°€
 	}
 
-	// ½ºÆäÀÌ½º·Î 5¹ß ½ºÇÁ·¹µå
-	if (curCooldown <= 0.f && INPUT->ButtonDown(VK_SPACE))
+	// ìˆ˜ë™ ì¬ì¥ì „ (R) - íƒ„ì´ ê°€ë“ ì°¨ ìˆì§€ ì•Šì„ ë•Œë§Œ
+	if (INPUT->ButtonDown('R') && curChamberSize < maxChamberSize)
 	{
-		FireSpreadToCursor(5, 30.f); // 30µµ ¹üÀ§·Î 5¹ß
-		curCooldown = fireCooldown;
+		if (reloadSound) {
+			SOUND->PlayOnce(reloadSound);
+		}
+
+		curReloadTime = reloadTime;
+		return;
+	}
+
+	// ì¢Œí´ë¦­ìœ¼ë¡œ ë‹¨ë°œ ì‚¬ê²©
+	if (curCooldown <= 0.f && INPUT->ButtonStay(VK_LBUTTON))
+	{
+		if (curChamberSize >= 1.f)
+		{
+			curChamberSize = curChamberSize - 1.f;
+
+			FireToCursor();
+
+			if (fireSound)
+				SOUND->PlayOnce(fireSound);
+
+			curCooldown = fireCooldown;
+
+			// íƒ„ ë‹¤ ì“°ë©´ ìë™ ì¬ì¥ì „
+			if (curChamberSize <= 0.f) {
+				if (reloadSound) {
+					SOUND->PlayOnce(reloadSound);
+				}
+				curReloadTime = reloadTime;
+			}
+		}
+		else
+		{
+			// ë¹ˆ íƒ„ì°½ì´ë©´ ì¬ì¥ì „ ì‹œì‘
+			if (reloadSound) {
+				SOUND->PlayOnce(reloadSound);
+			}
+			curReloadTime = reloadTime;
+		}
+	}
+
+	// ìŠ¤í˜ì´ìŠ¤: ìŠ¤í”„ë ˆë“œ ì‚¬ê²© (ë‚¨ì€ íƒ„ ìˆ˜ë§Œí¼ë§Œ ë°œì‚¬)
+	if (curCooldown <= 0.f && INPUT->ButtonStay(VK_SPACE))
+	{
+		const int desired = 5;
+		int bullets = (int)curChamberSize;
+		if (bullets > desired) bullets = desired;
+
+		if (bullets > 0)
+		{
+			curChamberSize -= (float)bullets;
+
+			FireSpreadToCursor(bullets, 30.f); // 30ë„ ë²”ìœ„ë¡œ ë°œì‚¬
+
+			if (fireSound)
+				SOUND->PlayOnce(fireSound);
+
+			curCooldown = fireCooldown;
+
+			if (curChamberSize <= 0.f) {
+				if (reloadSound) {
+					SOUND->PlayOnce(reloadSound);
+				}
+				curReloadTime = reloadTime;
+			}
+		}
+		else
+		{
+			if (reloadSound) {
+				SOUND->PlayOnce(reloadSound);
+			}
+
+			curReloadTime = reloadTime;
+		}
 	}
 }
 
 void CWeapon::Render()
 {
+
+	// ë¬´ê¸° ë³¸ì²´ ë Œë”ë§ (í°ìƒ‰ ì‚¬ê°í˜•)
+	RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+	RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
+
 	RENDER->Rect(
 		renderPos.x - scale.x * 0.5f,
 		renderPos.y - scale.y * 0.5f,
 		renderPos.x + scale.x * 0.5f,
 		renderPos.y + scale.y * 0.5f);
+
+	//=====//
+	
+	// ë‚¨ì€ íƒ„ ìˆ˜ í‘œì‹œ
+	int textSize = 24;
+	RENDER->SetText(textSize, RGB(20, 20, 20), TextAlign::Left);
+	RENDER->SetTextBackMode(TextBackMode::Null);
+
+	// í˜„ì¬ íƒ„/ìµœëŒ€ íƒ„
+	wstring ammoText = L"AMMO: " + to_wstring((int)curChamberSize) +
+		L" / " + to_wstring((int)maxChamberSize);
+
+	const float hudX = 10.f;
+	const float hudY = CGame::WINSIZE.y * 0.9f - (float)textSize;
+	RENDER->Text(hudX, hudY, ammoText);
+
+	// ì¬ì¥ì „ ì¤‘ì´ë©´ ë§‰ëŒ€ ì§„í–‰ë°”ì˜ í˜•íƒœë¡œ ë‚¨ì€ ì‹œê°„ í‘œì‹œ
+	if (curReloadTime > 0.f)
+	{
+		float progress = 1.f - (curReloadTime / reloadTime); // 0â†’1
+
+		// ë¬´ê¸° ìœ„ìª½ ìœ„ì¹˜
+		float barWidth = 100.f;
+		float barHeight = 10.f;
+		float offsetY = scale.y * 0.5f + 25.f; // ë¨¸ë¦¬ ìœ„ ì—¬ë°± ê°„ê²©
+		float barX = renderPos.x - barWidth * 0.5f;
+		float barY = renderPos.y - offsetY - barHeight;
+
+		// í…Œë‘ë¦¬ë°”
+		RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+		RENDER->SetBrush(BrushType::Null);
+		RENDER->Rect(barX, barY, barX + barWidth, barY + barHeight);
+
+		// ìµœì†Œ í­ ë³´í˜¸
+		float fillW = barWidth * progress;
+		if (fillW < 2.f && progress > 0.f) fillW = 2.f;
+
+		// ì§„í–‰ ìƒ‰ìƒ ì¼ë‹¨ì€ ê²€ì€ìƒ‰
+		COLORREF fillColor = RGB(0, 0, 0);
+
+		RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
+		RENDER->SetBrush(BrushType::Solid, fillColor);
+		RENDER->Rect(barX + 1.f, barY + 1.f, barX + fillW - 1.f, barY + barHeight - 1.f);
+
+	}
 }
 
 void CWeapon::OnDisable()
@@ -65,11 +196,11 @@ void CWeapon::FireToCursor()
 
 	Vec2 dir = targetWorld - weaponWorld;
 	if (dir.Length() <= 0.0001f)
-		dir = Vec2(0, -1); // µ¿ÀÏ À§Ä¡ Å¬¸¯ ½Ã ±âº» ¹æÇâ
+		dir = Vec2(0, -1); // ë™ì¼ ìœ„ì¹˜ í´ë¦­ ì‹œ ê¸°ë³¸ ë°©í–¥
 
 	dir = dir.Normalized();
 
-	// ÃÑ±¸ ¾Õ (¹«±â ±æÀÌÀÇ Àı¹İ + ¾à°£)À¸·Î ½ºÆù ¿ÀÇÁ¼Â
+	// ì´êµ¬ ì• (ë¬´ê¸° ê¸¸ì´ì˜ ì ˆë°˜ + ì•½ê°„)ìœ¼ë¡œ ìŠ¤í° ì˜¤í”„ì…‹
 	float spawnDistance = scale.y * 0.5f + 10.f;
 	Vec2 spawnPos = weaponWorld + dir * spawnDistance;
 
@@ -78,7 +209,10 @@ void CWeapon::FireToCursor()
 
 void CWeapon::FireSpreadToCursor(int count, float spreadAngleDeg)
 {
-	if (count <= 1)
+	if (count <= 0)
+		return;
+
+	if (count == 1)
 	{
 		FireToCursor();
 		return;
@@ -91,7 +225,7 @@ void CWeapon::FireSpreadToCursor(int count, float spreadAngleDeg)
 		baseDir = Vec2(0, -1);
 	baseDir = baseDir.Normalized();
 
-	// Áß¾Ó ¹æÇâÀ» ±âÁØÀ¸·Î ÁÂ¿ì·Î °¢µµ ºĞ¹è
+	// ì¤‘ì•™ ë°©í–¥ì„ ê¸°ì¤€ìœ¼ë¡œ ì¢Œìš°ë¡œ ê°ë„ ë¶„ë°°
 	float half = (count - 1) * 0.5f;
 	float step = (count > 1) ? spreadAngleDeg / (count - 1) : 0.f;
 
@@ -103,7 +237,7 @@ void CWeapon::FireSpreadToCursor(int count, float spreadAngleDeg)
 		float angleDeg = offsetIndex * step;
 		float angleRad = angleDeg * 3.141592f / 180.f;
 
-		// È¸Àü (x,y) -> (x*cos - y*sin, x*sin + y*cos)
+		// íšŒì „ (x,y) -> (x*cos - y*sin, x*sin + y*cos)
 		Vec2 dir;
 		dir.x = baseDir.x * cosf(angleRad) - baseDir.y * sinf(angleRad);
 		dir.y = baseDir.x * sinf(angleRad) + baseDir.y * cosf(angleRad);

@@ -29,11 +29,14 @@ void CMonster::Update()
 
 void CMonster::Render()
 {
-	RENDER->Rect(
-		renderPos.x - scale.x * 0.5f,
-		renderPos.y - scale.y * 0.5f,
-		renderPos.x + scale.x * 0.5f,
-		renderPos.y + scale.y * 0.5f);
+    RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+    RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
+
+    RENDER->Rect(
+        renderPos.x - scale.x * 0.5f,
+        renderPos.y - scale.y * 0.5f,
+        renderPos.x + scale.x * 0.5f,
+        renderPos.y + scale.y * 0.5f);
 }
 
 void CMonster::OnDisable()

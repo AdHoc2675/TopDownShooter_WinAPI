@@ -1,4 +1,6 @@
-#pragma once
+ï»¿#pragma once
+#include "CSound.h"
+
 class CWeapon : public CGameObject
 {
 public:
@@ -14,12 +16,18 @@ private:
     void    Release()       override;
 
 private:
-    void    FireToCursor();            // ¸¶¿ì½º ÁöÁ¡À¸·Î 1¹ß
-    void    FireSpreadToCursor(int count, float spreadAngleDeg); // ¿øÇÏ´Â °æ¿ì ºÎÃ¤²Ã ´Ù¹ß »ç°İ
+    void    FireToCursor();            // ë§ˆìš°ìŠ¤ ì§€ì ìœ¼ë¡œ 1ë°œ
+    void    FireSpreadToCursor(int count, float spreadAngleDeg); // ì›í•˜ëŠ” ê²½ìš° ë¶€ì±„ê¼´ ë‹¤ë°œ ì‚¬ê²©
     void    CreateMissile(const Vec2& spawnPos, const Vec2& dir);
 
 private:
-    float   fireCooldown = 0.15f;      // ¹ß»ç °£ ÃÖ¼Ò °£°İ(ÃÊ)
+    float   fireCooldown = 0.25f;      // ë°œì‚¬ ê°„ ìµœì†Œ ê°„ê²©(ì´ˆ)
     float   curCooldown  = 0.f;
+	float   maxChamberSize = 10.f;    // íƒ„ì°½ í¬ê¸°
+	float   curChamberSize = 10.f; // í˜„ì¬ ë‚¨ì€ íƒ„ì°½ í¬ê¸°
+	float   reloadTime = 1.f;          // ì¬ì¥ì „ ì‹œê°„(ì´ˆ)
+	float   curReloadTime = 0.f;
+	CSound* fireSound = nullptr;
+	CSound* reloadSound = nullptr;
 };
 
