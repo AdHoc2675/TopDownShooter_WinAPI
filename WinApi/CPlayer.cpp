@@ -44,6 +44,7 @@ void CPlayer::Init()
 
 	AddChild(animator);
 
+	// 충돌 컴포넌트 추가
 	CCollider* collider = new CCollider();
 	collider->SetScale(Vec2(70, 70));
 	collider->SetLayer(Layer::Player);

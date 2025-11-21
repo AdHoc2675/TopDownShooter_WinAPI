@@ -12,5 +12,13 @@ private:
 	void Render()		override;
 	void OnDisable()	override;
 	void Release()		override;
+
+	void OnCollisionEnter(CCollider* other) override;
+	void OnCollisionStay(CCollider* other) override;
+	void OnCollisionExit(CCollider* other) override;
+
+	float hitMsgDuration = 0.5f;
+	float curHitMsgTime = 0.f;
+	wstring hitMsg = L"Hit!";
 };
 
