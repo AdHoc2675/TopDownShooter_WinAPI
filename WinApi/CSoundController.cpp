@@ -41,7 +41,7 @@ void CSoundController::Update()
 	}
 	if (INPUT->ButtonDown('J'))
 	{
-		SOUND->Pause(TEXT("soundLoop"));
+		SOUND->Pause(TEXT("soundLoop"));	
 	}
 	if (INPUT->ButtonDown('K'))
 	{

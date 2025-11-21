@@ -45,7 +45,7 @@ void CPlayer::Init()
 	AddChild(animator);
 
 	CCollider* collider = new CCollider();
-	collider->SetScale(Vec2(90, 90));
+	collider->SetScale(Vec2(70, 70));
 	collider->SetLayer(Layer::Player);
 	AddChild(collider);
 }
@@ -59,13 +59,13 @@ void CPlayer::Update()
 	isMove = false;
 
 	// ÀÌµ¿
-	if (INPUT->ButtonStay(VK_LEFT))
+	if (INPUT->ButtonStay('A'))
 	{
 		pos.x -= speed * DT;
 		isMove = true;
 		moveDir.x = -1;
 	}
-	else if (INPUT->ButtonStay(VK_RIGHT))
+	else if (INPUT->ButtonStay('D'))
 	{
 		pos.x += speed * DT;
 		isMove = true;
@@ -76,13 +76,13 @@ void CPlayer::Update()
 		moveDir.x = 0;
 	}
 
-	if (INPUT->ButtonStay(VK_UP))
+	if (INPUT->ButtonStay('W'))
 	{
 		pos.y -= speed * DT;
 		isMove = true;
 		moveDir.y = +1;
 	}
-	else if (INPUT->ButtonStay(VK_DOWN))
+	else if (INPUT->ButtonStay('S'))
 	{
 		pos.y += speed * DT;
 		isMove = true;

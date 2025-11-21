@@ -1,6 +1,7 @@
 #pragma once
 
 class CPlayer;   // 전방 선언
+class CImage;
 
 class CCameraController : public CGameObject
 {
@@ -21,4 +22,5 @@ public:
 
 private:
     CPlayer* m_player = nullptr;
+	CImage* m_cursorImage = nullptr;
 };

@@ -6,6 +6,9 @@
 #include "CMonster.h"
 #include "CCameraController.h"
 #include "CSoundController.h"
+#include "CPanel.h"
+#include "CButton.h"
+#include "CWeapon.h"
 
 CSceneStage01::CSceneStage01()
 {
@@ -24,6 +27,9 @@ void CSceneStage01::Init()
 	CMonster* monster = new CMonster();
 	monster->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, 100));
 	AddGameObject(monster);
+
+	CWeapon* weapon = new CWeapon();
+	player->AddChild(weapon);
 
 	CCameraController* controller = new CCameraController();
 	// 카메라가 따라갈 플레이어를 전달
