@@ -4,6 +4,7 @@
 #include "CMissile.h"
 #include "CCombatSystem.h"
 #include "CCollider.h"
+#include "CExpOrb.h"
 
 CMonster::CMonster() 
 {
@@ -19,6 +20,7 @@ CMonster::CMonster()
     speed = 100.f;
     hitMsgDuration = 0.4f;
     curHitMsgTime = 0.f;
+	droppedExpOrb = false;
 
     hitMsg = L"Hit!";
 }
@@ -94,6 +96,23 @@ void CMonster::Release()
 {
 }
 
+void CMonster::DropExpOrb()
+{
+    if (player == nullptr)
+		return;
+
+    int dropCount = 1;
+
+    for (int i = 0 ; i < dropCount; ++i)
+    {
+        CExpOrb* expOrb = new CExpOrb();
+
+        expOrb->SetPos(worldPos);
+        expOrb->SetPlayer(player);
+        EVENT->AddGameObject(GetScene(), expOrb);
+	}
+}
+
 void CMonster::OnCollisionEnter(CCollider* other)
 {
     if (other->GetLayer() == Layer::Missile)
@@ -106,6 +125,12 @@ void CMonster::OnCollisionEnter(CCollider* other)
             COMBAT->ApplyDamage(missile, this, attackerStats, stats);
             curHitMsgTime = hitMsgDuration;
             hitMsg = L"-" + to_wstring((int)attackerStats.attack);
+
+            if (stats.alive() == false && droppedExpOrb == false)
+            {
+                DropExpOrb();
+				droppedExpOrb = true;
+            }
         }
     }
 }

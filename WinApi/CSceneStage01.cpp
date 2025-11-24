@@ -74,6 +74,8 @@ void CSceneStage01::Init()
 	button2->SetPos(Vec2(50, 50));
 	button2->SetClickCallback(click2, (DWORD_PTR)panel1, 0);
 	panel2->AddChild(button2);
+
+	CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::ExpOrb);
 }
 
 void CSceneStage01::Enter()

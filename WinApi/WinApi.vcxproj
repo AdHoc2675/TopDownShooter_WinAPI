@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CCameraController.h" />
+    <ClInclude Include="CExpOrb.h" />
     <ClInclude Include="CGame.h" />
     <ClInclude Include="CMissile.h" />
     <ClInclude Include="CMonster.h" />
@@ -177,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CCameraController.cpp" />
+    <ClCompile Include="CExpOrb.cpp" />
     <ClCompile Include="CGame.cpp" />
     <ClCompile Include="CMissile.cpp" />
     <ClCompile Include="CMonster.cpp" />

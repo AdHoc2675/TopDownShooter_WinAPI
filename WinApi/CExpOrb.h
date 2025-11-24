@@ -1,16 +1,16 @@
-#pragma once
+﻿#pragma once
 #include "CCombatSystem.h"
-
-struct CombatStats;
 
 class CPlayer;
 
-class CMonster : public CGameObject
+class CExpOrb : public CGameObject
 {
 public:
-    CMonster();
-    virtual ~CMonster();
+    CExpOrb();
+    virtual ~CExpOrb();
+
     void SetPlayer(CPlayer* player) { this->player = player; }
+    void SetValue(int value) { this->value = value; }
 
 private:
     void Init()         override;
@@ -20,16 +20,13 @@ private:
     void OnDisable()    override;
     void Release()      override;
 
-	void DropExpOrb();
-
     void OnCollisionEnter(CCollider* other) override;
 
-    CPlayer*    player = nullptr;
-    CombatStats stats;       
-	float    	speed;
-    float       hitMsgDuration;
-    float       curHitMsgTime;
-	bool        droppedExpOrb;
-    wstring     hitMsg;
+private:
+    CPlayer* player = nullptr;
+    int      value  = 30;      // 획득 경험치
+    float    attractRadius = 180.f;
+    float    moveSpeed      = 220.f;
+    float    homingSpeed    = 400.f;
+    bool     isHoming       = false;
 };
-

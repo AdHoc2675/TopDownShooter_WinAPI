@@ -10,6 +10,7 @@ public:
 	CPlayer();
 	virtual ~CPlayer();
 	CombatStats& GetCombatStats() { return stats; }
+	void	AddExp(int amount);
 
 private:
 	void	Init()			override;
@@ -25,7 +26,6 @@ private:
 	CAnimator*	animator;
 	CombatStats stats;
 	float		speed;
-	int 		life;
 	int 		level;
 	int			exp;
 	int			maxExp;

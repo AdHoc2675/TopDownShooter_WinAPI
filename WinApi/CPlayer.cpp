@@ -13,7 +13,7 @@ CPlayer::CPlayer()
 	stats.hp = 5.f;
 	stats.maxHp = 5.f;
 	stats.defense = 0.f;
-	stats.attack = 20.f;
+	stats.attack = 15.f;
 	stats.critChance = 0.f;
 	stats.critMultiplier = 1.5f;
 
@@ -169,6 +169,17 @@ void CPlayer::OnDisable()
 
 void CPlayer::Release()
 {
+}
+
+void CPlayer::AddExp(int amount)
+{
+	exp = exp + amount;
+	if (exp >= maxExp)
+	{
+		exp = exp - maxExp;
+		level++;
+		maxExp = static_cast<int>(maxExp * 1.2f);
+	}
 }
 
 void CPlayer::AnimatorUpdate()

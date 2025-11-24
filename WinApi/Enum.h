@@ -22,6 +22,6 @@ enum Layer
 	Player,
 	Monster,
 	Missile,
-
+	ExpOrb,
 	LayerSize,
 };
