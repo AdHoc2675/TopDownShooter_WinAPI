@@ -1,6 +1,9 @@
 #pragma once
+#include "CCombatSystem.h"
 
 struct CombatStats;
+
+class CPlayer;
 
 class CMonster : public CGameObject
 {
@@ -19,7 +22,6 @@ private:
 
     void OnCollisionEnter(CCollider* other) override;
 
-private:
     CPlayer*    player = nullptr;
     CombatStats stats;       
 	float    	speed;

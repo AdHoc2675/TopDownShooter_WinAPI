@@ -10,9 +10,12 @@ CMissile::CMissile()
 	speed = 700.f;
 	lifeTime = 3.f;
 
-	combat.attack = 12.f;      // 기본 공격력
-	combat.critChance = 0.1f;
-	combat.critMultiplier = 1.6f;
+	stats.attack = 10.f;
+	stats.hp = 1.f;
+	stats.maxHp = 1.f;
+	stats.defense = 0.f;
+	stats.critChance = 0.0f;
+	stats.critMultiplier = 1.5f;
 }
 
 CMissile::~CMissile()
@@ -33,7 +36,7 @@ void CMissile::OnEnable()
 
 void CMissile::Update()
 {
-	pos += dir * speed * DT;
+	pos = pos + dir * speed * DT;
 
 	// 개선점: 미사일이 일정 시간 경과 시 삭제
 	lifeTime = lifeTime - DT;
@@ -64,8 +67,7 @@ void CMissile::OnCollisionEnter(CCollider* other)
 	if (other->GetLayer() == Layer::Monster)
 	{
 		CGameObject* monsterObj = other->GetOwner();
-		CMonster* monster = dynamic_cast<CMonster*>(monsterObj);
-		if (monster)
+		if (monsterObj)
 		{
 			// 몬스터가 ApplyDamage 호출하는 방식으로 할 수도 있으나 여기서는 시스템 직접 호출
 			// (몬스터 쪽으로 이동시키고 싶으면 이 부분 생략)

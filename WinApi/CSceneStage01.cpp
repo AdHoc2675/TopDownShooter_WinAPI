@@ -31,6 +31,7 @@ void CSceneStage01::Init()
 
 	CWeapon* weapon = new CWeapon();
 	player->AddChild(weapon);
+	weapon->SetPlayer(player);
 
 	CCameraController* controller = new CCameraController();
 	// 카메라가 따라갈 플레이어를 전달

@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CRenderManager.h"
 
 CRenderManager::CRenderManager()
@@ -36,20 +36,20 @@ void CRenderManager::Init()
 	winSize = SINGLE(CEngine)->GetWinSize();
 	hDC		= GetDC(SINGLE(CEngine)->GetHWnd());
 
-	// <´õºí ¹öÆÛ¸µ>
-	// ÇöÀç °ÔÀÓÈ­¸é¿¡ Á÷Á¢ ±×¸±°æ¿ì ±×¸®´Â °úÁ¤ÀÌ Æ÷ÂøµÇ¾î
-	// ¹İÂ¦°Å¸®´Â ºí¸µÅ© Çö»ó ¹ß»ı
-	// ¹é¹öÆÛ¿¡ ±×¸®´Â ÀÛ¾÷À» ÁøÇàÇÏ°í ¸ğµÎ ±×·ÈÀ» °æ¿ì
-	// ºê·ĞÆ®¹öÆÛ¿¡ °á°ú¹°À» º¹»çÇØÁÖ´Â ¹æ½ÄÀ¸·Î ºí¸µÅ© Çö»óÀ» ÇØ°á
+	// <ë”ë¸” ë²„í¼ë§>
+	// í˜„ì¬ ê²Œì„í™”ë©´ì— ì§ì ‘ ê·¸ë¦´ê²½ìš° ê·¸ë¦¬ëŠ” ê³¼ì •ì´ í¬ì°©ë˜ì–´
+	// ë°˜ì§ê±°ë¦¬ëŠ” ë¸”ë§í¬ í˜„ìƒ ë°œìƒ
+	// ë°±ë²„í¼ì— ê·¸ë¦¬ëŠ” ì‘ì—…ì„ ì§„í–‰í•˜ê³  ëª¨ë‘ ê·¸ë ¸ì„ ê²½ìš°
+	// í”„ë¡ íŠ¸ë²„í¼ì— ê²°ê³¼ë¬¼ì„ ë³µì‚¬í•´ì£¼ëŠ” ë°©ì‹ìœ¼ë¡œ ë¸”ë§í¬ í˜„ìƒì„ í•´ê²°
 
-	// ´õºí ¹öÆÛ¸µÀÇ ¸Ş¸ğ¸® DC¿Í ºñÆ®¸Ê »ı¼º
+	// ë”ë¸” ë²„í¼ë§ì˜ ë©”ëª¨ë¦¬ DCì™€ ë¹„íŠ¸ë§µ ìƒì„±
 	hMemDC = CreateCompatibleDC(hDC);
 	hBMP = CreateCompatibleBitmap(hDC, (int)winSize.x, (int)winSize.y);
 
 	HBITMAP hOldBitmap = static_cast<HBITMAP>(SelectObject(hMemDC, hBMP));
 	DeleteObject(hOldBitmap);
 
-	// ±âº» Ææ & ºê·¯½Ã ¼³Á¤
+	// ê¸°ë³¸ íœ & ë¸ŒëŸ¬ì‹œ ì„¤ì •
 	SetPen();
 	SetBrush();
 	SetText();
@@ -58,24 +58,24 @@ void CRenderManager::Init()
 
 void CRenderManager::BeginDraw()
 {
-	// ¹é¹öÆÛ¸¦ ¸ğµÎ Èò»öÀ¸·Î ÃÊ±âÈ­
+	// ë°±ë²„í¼ë¥¼ ëª¨ë‘ í°ìƒ‰ìœ¼ë¡œ ì´ˆê¸°í™”
 	PatBlt(hMemDC, 0, 0, (int)winSize.x, (int)winSize.y, WHITENESS);
 }
 
 void CRenderManager::EndDraw()
 {
-	// ¹é¹öÆÛ¸¦ ÇÁ·ĞÆ®¹öÆÛ·Î º¹»ç
+	// ë°±ë²„í¼ë¥¼ í”„ë¡ íŠ¸ë²„í¼ë¡œ ë³µì‚¬
 	BitBlt(hDC, 0, 0, (int)winSize.x, (int)winSize.y, hMemDC, 0, 0, SRCCOPY);
 }
 
 void CRenderManager::Release()
 {
-	// »ç¿ëÇß´ø ÇÁ·ĞÆ®¹öÆÛ¿Í ¹é¹öÆÛ »èÁ¦
+	// ì‚¬ìš©í–ˆë˜ í”„ë¡ íŠ¸ë²„í¼ì™€ ë°±ë²„í¼ ì‚­ì œ
 	DeleteObject(hMemDC);
 	DeleteObject(hBMP);
 	ReleaseDC(hWnd, hDC);
 
-	// »ç¿ëÇß´ø Ææ & ºê·¯½Ã »èÁ¦
+	// ì‚¬ìš©í–ˆë˜ íœ & ë¸ŒëŸ¬ì‹œ ì‚­ì œ
 	DeleteObject(hCurPen);
 	DeleteObject(hCurBrush);
 
@@ -91,11 +91,11 @@ void CRenderManager::Pixel(float x, float y, COLORREF color)
 
 void CRenderManager::Line(float startX, float startY, float endX, float endY)
 {
-	// WinGDI »ç¿ë¹ı
-	// 1. ÇöÀçÆæ°ú ÇöÀçºê·¯½Ã¸¦ ¼±ÅÃ
-	// 2. ±×¸®±â ÀÛ¾÷ ÁøÇà
-	// 3. ÀÌÀüÆæ°ú ÀÌÀüºê·¯½Ã·Î º¹±¸
-	// Why? ´Ù¸¥ ¿µ¿ª¿¡¼­ »ç¿ëÇÏ´Ù Àá½Ã ºô·Á¾´ °æ¿ì¸¦ ´ëºñ
+	// WinGDI ì‚¬ìš©ë²•
+	// 1. í˜„ì¬íœê³¼ í˜„ì¬ë¸ŒëŸ¬ì‹œë¥¼ ì„ íƒ
+	// 2. ê·¸ë¦¬ê¸° ì‘ì—… ì§„í–‰
+	// 3. ì´ì „íœê³¼ ì´ì „ë¸ŒëŸ¬ì‹œë¡œ ë³µêµ¬
+	// Why? ë‹¤ë¥¸ ì˜ì—­ì—ì„œ ì‚¬ìš©í•˜ë‹¤ ì ì‹œ ë¹Œë ¤ì“´ ê²½ìš°ë¥¼ ëŒ€ë¹„
 
 	HPEN prevPen = static_cast<HPEN>(SelectObject(hMemDC, hCurPen));
 	HBRUSH prevBrush = static_cast<HBRUSH>(SelectObject(hMemDC, hCurBrush));
@@ -182,7 +182,7 @@ void CRenderManager::BlendImage(CImage* pImg, float dstStartX, float dstStartY, 
 
 void CRenderManager::SetPen(PenType type, COLORREF color, int width)
 {
-	// ¼±ÅÃÇÏ´Â ÆæÀÌ ÇöÀç Ææ°ú µ¿ÀÏÇÒ °æ¿ì »õ·Î ¸¸µéÁö ¾ÊÀ½
+	// ì„ íƒí•˜ëŠ” íœì´ í˜„ì¬ íœê³¼ ë™ì¼í•  ê²½ìš° ìƒˆë¡œ ë§Œë“¤ì§€ ì•ŠìŒ
 	if (penType == type && penWidth == width && penColor == color)
 		return;
 
@@ -190,10 +190,10 @@ void CRenderManager::SetPen(PenType type, COLORREF color, int width)
 	penWidth = width;
 	penColor = color;
 
-	// ÀÌÀü ÆæÀ» Á¦°Å
+	// ì´ì „ íœì„ ì œê±°
 	DeleteObject(hCurPen);
 
-	// Ææ Å¸ÀÔ¿¡ µû¶ó Ææ ½ºÅ¸ÀÏÀ» ´Ù¸£°Ô ¼³Á¤
+	// íœ íƒ€ì…ì— ë”°ë¼ íœ ìŠ¤íƒ€ì¼ì„ ë‹¤ë¥´ê²Œ ì„¤ì •
 	switch (type)
 	{
 	case PenType::Solid:
@@ -216,25 +216,25 @@ void CRenderManager::SetPen(PenType type, COLORREF color, int width)
 
 void CRenderManager::SetBrush(BrushType type, COLORREF color)
 {
-	// ¼±ÅÃÇÏ´Â ºê·¯½Ã°¡ ÇöÀç ºê·¯½Ã¿Í µ¿ÀÏÇÒ °æ¿ì »õ·Î ¸¸µéÁö ¾ÊÀ½
+	// ì„ íƒí•˜ëŠ” ë¸ŒëŸ¬ì‹œê°€ í˜„ì¬ ë¸ŒëŸ¬ì‹œì™€ ë™ì¼í•  ê²½ìš° ìƒˆë¡œ ë§Œë“¤ì§€ ì•ŠìŒ
 	if (brushType == type && brushColor == color)
 		return;
 
 	brushType = type;
 	brushColor = color;
 
-	// ÀÌÀü ºê·¯½Ã¸¦ Á¦°Å
+	// ì´ì „ ë¸ŒëŸ¬ì‹œë¥¼ ì œê±°
 	DeleteObject(hCurBrush);
 
-	// ºê·¯½Ã Å¸ÀÔ¿¡ µû¶ó ºê·¯½Ã ½ºÅ¸ÀÏÀ» ´Ù¸£°Ô ¼³Á¤
+	// ë¸ŒëŸ¬ì‹œ íƒ€ì…ì— ë”°ë¼ ë¸ŒëŸ¬ì‹œ ìŠ¤íƒ€ì¼ì„ ë‹¤ë¥´ê²Œ ì„¤ì •
 	switch (type)
 	{
 	case BrushType::Solid:
 		hCurBrush = CreateSolidBrush(color);
 		break;
 	case BrushType::Null:
-		// Null ºê·¯½Ã¸¸ À¯µ¶ Èñ¾ÈÇÑ ±¸Çö
-		// ÄÄÇ»ÅÍ´Â Åõ¸íÇ¥ÇöÀÌ ºÒ°¡´É -> Æ¯º°Ã³¸® ÇÊ¿ä
+		// Null ë¸ŒëŸ¬ì‹œë§Œ ìœ ë… í¬ì•ˆí•œ êµ¬í˜„
+		// ì»´í“¨í„°ëŠ” íˆ¬ëª…í‘œí˜„ì´ ë¶ˆê°€ëŠ¥ -> íŠ¹ë³„ì²˜ë¦¬ í•„ìš”
 		hCurBrush = static_cast<HBRUSH>(GetStockObject(NULL_BRUSH));
 		break;
 	default:
@@ -245,7 +245,7 @@ void CRenderManager::SetBrush(BrushType type, COLORREF color)
 
 void CRenderManager::SetText(int size, COLORREF color, TextAlign align)
 {
-	// ¼±ÅÃÇÏ´Â ÅØ½ºÆ®°¡ ÇöÀç ÅØ½ºÆ®¿Í µ¿ÀÏÇÒ °æ¿ì »õ·Î ¸¸µéÁö ¾ÊÀ½
+	// ì„ íƒí•˜ëŠ” í…ìŠ¤íŠ¸ê°€ í˜„ì¬ í…ìŠ¤íŠ¸ì™€ ë™ì¼í•  ê²½ìš° ìƒˆë¡œ ë§Œë“¤ì§€ ì•ŠìŒ
 	if (textSize == size && textColor == color && textAlign == align)
 		return;
 
@@ -255,7 +255,7 @@ void CRenderManager::SetText(int size, COLORREF color, TextAlign align)
 
 	DeleteObject(hFont);
 	hFont = CreateFont(size, 0, 0, 0, 0, 0, 0, 0, HANGEUL_CHARSET,
-		0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("±¼¸²"));
+		0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("êµ´ë¦¼"));
 	SelectObject(hMemDC, hFont);
 
 	SetTextColor(hMemDC, color);
@@ -286,7 +286,7 @@ void CRenderManager::SetText(int size, COLORREF color, TextAlign align)
 
 void CRenderManager::SetTextBackMode(TextBackMode mode, COLORREF backColor)
 {
-	// ¼±ÅÃÇÏ´Â ÅØ½ºÆ® ¹è°æÀÌ ÇöÀç ÅØ½ºÆ®¿Í µ¿ÀÏÇÒ °æ¿ì »õ·Î ¸¸µéÁö ¾ÊÀ½
+	// ì„ íƒí•˜ëŠ” í…ìŠ¤íŠ¸ ë°°ê²½ì´ í˜„ì¬ í…ìŠ¤íŠ¸ì™€ ë™ì¼í•  ê²½ìš° ìƒˆë¡œ ë§Œë“¤ì§€ ì•ŠìŒ
 	if (textBackMode == mode && textBackColor == backColor)
 		return;
 

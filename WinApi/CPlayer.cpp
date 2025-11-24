@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CPlayer.h"
 #include "CGame.h"
+#include "CCombatSystem.h"
 
 CPlayer::CPlayer()
 {
@@ -8,7 +9,14 @@ CPlayer::CPlayer()
 	scale		= Vec2(100, 100);
 	animator	= nullptr;
 	speed		= 200.f;
-	life		= 5;
+
+	stats.hp = 5.f;
+	stats.maxHp = 5.f;
+	stats.defense = 0.f;
+	stats.attack = 20.f;
+	stats.critChance = 0.f;
+	stats.critMultiplier = 1.5f;
+
 	level		= 1;
 	exp			= 0;
 	maxExp		= 100;
@@ -61,6 +69,8 @@ void CPlayer::OnEnable()
 
 void CPlayer::Update()
 {
+#pragma region 이동 입력 처리
+
 	isMove = false;
 
 	// 이동
@@ -97,6 +107,9 @@ void CPlayer::Update()
 	{
 		moveDir.y = 0;
 	}
+
+#pragma endregion
+
 
 	// 경험치 및 레벨업 테스트
 	if (INPUT->ButtonDown(VK_SPACE))

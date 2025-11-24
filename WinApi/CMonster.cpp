@@ -1,20 +1,20 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CMonster.h"
 #include "CPlayer.h"
 #include "CMissile.h"
 #include "CCombatSystem.h"
 #include "CCollider.h"
 
-CMonster::CMonster()
+CMonster::CMonster() 
 {
-    name  = TEXT("¸ó½ºÅÍ");
+    name  = TEXT("ëª¬ìŠ¤í„°");
     scale = Vec2(40, 40);
     stats.hp       = 60.f;
     stats.maxHp    = 60.f;
-    stats.defense  = 2.f;
-    stats.attack   = 8.f;      // (»ç¿ëÇÒÁö ¼±ÅÃ)
-    stats.critChance = 0.05f;
-    stats.critMultiplier = 1.4f;
+    stats.defense  = 0.f;
+    stats.attack = 1.f;
+    stats.critChance = 0.f;
+    stats.critMultiplier = 1.0f;
 
     speed = 100.f;
     hitMsgDuration = 0.4f;
@@ -29,7 +29,7 @@ CMonster::~CMonster()
 
 void CMonster::Init()
 {
-    // Ãæµ¹ ÄÄÆ÷³ÍÆ® Ãß°¡
+    // ì¶©ëŒ ì»´í¬ë„ŒíŠ¸ ì¶”ê°€
 	CCollider* collider = new CCollider();
 	collider->SetScale(Vec2(45, 45));
 	collider->SetLayer(Layer::Monster);
@@ -50,7 +50,7 @@ void CMonster::Update()
         }
     }
 
-	// ÇÃ·¹ÀÌ¾î ÂÊÀ¸·Î ÀÌµ¿
+	// í”Œë ˆì´ì–´ ìª½ìœ¼ë¡œ ì´ë™
     if (player != nullptr)
     {
         Vec2 dir = player->GetWorldPos() - worldPos;
@@ -72,11 +72,11 @@ void CMonster::Render()
 
 	//=====//
 
-    // ÇÇ°Ý ¸Þ½ÃÁö
+    // í”¼ê²© ë©”ì‹œì§€
     int textSize = 12;
     if (curHitMsgTime > 0.f)
     {
-        // ÇÇ°Ý ¸Þ½ÃÁö Ãâ·Â
+        // í”¼ê²© ë©”ì‹œì§€ ì¶œë ¥
         RENDER->SetText(textSize, RGB(255, 0, 0), TextAlign::Center);
         RENDER->SetTextBackMode(TextBackMode::Null);
         RENDER->Text(

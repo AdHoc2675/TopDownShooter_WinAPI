@@ -8,8 +8,8 @@ public:
 
 public:
 	void	SetDir(const Vec2 dir) { this->dir = dir.Normalized(); }
-	void	SetDamage(float dmg)   { combat.attack = dmg; }
-	CombatStats& GetCombatStats() { return combat; }
+	void	CopyStats(const CombatStats& other) { stats = other; }
+	CombatStats& GetCombatStats() { return stats; }
 
 private:
 	void	Init()						override;
@@ -25,5 +25,5 @@ private:
 	Vec2	dir;
 	float	speed;
 	float	lifeTime;
-	CombatStats combat;
+	CombatStats stats;
 };

@@ -1,6 +1,5 @@
-#pragma once
+ï»¿#pragma once
 
-// Àü¹æ ¼±¾ğ
 class CGameObject;
 class CMissile;
 class CMonster;
@@ -11,9 +10,9 @@ struct CombatStats
     float hp            = 100.f;
     float maxHp         = 100.f;
     float attack        = 10.f;
-    float defense       = 0.f;      // ´Ü¼ø °¨¼ÒÄ¡
+    float defense       = 0.f;      // ë‹¨ìˆœ ê°ì†Œì¹˜
     float critChance    = 0.1f;     // 0~1
-    float critMultiplier= 1.5f;     // Ä¡¸íÅ¸ ¹è¼ö
+    float critMultiplier= 1.5f;     // ì¹˜ëª…íƒ€ ë°°ìˆ˜
     bool  alive() const { return hp > 0.f; }
 };
 
@@ -25,20 +24,20 @@ private:
     ~CCombatSystem() {}
 
 public:
-    // ±âº» µ¥¹ÌÁö °ø½Ä: (°ø°İ·Â - ¹æ¾î·Â) * Ä¡¸íÅ¸
-    float CalculateDamage(const CombatStats& attacker, const CombatStats& victim);
+    // ê¸°ë³¸ ë°ë¯¸ì§€ ê³µì‹: (ê³µê²©ë ¥ - ë°©ì–´ë ¥) * ì¹˜ëª…íƒ€
+    float CalculateDamage(const CombatStats& attacker, const CombatStats& victim, bool& critOut);
 
-    // ½ÇÁ¦ ÇÇÇØ Àû¿ë (»ç¸Á Ã³¸® µî)
+    // ì‹¤ì œ í”¼í•´ ì ìš© (ì‚¬ë§ ì²˜ë¦¬ ë“±)
     void ApplyDamage(CGameObject* attackerObj, CGameObject* victimObj,
                      CombatStats& attackerStats, CombatStats& victimStats);
 
-    // Ä¡¸íÅ¸ ÆÇÁ¤
+    // ì¹˜ëª…íƒ€ íŒì •
     bool IsCritical(const CombatStats& attacker);
 
-    // HP °¨¼Ò ÈÄ »ç¸Á Ã³¸® Äİ¹é ºĞ¸® °¡´É
+    // HP ê°ì†Œ í›„ ì‚¬ë§ ì²˜ë¦¬ ì½œë°± ë¶„ë¦¬ ê°€ëŠ¥
     void HandleDeath(CGameObject* obj, CombatStats& stats);
 
-    // ·Î±ë / µğ¹ö±× Ãâ·Â(¿É¼Ç)
+    // ë¡œê¹… / ë””ë²„ê·¸ ì¶œë ¥(ì˜µì…˜)
     void DebugDamageLog(CGameObject* attackerObj, CGameObject* victimObj,
                         float dmg, bool crit);
 };

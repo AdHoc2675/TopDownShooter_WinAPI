@@ -2,6 +2,7 @@
 #include "CWeapon.h"
 #include "CMissile.h"
 #include "CGame.h"
+#include "CPlayer.h"
 
 using namespace std;
 
@@ -253,5 +254,10 @@ void CWeapon::CreateMissile(const Vec2& spawnPos, const Vec2& dir)
 	CMissile* missile = new CMissile();
 	missile->SetPos(spawnPos);
 	missile->SetDir(dir);
+
+	if (player)
+	{
+		missile->CopyStats(player->GetCombatStats());
+	}
 	EVENT->AddGameObject(GetScene(), missile);
 }

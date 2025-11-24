@@ -1,9 +1,15 @@
 #pragma once
+#include "CCombatSystem.h"
+
+struct CombatStats;
+class CAnimator;
+
 class CPlayer : public CGameObject
 {
 public:
 	CPlayer();
 	virtual ~CPlayer();
+	CombatStats& GetCombatStats() { return stats; }
 
 private:
 	void	Init()			override;
@@ -17,6 +23,7 @@ private:
 	void	AnimatorUpdate();
 
 	CAnimator*	animator;
+	CombatStats stats;
 	float		speed;
 	int 		life;
 	int 		level;

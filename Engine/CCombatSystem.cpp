@@ -1,12 +1,12 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CCombatSystem.h"
 #include "CGameObject.h"
 #include "CEventManager.h"
 
-float CCombatSystem::CalculateDamage(const CombatStats& attacker, const CombatStats& victim)
+float CCombatSystem::CalculateDamage(const CombatStats& attacker, const CombatStats& victim, bool& critOut)
 {
     float base = attacker.attack - victim.defense;
-    if (base < 1.f) base = 1.f; // ÃÖ¼Ò 1
+    if (base < 1.f) base = 1.f; // ìµœì†Œ 1
     bool crit = IsCritical(attacker);
     if (crit)
         base *= attacker.critMultiplier;
@@ -15,7 +15,7 @@ float CCombatSystem::CalculateDamage(const CombatStats& attacker, const CombatSt
 
 bool CCombatSystem::IsCritical(const CombatStats& attacker)
 {
-    // °£´ÜÇÑ È®·ü(ÃßÈÄ RNG °³¼± °¡´É)
+    // ê°„ë‹¨í•œ í™•ë¥ (ì¶”í›„ RNG ê°œì„  ê°€ëŠ¥)
     float r = (float)rand() / (float)RAND_MAX;
     return r < attacker.critChance;
 }
@@ -27,13 +27,12 @@ void CCombatSystem::ApplyDamage(CGameObject* attackerObj, CGameObject* victimObj
     if (!victimStats.alive()) return;
 
     bool crit = false;
-    // Ä¡¸íÅ¸ ¿©ºÎ °è»êÀ» À§ÇØ º°µµ È£Ãâ
+
+    // ì¹˜ëª…íƒ€ ì—¬ë¶€ ê³„ì‚°ì„ ìœ„í•´ ë³„ë„ í˜¸ì¶œ
     float r = (float)rand() / (float)RAND_MAX;
     crit = (r < attackerStats.critChance);
 
-    float base = attackerStats.attack - victimStats.defense;
-    if (base < 1.f) base = 1.f;
-    if (crit) base *= attackerStats.critMultiplier;
+    float base = CalculateDamage(attackerStats, victimStats, crit);;
 
     victimStats.hp -= base;
     if (victimStats.hp < 0.f) victimStats.hp = 0.f;
@@ -46,7 +45,7 @@ void CCombatSystem::ApplyDamage(CGameObject* attackerObj, CGameObject* victimObj
 
 void CCombatSystem::HandleDeath(CGameObject* obj, CombatStats& stats)
 {
-    // »ç¸Á Ã³¸®(Áö±ÝÀº ¹Ù·Î »èÁ¦)
+    // ì‚¬ë§ ì²˜ë¦¬(ì”¬ì—ì„œ ì‚­ì œ)
     EVENT->Delete(obj->GetScene(), obj);
 }
 

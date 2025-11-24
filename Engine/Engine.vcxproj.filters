@@ -120,6 +120,9 @@
     <ClInclude Include="CButton.h">
       <Filter>Asset\UI</Filter>
     </ClInclude>
+    <ClInclude Include="CCombatSystem.h">
+      <Filter>Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -193,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="CButton.cpp">
       <Filter>Asset\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CCombatSystem.cpp">
+      <Filter>Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
