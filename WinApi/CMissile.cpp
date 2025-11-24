@@ -6,9 +6,10 @@
 CMissile::CMissile()
 {
 	name = TEXT("미사일");
-	scale = Vec2(20, 20);
+	scale = Vec2(15, 15);
 	dir = Vec2(0, -1);
 	speed = 700.f;
+	lifeTime = 3.f;
 }
 
 CMissile::~CMissile()
@@ -31,9 +32,11 @@ void CMissile::Update()
 {
 	pos += dir * speed * DT;
 
-	if (worldPos.x < 0 || worldPos.x > CGame::WINSIZE.x ||
-		worldPos.y < 0 || worldPos.y > CGame::WINSIZE.y)
+	// 개선점: 미사일이 일정 시간 경과 시 삭제
+	lifeTime = lifeTime - DT;
+	if (lifeTime <= 0.f)
 		EVENT->Delete(GetScene(), this);
+
 }
 
 void CMissile::Render()

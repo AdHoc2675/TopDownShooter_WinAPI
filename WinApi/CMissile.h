@@ -21,4 +21,5 @@ private:
 private:
 	Vec2	dir;
 	float	speed;
+	float	lifeTime;
 };

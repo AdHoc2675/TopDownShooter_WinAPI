@@ -6,7 +6,7 @@ CMonster::CMonster()
 	:player(nullptr)
 {
 	name	= TEXT("몬스터");
-	scale	= Vec2(100, 100);
+	scale	= Vec2(40, 40);
 
 	speed = 100.f;
     hitMsgDuration = 0.5f;
@@ -23,7 +23,7 @@ void CMonster::Init()
 {
     // 충돌 컴포넌트 추가
 	CCollider* collider = new CCollider();
-	collider->SetScale(Vec2(105, 105));
+	collider->SetScale(Vec2(45, 45));
 	collider->SetLayer(Layer::Monster);
 	AddChild(collider);
 }
