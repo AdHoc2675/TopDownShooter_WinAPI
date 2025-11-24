@@ -1,4 +1,5 @@
 #pragma once
+#include "CCombatSystem.h"
 class CMissile : public CGameObject
 {
 public:
@@ -6,15 +7,17 @@ public:
 	virtual ~CMissile();
 
 public:
-	void	SetDir(const Vec2 dir)	{ this->dir = dir.Normalized(); }
+	void	SetDir(const Vec2 dir) { this->dir = dir.Normalized(); }
+	void	SetDamage(float dmg)   { combat.attack = dmg; }
+	CombatStats& GetCombatStats() { return combat; }
 
 private:
-	void	Init()					override;
-	void	OnEnable()				override;
-	void	Update()				override;
-	void	Render()				override;
-	void	OnDisable()				override;
-	void	Release()				override;
+	void	Init()						override;
+	void	OnEnable()					override;
+	void	Update()					override;
+	void	Render()					override;
+	void	OnDisable()					override;
+	void	Release()					override;
 
 	void	OnCollisionEnter(CCollider* other)	override;
 
@@ -22,4 +25,5 @@ private:
 	Vec2	dir;
 	float	speed;
 	float	lifeTime;
+	CombatStats combat;
 };

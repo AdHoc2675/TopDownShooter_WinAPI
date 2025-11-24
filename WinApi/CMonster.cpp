@@ -1,15 +1,23 @@
 #include "pch.h"
 #include "CMonster.h"
 #include "CPlayer.h"
+#include "CMissile.h"
+#include "CCombatSystem.h"
+#include "CCollider.h"
 
 CMonster::CMonster()
-	:player(nullptr)
 {
-	name	= TEXT("몬스터");
-	scale	= Vec2(40, 40);
+    name  = TEXT("몬스터");
+    scale = Vec2(40, 40);
+    stats.hp       = 60.f;
+    stats.maxHp    = 60.f;
+    stats.defense  = 2.f;
+    stats.attack   = 8.f;      // (사용할지 선택)
+    stats.critChance = 0.05f;
+    stats.critMultiplier = 1.4f;
 
-	speed = 100.f;
-    hitMsgDuration = 0.5f;
+    speed = 100.f;
+    hitMsgDuration = 0.4f;
     curHitMsgTime = 0.f;
 
     hitMsg = L"Hit!";
@@ -88,13 +96,16 @@ void CMonster::Release()
 
 void CMonster::OnCollisionEnter(CCollider* other)
 {
-    curHitMsgTime = hitMsgDuration;
-}
-
-void CMonster::OnCollisionStay(CCollider* other)
-{
-}
-
-void CMonster::OnCollisionExit(CCollider* other)
-{
+    if (other->GetLayer() == Layer::Missile)
+    {
+        CGameObject* missileObj = other->GetOwner();
+        CMissile* missile = dynamic_cast<CMissile*>(missileObj);
+        if (missile)
+        {
+            CombatStats& attackerStats = missile->GetCombatStats();
+            COMBAT->ApplyDamage(missile, this, attackerStats, stats);
+            curHitMsgTime = hitMsgDuration;
+            hitMsg = L"-" + to_wstring((int)attackerStats.attack);
+        }
+    }
 }
