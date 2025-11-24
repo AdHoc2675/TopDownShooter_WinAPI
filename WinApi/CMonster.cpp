@@ -31,11 +31,10 @@ CMonster::~CMonster()
 
 void CMonster::Init()
 {
-    // 충돌 컴포넌트 추가
-	CCollider* collider = new CCollider();
-	collider->SetScale(Vec2(45, 45));
-	collider->SetLayer(Layer::Monster);
-	AddChild(collider);
+    collider = new CCollider();
+    collider->SetScale(Vec2(45, 45));
+    collider->SetLayer(Layer::Monster);
+    AddChild(collider);
 }
 
 void CMonster::OnEnable()
@@ -133,4 +132,50 @@ void CMonster::OnCollisionEnter(CCollider* other)
             }
         }
     }
+}
+
+void CMonster::OnCollisionStay(CCollider* other)
+{
+    if (other->GetLayer() != Layer::Monster)
+        return;
+
+    // 중복 분리 방지: collider ID가 더 작은 쪽만 처리
+    if (collider->GetID() >= other->GetID())
+        return;
+
+    CGameObject* otherObj = other->GetOwner();
+    CMonster* otherMonster = dynamic_cast<CMonster*>(otherObj);
+    if (!otherMonster) return;
+
+    // 위치
+    Vec2 aPos = worldPos;
+    Vec2 bPos = otherObj->GetWorldPos();
+
+    // 반경(대략 절반 폭)
+    float aRadius = collider->GetScale().x * 0.5f;
+    float bRadius = other->GetScale().x * 0.5f;
+
+    Vec2 diff = aPos - bPos;
+    float dist = diff.Length();
+    if (dist <= 0.0001f)
+    {
+        diff = Vec2(1.f, 0.f);
+        dist = 1.f;
+    }
+
+    float targetDist = aRadius + bRadius;
+    float overlap = targetDist - dist;
+    if (overlap > 0.f)
+    {
+        Vec2 n = diff / dist;               // 정규화 방향
+        Vec2 correction = n * (overlap * 0.5f);
+
+        // 두 몬스터를 반씩 이동
+        pos += correction;
+        otherMonster->SetPos(otherMonster->GetPos() - correction);
+    }
+}
+
+void CMonster::OnCollisionExit(CCollider* other)
+{
 }

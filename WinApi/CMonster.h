@@ -1,16 +1,15 @@
 #pragma once
 #include "CCombatSystem.h"
 
-struct CombatStats;
-
 class CPlayer;
+class CCollider;
 
 class CMonster : public CGameObject
 {
 public:
     CMonster();
     virtual ~CMonster();
-    void SetPlayer(CPlayer* player) { this->player = player; }
+    void SetPlayer(CPlayer* p) { player = p; }
 
 private:
     void Init()         override;
@@ -20,16 +19,20 @@ private:
     void OnDisable()    override;
     void Release()      override;
 
-	void DropExpOrb();
-
     void OnCollisionEnter(CCollider* other) override;
+    void OnCollisionStay(CCollider* other)  override;
+    void OnCollisionExit(CCollider* other)  override;
 
+    void DropExpOrb();
+
+private:
     CPlayer*    player = nullptr;
-    CombatStats stats;       
-	float    	speed;
+    CCollider*  collider = nullptr;   // Ãß°¡
+    CombatStats stats;
+    float       speed;
     float       hitMsgDuration;
     float       curHitMsgTime;
-	bool        droppedExpOrb;
     wstring     hitMsg;
+    bool        droppedExpOrb = false;
 };
 

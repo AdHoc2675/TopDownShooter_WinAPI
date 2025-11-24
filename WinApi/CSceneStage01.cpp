@@ -46,9 +46,10 @@ void CSceneStage01::Init()
     // UI 예시 생략(존재 유지)
     // ...
 
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::ExpOrb);
+    CCollisionManager::GetInstance()->CheckLayer(Layer::Player,  Layer::ExpOrb);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::Monster);
+    CCollisionManager::GetInstance()->CheckLayer(Layer::Player,  Layer::Monster);
+    CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster); // 추가
 
     spawnTimer = spawnInterval;
 }
