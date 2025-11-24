@@ -24,9 +24,9 @@ private:
 
 private:
     CPlayer* player = nullptr;
-    int      value  = 30;      // 획득 경험치
-    float    attractRadius = 180.f;
-    float    moveSpeed      = 220.f;
-    float    homingSpeed    = 400.f;
-    bool     isHoming       = false;
+    int      value;      // 획득 경험치
+    float    attractRadius;
+    float    moveSpeed;
+    float    homingSpeed;
+    bool     isHoming;
 };

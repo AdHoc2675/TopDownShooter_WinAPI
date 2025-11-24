@@ -10,11 +10,11 @@ CExpOrb::CExpOrb()
     name  = TEXT("경험치구슬");
     scale = Vec2(16.f, 16.f);
 
-    int      value = 5;      // 획득 경험치
-    float    attractRadius = 250.f;
-    float    moveSpeed = 220.f;
-    float    homingSpeed = 400.f;
-    bool     isHoming = false;
+    value = 5;      // 획득 경험치
+    attractRadius = 250.f;
+    moveSpeed = 220.f;
+    homingSpeed = 400.f;
+    isHoming = false;
 }
 
 CExpOrb::~CExpOrb()
@@ -41,20 +41,19 @@ void CExpOrb::Update()
     Vec2 toPlayer = player->GetWorldPos() - worldPos;
     float dist = toPlayer.Length();
 
-    if (!isHoming && dist < attractRadius)
+    if (isHoming == false && dist < attractRadius)
     {
         isHoming = true;
     }
 
-    if (isHoming)
+    if (isHoming == true)
     {
         toPlayer.Normalize();
         pos = pos + toPlayer * homingSpeed * DT;
     }
     else
     {
-        // 간단한 부유(선회) 효과를 원하면 여기에 추가 가능
-        // pos.y += sinf((float)GetTickCount() * 0.005f) * 20.f * DT;
+
     }
 }
 
