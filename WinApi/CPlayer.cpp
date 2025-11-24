@@ -1,10 +1,10 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CPlayer.h"
 #include "CGame.h"
 
 CPlayer::CPlayer()
 {
-	name		= TEXT("ÇÃ·¹ÀÌ¾î");
+	name		= TEXT("í”Œë ˆì´ì–´");
 	scale		= Vec2(100, 100);
 	animator	= nullptr;
 	speed		= 200.f;
@@ -48,7 +48,7 @@ void CPlayer::Init()
 
 	AddChild(animator);
 
-	// Ãæµ¹ ÄÄÆ÷³ÍÆ® Ãß°¡
+	// ì¶©ëŒ ì»´í¬ë„ŒíŠ¸ ì¶”ê°€
 	CCollider* collider = new CCollider();
 	collider->SetScale(Vec2(70, 70));
 	collider->SetLayer(Layer::Player);
@@ -63,7 +63,7 @@ void CPlayer::Update()
 {
 	isMove = false;
 
-	// ÀÌµ¿
+	// ì´ë™
 	if (INPUT->ButtonStay('A'))
 	{
 		pos.x -= speed * DT;
@@ -98,7 +98,7 @@ void CPlayer::Update()
 		moveDir.y = 0;
 	}
 
-	// °æÇèÄ¡ ¹× ·¹º§¾÷ Å×½ºÆ®
+	// ê²½í—˜ì¹˜ ë° ë ˆë²¨ì—… í…ŒìŠ¤íŠ¸
 	if (INPUT->ButtonDown(VK_SPACE))
 	{
 		exp += 30;
@@ -115,30 +115,39 @@ void CPlayer::Update()
 
 void CPlayer::Render()
 {
-	// °æÇèÄ¡ ¹Ù ·»´õ¸µ (³ë¶õ »ç°¢Çü)
-	float progress = ((float)exp / (float)maxExp); // 0¡æ1
+	// ê²½í—˜ì¹˜ ë°” ë Œë”ë§ (ë…¸ë€ ì‚¬ê°í˜•)
+	float progress = ((float)exp / (float)maxExp); // 0â†’1
 	float barWidth = CGame::WINSIZE.x;
 	float barHeight = 20.f;
-	float offsetY = scale.y * 0.5f + 25.f; // ¸Ó¸® À§ ¿©¹é °£°İ
+	float offsetY = scale.y * 0.5f + 25.f; // ë¨¸ë¦¬ ìœ„ ì—¬ë°± ê°„ê²©
 	float barX = 0.f;
 	float barY = 0.f;
 
-	// °æÇèÄ¡ ¹è°æ ¹Ù ·»´õ¸µ (°ËÀº »ç°¢Çü)
+	// ê²½í—˜ì¹˜ ë°°ê²½ ë°” ë Œë”ë§ (ê²€ì€ ì‚¬ê°í˜•)
 	RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
 	RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
-
 	RENDER->Rect(barX, barY, barX + barWidth, barY + barHeight);
 
-	// ÃÖ¼Ò Æø º¸È£
+	// ìµœì†Œ í­ ë³´í˜¸
 	float fillW = barWidth * progress;
 	if (fillW < 2.f && progress > 0.f) fillW = 2.f;
 
-	// °æÇèÄ¡ ÁøÇà ¹Ù
+	// ê²½í—˜ì¹˜ ì§„í–‰ ë°”
 	COLORREF fillColor = RGB(255, 255, 0);
 
 	RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
 	RENDER->SetBrush(BrushType::Solid, fillColor);
 	RENDER->Rect(barX + 1.f, barY + 1.f, barX + fillW - 1.f, barY + barHeight - 1.f);
+
+	// í˜„ì¬ ë ˆë²¨ í…ìŠ¤íŠ¸
+	int textSize = 24;
+	wstring levelText = L"Level " + to_wstring(level);
+	RENDER->SetText(textSize, RGB(0, 0, 0), TextAlign::Center);
+	RENDER->SetTextBackMode(TextBackMode::Null);
+	RENDER->Text(
+		barWidth * 0.5f,
+		barHeight + 5.f,
+		levelText);
 }
 
 void CPlayer::OnDisable()
