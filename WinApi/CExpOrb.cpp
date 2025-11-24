@@ -10,8 +10,8 @@ CExpOrb::CExpOrb()
     name  = TEXT("경험치구슬");
     scale = Vec2(16.f, 16.f);
 
-    value = 5;      // 획득 경험치
-    attractRadius = 250.f;
+    value = 15;      // 획득 경험치
+    attractRadius = 150.f;
     moveSpeed = 220.f;
     homingSpeed = 400.f;
     isHoming = false;
@@ -68,10 +68,11 @@ void CExpOrb::Render()
         renderPos.x + scale.x * 0.5f,
         renderPos.y + scale.y * 0.5f);
 
-    // 값 표시(디버그)
-    RENDER->SetText(10, RGB(0, 60, 0), TextAlign::Center);
+    // 경험치 값 표시
+	int textSize = 10;
+    RENDER->SetText(textSize, RGB(0, 60, 0), TextAlign::Center);
     RENDER->SetTextBackMode(TextBackMode::Null);
-    RENDER->Text(renderPos.x, renderPos.y - scale.y * 0.5f - 12.f, L"+" + to_wstring(value));
+    RENDER->Text(renderPos.x, renderPos.y - scale.y * 0.5f - (float)textSize, L"+" + to_wstring(value));
 }
 
 void CExpOrb::OnDisable()
