@@ -18,6 +18,10 @@ private:
 
 	CAnimator*	animator;
 	float		speed;
+	int 		life;
+	int 		level;
+	int			exp;
+	int			maxExp;
 
 	Vec2		moveDir;
 	Vec2		lookDir;

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CPlayer.h"
+#include "CGame.h"
 
 CPlayer::CPlayer()
 {
@@ -7,7 +8,10 @@ CPlayer::CPlayer()
 	scale		= Vec2(100, 100);
 	animator	= nullptr;
 	speed		= 200.f;
-
+	life		= 5;
+	level		= 1;
+	exp			= 0;
+	maxExp		= 100;
 	moveDir		= Vec2(0, 0);
 	lookDir		= Vec2(0, -1);
 	isMove		= false;
@@ -94,11 +98,47 @@ void CPlayer::Update()
 		moveDir.y = 0;
 	}
 
+	// 경험치 및 레벨업 테스트
+	if (INPUT->ButtonDown(VK_SPACE))
+	{
+		exp += 30;
+		if (exp >= maxExp)
+		{
+			exp = exp - maxExp;
+			level++;
+			maxExp = static_cast<int>(maxExp * 1.2f);
+		}
+	}
+
 	AnimatorUpdate();
 }
 
 void CPlayer::Render()
 {
+	// 경험치 바 렌더링 (노란 사각형)
+	float progress = ((float)exp / (float)maxExp); // 0→1
+	float barWidth = CGame::WINSIZE.x;
+	float barHeight = 20.f;
+	float offsetY = scale.y * 0.5f + 25.f; // 머리 위 여백 간격
+	float barX = 0.f;
+	float barY = 0.f;
+
+	// 경험치 배경 바 렌더링 (검은 사각형)
+	RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+	RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
+
+	RENDER->Rect(barX, barY, barX + barWidth, barY + barHeight);
+
+	// 최소 폭 보호
+	float fillW = barWidth * progress;
+	if (fillW < 2.f && progress > 0.f) fillW = 2.f;
+
+	// 경험치 진행 바
+	COLORREF fillColor = RGB(255, 255, 0);
+
+	RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
+	RENDER->SetBrush(BrushType::Solid, fillColor);
+	RENDER->Rect(barX + 1.f, barY + 1.f, barX + fillW - 1.f, barY + barHeight - 1.f);
 }
 
 void CPlayer::OnDisable()
