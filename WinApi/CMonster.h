@@ -1,9 +1,12 @@
 #pragma once
+
+class CPlayer;
 class CMonster : public CGameObject
 {
 public:
 	CMonster();
 	virtual ~CMonster();
+	void SetPlayer(CPlayer* player) { this->player = player; }
 
 private:
 	void Init()			override;
@@ -17,8 +20,10 @@ private:
 	void OnCollisionStay(CCollider* other) override;
 	void OnCollisionExit(CCollider* other) override;
 
-	float hitMsgDuration = 0.5f;
-	float curHitMsgTime = 0.f;
-	wstring hitMsg = L"Hit!";
+	float speed;
+	float hitMsgDuration;
+	float curHitMsgTime;
+	CPlayer* player = nullptr;
+	wstring hitMsg;
 };
 

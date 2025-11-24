@@ -1,10 +1,18 @@
 #include "pch.h"
 #include "CMonster.h"
+#include "CPlayer.h"
 
 CMonster::CMonster()
+	:player(nullptr)
 {
 	name	= TEXT("몬스터");
 	scale	= Vec2(100, 100);
+
+	speed = 100.f;
+    hitMsgDuration = 0.5f;
+    curHitMsgTime = 0.f;
+
+    hitMsg = L"Hit!";
 }
 
 CMonster::~CMonster()
@@ -33,6 +41,14 @@ void CMonster::Update()
             curHitMsgTime = 0.f;
         }
     }
+
+	// 플레이어 쪽으로 이동
+    if (player != nullptr)
+    {
+        Vec2 dir = player->GetWorldPos() - worldPos;
+        dir.Normalize();
+        pos = pos + (dir * speed * DT);
+	}
 }
 
 void CMonster::Render()

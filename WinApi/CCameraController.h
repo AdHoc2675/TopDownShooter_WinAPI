@@ -8,6 +8,7 @@ class CCameraController : public CGameObject
 public:
     CCameraController();
     virtual ~CCameraController();
+    void SetPlayer(CPlayer* player) { m_player = player; }
 
 private:
     void Init()         override;
@@ -16,11 +17,7 @@ private:
     void Render()       override;
     void OnDisable()    override;
     void Release()      override;
-
-public:
-    void SetPlayer(CPlayer* player) { m_player = player; }
-
-private:
+ 
     CPlayer* m_player = nullptr;
 	CImage* m_cursorImage = nullptr;
 };

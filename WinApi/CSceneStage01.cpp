@@ -26,6 +26,7 @@ void CSceneStage01::Init()
 
 	CMonster* monster = new CMonster();
 	monster->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, 100));
+	monster->SetPlayer(player);
 	AddGameObject(monster);
 
 	CWeapon* weapon = new CWeapon();
