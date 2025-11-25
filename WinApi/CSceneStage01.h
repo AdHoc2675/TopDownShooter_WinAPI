@@ -17,7 +17,7 @@ public:
 
 private:
     void SpawnMonster();                 // 몬스터 1마리 스폰
-    Vec2 GetOffScreenSpawnPos() const;   // 화면 밖 위치 계산
+    Vec2 GetSpawnPosPlayerDistance() const;
 
 private:
     CPlayer* player = nullptr;           // 플레이어 참조

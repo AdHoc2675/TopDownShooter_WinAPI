@@ -98,9 +98,9 @@ void CSceneStage01::Update()
         EVENT->ChangeScene(SceneType::Title, 0.5f);
         return;
     }
-
+               
     // 몬스터 지속 스폰
-    spawnTimer -= DT;
+    spawnTimer = spawnTimer - DT;
     if (spawnTimer <= 0.f)
     {
         // 현재 몬스터 수 제한
@@ -112,9 +112,10 @@ void CSceneStage01::Update()
         }
 
         // 난이도 증가(선택): 간격 서서히 감소
-        spawnInterval -= 0.02f;
-        if (spawnInterval < 1.2f) spawnInterval = 1.2f;
-
+        spawnInterval = spawnInterval - 0.02f;
+        if (spawnInterval < 1.2f) {
+            spawnInterval = 1.2f;
+        }
         spawnTimer = spawnInterval;
     }
 }
@@ -138,42 +139,44 @@ void CSceneStage01::SpawnMonster()
     if (!player)
         return;
 
-    Vec2 spawnPos = GetOffScreenSpawnPos();
+    Vec2 spawnPos = GetSpawnPosPlayerDistance();
 
     CMonster* monster = new CMonster();
     monster->SetPos(spawnPos);
     monster->SetPlayer(player);
-    AddGameObject(monster);
+    EVENT->AddGameObject(this, monster);
 }
 
-Vec2 CSceneStage01::GetOffScreenSpawnPos() const
-{
-    // 화면 크기
+Vec2 CSceneStage01::GetSpawnPosPlayerDistance() const {
+    if (!player)
+        return Vec2(0, 0);
+
+    Vec2 playerPos = player->GetWorldPos();
     Vec2 size = CGame::WINSIZE;
 
-    // 0: 위, 1: 아래, 2: 좌, 3: 우 중 하나 선택
     int side = rand() % 4;
+    Vec2 pos = playerPos;
 
-    Vec2 pos;
     switch (side)
     {
-    case 0: // 위
-        pos.x = (float)(rand() % (int)size.x);
-        pos.y = -offScreenMargin;
+    case 0: // 위쪽 화면 밖
+        pos.x += (float)(rand() % (int)size.x) - size.x * 0.5f;
+        pos.y -= size.y + offScreenMargin;
         break;
-    case 1: // 아래
-        pos.x = (float)(rand() % (int)size.x);
-        pos.y = size.y + offScreenMargin;
+    case 1: // 아래쪽 화면 밖
+        pos.x += (float)(rand() % (int)size.x) - size.x * 0.5f;
+        pos.y += size.y + offScreenMargin;
         break;
-    case 2: // 좌
-        pos.x = -offScreenMargin;
-        pos.y = (float)(rand() % (int)size.y);
+    case 2: // 왼쪽 화면 밖
+        pos.x -= size.x + offScreenMargin;
+        pos.y += (float)(rand() % (int)size.y) - size.y * 0.5f;
         break;
-    case 3: // 우
+    case 3: // 오른쪽 화면 밖
     default:
-        pos.x = size.x + offScreenMargin;
-        pos.y = (float)(rand() % (int)size.y);
+        pos.x += size.x + offScreenMargin;
+        pos.y += (float)(rand() % (int)size.y) - size.y * 0.5f;
         break;
     }
+
     return pos;
 }

@@ -31,8 +31,8 @@ void CCameraController::Update()
 	Vec2 playerPos = m_player->GetWorldPos();
 	Vec2 mousePos = INPUT->MouseWorldPos();
 
-	// Point closer to player (1/3 point) by dividing player position and mouse position into three equal parts
-	Vec2 focusPos = playerPos + (mousePos - playerPos) * (1.0f / 3.0f);
+	// Point closer to player (1/5 point) by dividing player position and mouse position into three equal parts
+	Vec2 focusPos = playerPos + (mousePos - playerPos) * (1.0f / 5.0f);
 
 	float timeToTarget = 0.2f;
 	CAMERA->SetTargetPos(focusPos, timeToTarget);
