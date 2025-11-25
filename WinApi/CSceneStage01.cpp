@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CSceneStage01.h"
 
 #include "CGame.h"
@@ -26,7 +26,7 @@ void CSceneStage01::Init()
     player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
     AddGameObject(player);
 
-    // ÃÊ±â¿¡ ÇÑ ¸¶¸® Á¤µµ
+    // ì²˜ìŒ í•œë§ˆë¦¬ ì†Œí™˜
     CMonster* monster = new CMonster();
     monster->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, 100));
     monster->SetPlayer(player);
@@ -43,13 +43,44 @@ void CSceneStage01::Init()
     CSoundController* sound = new CSoundController();
     AddGameObject(sound);
 
-    // UI ¿¹½Ã »ı·«(Á¸Àç À¯Áö)
-    // ...
+    CPanel* panel1 = new CPanel();
+    panel1->SetScale(Vec2(200, 200));
+    panel1->SetPos(Vec2(100, 100));
+    AddUI(panel1);
+
+    auto click1 = [](DWORD_PTR button1, DWORD_PTR param2) {
+        CButton* button = (CButton*)button1;
+        wstring text = button->GetName() + TEXT("ì´ í´ë¦­ë¨");
+        Logger::Debug(text);
+        };
+
+    CButton* button1 = new CButton();
+    button1->SetScale(Vec2(100, 50));
+    button1->SetPos(Vec2(50, 50));
+    button1->SetName(TEXT("ë²„íŠ¼1"));
+    button1->SetClickCallback(click1, (DWORD_PTR)button1, 0);
+    panel1->AddChild(button1);
+
+    CPanel* panel2 = new CPanel();
+    panel2->SetScale(Vec2(200, 200));
+    panel2->SetPos(Vec2(300, 100));
+    AddUI(panel2);
+
+    auto click2 = [](DWORD_PTR panel1, DWORD_PTR param2) {
+        CPanel* panel = (CPanel*)panel1;
+        EVENT->ShowUI(panel, !panel->IsShow());
+        };
+
+    CButton* button2 = new CButton();
+    button2->SetScale(Vec2(100, 50));
+    button2->SetPos(Vec2(50, 50));
+    button2->SetClickCallback(click2, (DWORD_PTR)panel1, 0);
+    panel2->AddChild(button2);
 
     CCollisionManager::GetInstance()->CheckLayer(Layer::Player,  Layer::ExpOrb);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Player,  Layer::Monster);
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster); // Ãß°¡
+    CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster); // ì¶”ê°€
 
     spawnTimer = spawnInterval;
 }
@@ -68,11 +99,11 @@ void CSceneStage01::Update()
         return;
     }
 
-    // ¸ó½ºÅÍ Áö¼Ó ½ºÆù
+    // ëª¬ìŠ¤í„° ì§€ì† ìŠ¤í°
     spawnTimer -= DT;
     if (spawnTimer <= 0.f)
     {
-        // ÇöÀç ¸ó½ºÅÍ ¼ö Á¦ÇÑ
+        // í˜„ì¬ ëª¬ìŠ¤í„° ìˆ˜ ì œí•œ
         int monsterCount = 0;
 
         if (monsterCount < maxMonsters)
@@ -80,7 +111,7 @@ void CSceneStage01::Update()
             SpawnMonster();
         }
 
-        // ³­ÀÌµµ Áõ°¡(¼±ÅÃ): °£°İ ¼­¼­È÷ °¨¼Ò
+        // ë‚œì´ë„ ì¦ê°€(ì„ íƒ): ê°„ê²© ì„œì„œíˆ ê°ì†Œ
         spawnInterval -= 0.02f;
         if (spawnInterval < 1.2f) spawnInterval = 1.2f;
 
@@ -117,28 +148,28 @@ void CSceneStage01::SpawnMonster()
 
 Vec2 CSceneStage01::GetOffScreenSpawnPos() const
 {
-    // È­¸é Å©±â
+    // í™”ë©´ í¬ê¸°
     Vec2 size = CGame::WINSIZE;
 
-    // 0: À§, 1: ¾Æ·¡, 2: ÁÂ, 3: ¿ì Áß ÇÏ³ª ¼±ÅÃ
+    // 0: ìœ„, 1: ì•„ë˜, 2: ì¢Œ, 3: ìš° ì¤‘ í•˜ë‚˜ ì„ íƒ
     int side = rand() % 4;
 
     Vec2 pos;
     switch (side)
     {
-    case 0: // À§
+    case 0: // ìœ„
         pos.x = (float)(rand() % (int)size.x);
         pos.y = -offScreenMargin;
         break;
-    case 1: // ¾Æ·¡
+    case 1: // ì•„ë˜
         pos.x = (float)(rand() % (int)size.x);
         pos.y = size.y + offScreenMargin;
         break;
-    case 2: // ÁÂ
+    case 2: // ì¢Œ
         pos.x = -offScreenMargin;
         pos.y = (float)(rand() % (int)size.y);
         break;
-    case 3: // ¿ì
+    case 3: // ìš°
     default:
         pos.x = size.x + offScreenMargin;
         pos.y = (float)(rand() % (int)size.y);
