@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CGame.h"
 
 #include "Resource.h"
@@ -21,43 +21,43 @@ CGame::~CGame()
 
 void CGame::Init(HINSTANCE hInstance)
 {
-	// °ÔÀÓÀÇ ÃÊ±âÈ­ ÁøÇà
+	// ê²Œìž„ì˜ ì´ˆê¸°í™” ì§„í–‰
 	const UINT MAX_LOADSTRING = 100;
 	WCHAR szTitle[MAX_LOADSTRING];
 	WCHAR szWindowClass[MAX_LOADSTRING];
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_WINAPI, szWindowClass, MAX_LOADSTRING);
 
-	hInst = hInstance; // ÀÎ½ºÅÏ½º ÇÚµéÀ» Àü¿ª º¯¼ö¿¡ ÀúÀåÇÕ´Ï´Ù.
+	hInst = hInstance; // ì¸ìŠ¤í„´ìŠ¤ í•¸ë“¤ì„ ì „ì—­ ë³€ìˆ˜ì— ì €ìž¥í•©ë‹ˆë‹¤.
 
-	hWnd = CreateWindow(	// À©µµ¿ì »ý¼º ¹× ÇÚµé°ª ¹ÝÈ¯
-		szWindowClass,		// À©µµ¿ì Å¬·¡½º ÀÌ¸§
-		szTitle,			// À©µµ¿ì Å¸ÀÌÆ² ÀÌ¸§
-		WINSTYLE,			// À©µµ¿ì ½ºÅ¸ÀÏ
-		(int)WINSTART.x,	// À©µµ¿ì È­¸é X
-		(int)WINSTART.y,	// À©µµ¿ì È­¸é Y
-		(int)WINSIZE.x,		// À©µµ¿ì °¡·Î Å©±â
-		(int)WINSIZE.y,		// À©µµ¿ì ¼¼·Î Å©±â
-		nullptr,			// ºÎ¸ð À©µµ¿ì
-		nullptr,			// ¸Þ´º ÇÚµé
-		hInstance,			// ÀÎ½ºÅÏ½º ÁöÁ¤
-		nullptr				// Ãß°¡ ¸Å°³º¯¼ö
+	hWnd = CreateWindow(	// ìœˆë„ìš° ìƒì„± ë° í•¸ë“¤ê°’ ë°˜í™˜
+		szWindowClass,		// ìœˆë„ìš° í´ëž˜ìŠ¤ ì´ë¦„
+		szTitle,			// ìœˆë„ìš° íƒ€ì´í‹€ ì´ë¦„
+		WINSTYLE,			// ìœˆë„ìš° ìŠ¤íƒ€ì¼
+		(int)WINSTART.x,	// ìœˆë„ìš° í™”ë©´ X
+		(int)WINSTART.y,	// ìœˆë„ìš° í™”ë©´ Y
+		(int)WINSIZE.x,		// ìœˆë„ìš° ê°€ë¡œ í¬ê¸°
+		(int)WINSIZE.y,		// ìœˆë„ìš° ì„¸ë¡œ í¬ê¸°
+		nullptr,			// ë¶€ëª¨ ìœˆë„ìš°
+		nullptr,			// ë©”ë‰´ í•¸ë“¤
+		hInstance,			// ì¸ìŠ¤í„´ìŠ¤ ì§€ì •
+		nullptr				// ì¶”ê°€ ë§¤ê°œë³€ìˆ˜
 	);
 
 	assert(hWnd != nullptr && "Create window failed");
 
-	// °ÔÀÓ À©µµ¿ì Å©±â(Å×µÎ¸®, ¸Þ´º¹ÙÀÇ Å©±â¸¦ Á¦¿ÜÇÑ Å©±â)¸¦ ±¸ÇÏ±â À§ÇØ AdjustWindowRect »ç¿ë
+	// ê²Œìž„ ìœˆë„ìš° í¬ê¸°(í…Œë‘ë¦¬, ë©”ë‰´ë°”ì˜ í¬ê¸°ë¥¼ ì œì™¸í•œ í¬ê¸°)ë¥¼ êµ¬í•˜ê¸° ìœ„í•´ AdjustWindowRect ì‚¬ìš©
 	RECT rc = { 0, 0, (LONG)WINSIZE.x, (LONG)WINSIZE.y };
 
-	// À©µµ¿ì ½ºÅ¸ÀÏ¿¡ µû¶ó È­¸é ÄÁÅÙÃ÷ÀÇ Å©±â¿¡ ¸Â°Ô ³ª¿Â´Ù.
+	// ìœˆë„ìš° ìŠ¤íƒ€ì¼ì— ë”°ë¼ í™”ë©´ ì»¨í…ì¸ ì˜ í¬ê¸°ì— ë§žê²Œ ë‚˜ì˜¨ë‹¤.
 	AdjustWindowRect(&rc, WINSTYLE, FALSE);
-	// À©µµ¿ì »çÀÌÁî¸¦ ¼³Á¤
+	// ìœˆë„ìš° ì‚¬ì´ì¦ˆë¥¼ ì„¤ì •
 	SetWindowPos(hWnd, HWND_TOPMOST, (int)WINSTART.x, (int)WINSTART.y, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER | SWP_NOMOVE);
 
 	ShowWindow(hWnd, SW_SHOW);
 	UpdateWindow(hWnd);
 
-	// °ÔÀÓ¿£Áø ÃÊ±âÈ­
+	// ê²Œìž„ì—”ì§„ ì´ˆê¸°í™”
 	SINGLE(CEngine)->Init(hInst, hWnd, WINSIZE);
 	SINGLE(CTimeManager)->Init();
 	SINGLE(CRenderManager)->Init();
@@ -71,24 +71,24 @@ void CGame::Init(HINSTANCE hInstance)
 	SINGLE(CSoundManager)->Init();
 	SINGLE(CUIManager)->Init();
 
-	// TODO : ¸®¼Ò½º °æ·Î ¼³Á¤
+	// TODO : ë¦¬ì†ŒìŠ¤ ê²½ë¡œ ì„¤ì •
 	SINGLE(CResourceManager)->SetResourceFolder(PATH + TEXT("\\..\\Resource\\"));
 
-	// TODO : ¾À Ãß°¡
+	// TODO : ì”¬ ì¶”ê°€
 	SINGLE(CSceneManager)->AddScene(SceneType::Title,	new CSceneTitle());
 	SINGLE(CSceneManager)->AddScene(SceneType::Stage01,	new CSceneStage01());
 
-	// TODO : Ãæµ¹ ·¹ÀÌ¾î ¼³Á¤
+	// TODO : ì¶©ëŒ ë ˆì´ì–´ ì„¤ì •
 	SINGLE(CCollisionManager)->CheckLayer(Layer::Player, Layer::Monster);
 	SINGLE(CCollisionManager)->CheckLayer(Layer::Monster, Layer::Missile);
 
-	// ¾À ½ÃÀÛ
+	// ì”¬ ì‹œìž‘
 	SINGLE(CSceneManager)->SetStartScene(SceneType::Title);
 }
 
 void CGame::Run()
 {
-	// °ÔÀÓÀÇ µ¿ÀÛ ÁøÇà
+	// ê²Œìž„ì˜ ë™ìž‘ ì§„í–‰
 
 	Input();
 	Update();
@@ -97,9 +97,9 @@ void CGame::Run()
 
 void CGame::Release()
 {
-	// °ÔÀÓÀÇ ¸¶¹«¸® ÁøÇà
+	// ê²Œìž„ì˜ ë§ˆë¬´ë¦¬ ì§„í–‰
 
-	// °ÔÀÓ¿£Áø ¸¶¹«¸®
+	// ê²Œìž„ì—”ì§„ ë§ˆë¬´ë¦¬
 	SINGLE(CEngine)->Release();
 	SINGLE(CTimeManager)->Release();
 	SINGLE(CRenderManager)->Release();
@@ -116,15 +116,15 @@ void CGame::Release()
 
 void CGame::Input()
 {
-	// °ÔÀÓÀÇ ÀÔ·Â ÁøÇà
+	// ê²Œìž„ì˜ ìž…ë ¥ ì§„í–‰
 	SINGLE(CInputManager)->Update();
 }
 
 void CGame::Update()
 {
-	// °ÔÀÓÀÇ Ã³¸® ÁøÇà
-	// ¼ø¼­ ÁÖÀÇ! : ÀÌº¥Æ® ¸Å´ÏÀú´Â ¾÷µ¥ÀÌÆ® °¡Àå ÃÊ±â¿¡ ÁøÇà
-	// °°Àº ÇÁ·¹ÀÓ³»¿¡ ¸ðµç °ÔÀÓ ¿ÀºêÁ§Æ®°¡ µ¿ÀÏÇÑ »óÈ²À» ±âÁØÀ¸·Î Ã³¸®ÇÏ±â À§ÇØ
+	// ê²Œìž„ì˜ ì²˜ë¦¬ ì§„í–‰
+	// ìˆœì„œ ì£¼ì˜! : ì´ë²¤íŠ¸ ë§¤ë‹ˆì €ëŠ” ì—…ë°ì´íŠ¸ ê°€ìž¥ ì´ˆê¸°ì— ì§„í–‰
+	// ê°™ì€ í”„ë ˆìž„ë‚´ì— ëª¨ë“  ê²Œìž„ ì˜¤ë¸Œì íŠ¸ê°€ ë™ì¼í•œ ìƒí™©ì„ ê¸°ì¤€ìœ¼ë¡œ ì²˜ë¦¬í•˜ê¸° ìœ„í•´
 	SINGLE(CEventManager)->Update();
 
 	SINGLE(CTimeManager)->Update();
@@ -133,9 +133,9 @@ void CGame::Update()
 	SINGLE(CCameraManager)->Update();
 	SINGLE(CSoundManager)->Update();
 
-	// ¼ø¼­ ÁÖÀÇ! : Ãæµ¹ ¸Å´ÏÀú´Â ¾÷µ¥ÀÌÆ® °¡Àå ¸¶Áö¸·¿¡ ÁøÇà
-	// ¾À¿¡¼­ ¿òÁ÷ÀÎ °á°úÀ§Ä¡¸¦ ±âÁØÀ¸·Î Ãæµ¹ÆÇÁ¤À» ÁøÇàÇÏ±â À§ÇØ
-	// ÀÏ½Ã Á¤Áö »óÅÂ¿¡¼­´Â Ãæµ¹ Ã³¸®¸¦ ÇÏÁö ¾ÊÀ½
+	// ìˆœì„œ ì£¼ì˜! : ì¶©ëŒ ë§¤ë‹ˆì €ëŠ” ì—…ë°ì´íŠ¸ ê°€ìž¥ ë§ˆì§€ë§‰ì— ì§„í–‰
+	// ì”¬ì—ì„œ ì›€ì§ì¸ ê²°ê³¼ìœ„ì¹˜ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì¶©ëŒíŒì •ì„ ì§„í–‰í•˜ê¸° ìœ„í•´
+	// ì¼ì‹œ ì •ì§€ ìƒíƒœì—ì„œëŠ” ì¶©ëŒ ì²˜ë¦¬ë¥¼ í•˜ì§€ ì•ŠìŒ
 	if (SINGLE(CSceneManager)->GetCurScene()->isPaused() == false) {
 		SINGLE(CCollisionManager)->Update();
 	}
@@ -145,11 +145,11 @@ void CGame::Render()
 {
 	SINGLE(CRenderManager)->BeginDraw();
 
-	// °ÔÀÓÀÇ Ç¥Çö ÁøÇà
+	// ê²Œìž„ì˜ í‘œí˜„ ì§„í–‰
 	SINGLE(CSceneManager)->Render();
 	SINGLE(CCameraManager)->Render();
 
-	// °ÔÀÓÀÇ ¿ìÇÏ´Ü¿¡ °ÔÀÓ FPS Ãâ·Â (60ÇÁ·¹ÀÓ ÀÌ»óÀ» ¸ñÇ¥·Î ÃÖÀûÈ­ ÇØ¾ßÇÔ)
+	// ê²Œìž„ì˜ ìš°í•˜ë‹¨ì— ê²Œìž„ FPS ì¶œë ¥ (60í”„ë ˆìž„ ì´ìƒì„ ëª©í‘œë¡œ ìµœì í™” í•´ì•¼í•¨)
 	wstring frame = to_wstring(FPS);
 	RENDER->SetText(20, RGB(0, 255, 0), TextAlign::Right);
 	RENDER->Text(WINSIZE.x - 30, WINSIZE.y * 0.9f, frame);

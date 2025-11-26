@@ -4,7 +4,12 @@
 #include "CGame.h"
 #include "CButton.h"
 #include "CCombatSystem.h"
-    
+#include "CIconTextButton.h" // 추가
+// 필요 시 아이콘 로드 시에만 사용
+// #include "CResourceManager.h"
+
+using namespace std;
+
 CUpgradePanel::CUpgradePanel()
 {
     player = nullptr;
@@ -34,12 +39,34 @@ void CUpgradePanel::OnEnable()
     // 버튼 생성 (패널의 자식 UI로 추가)
     for (const auto& o : options)
     {
-        CButton* btn = new CButton();
+        auto* btn = new CIconTextButton();
         btn->SetName(TEXT("UpgradeButton"));
         btn->SetPos(o.btnPos);      // 패널 기준 상대 좌표
         btn->SetScale(o.btnSize);
         btn->SetClickCallback(&CUpgradePanel::OnButtonClicked,
                               (DWORD_PTR)this, (DWORD_PTR)o.type);
+
+        // 라벨/스타일
+        btn->SetLabel(o.label);
+        btn->SetLabelSize(18);
+        btn->SetLabelColor(RGB(20, 20, 20));
+
+        // 타입별 아이콘이 필요하면 주석 해제 후 사용
+        /*
+        CImage* icon = nullptr;
+        if (o.type == UpgradeType::AtkUp)
+            icon = LOADIMAGE(TEXT("IconAtk"), TEXT("Image\\IconAtk.bmp"));
+        else if (o.type == UpgradeType::MaxHpUpHeal)
+            icon = LOADIMAGE(TEXT("IconHP"), TEXT("Image\\IconHP.bmp"));
+        else if (o.type == UpgradeType::CritChanceUp)
+            icon = LOADIMAGE(TEXT("IconCrit"), TEXT("Image\\IconCrit.bmp"));
+
+        if (icon) {
+            btn->SetIcon(icon);
+            btn->SetIconTransparent(RGB(255,0,255));
+        }
+        */
+
         EVENT->AddChild(this, btn);
     }
 }
@@ -62,7 +89,9 @@ void CUpgradePanel::Render()
     RENDER->SetTextBackMode(TextBackMode::Null);
     RENDER->Text(renderPos.x + scale.x * 0.5f, renderPos.y + 20.f, L"Level Up!");
 
-    // 옵션 라벨
+    // 버튼 내부에서 라벨을 그리므로 패널에서는 옵션 라벨을 따로 그리지 않음
+    // (아래 코드는 제거/주석 처리)
+    /*
     int labelSize = 18;
     RENDER->SetText(labelSize, RGB(20, 20, 20), TextAlign::Left);
     RENDER->SetTextBackMode(TextBackMode::Null);
@@ -72,6 +101,7 @@ void CUpgradePanel::Render()
         float ty = renderPos.y + opt.btnPos.y + opt.btnSize.y * 0.5f - labelSize * 0.5f;
         RENDER->Text(tx, ty, opt.label);
     }
+    */
 }
 
 void CUpgradePanel::OnDisable()

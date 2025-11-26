@@ -47,6 +47,9 @@ void CMissile::Update()
 
 void CMissile::Render()
 {
+	RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+	RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
+
 	RENDER->Ellipse(
 		renderPos.x - scale.x * 0.5f,
 		renderPos.y - scale.y * 0.5f,
