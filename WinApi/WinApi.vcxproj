@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Engine\CIconTextButton.h" />
     <ClInclude Include="CCameraController.h" />
     <ClInclude Include="CExpOrb.h" />
     <ClInclude Include="CGame.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="WinApi.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Engine\CIconTextButton.cpp" />
     <ClCompile Include="CCameraController.cpp" />
     <ClCompile Include="CExpOrb.cpp" />
     <ClCompile Include="CGame.cpp" />

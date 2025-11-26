@@ -52,20 +52,20 @@ void CUpgradePanel::OnEnable()
         btn->SetLabelColor(RGB(20, 20, 20));
 
         // 타입별 아이콘이 필요하면 주석 해제 후 사용
-        /*
+        
         CImage* icon = nullptr;
         if (o.type == UpgradeType::AtkUp)
-            icon = LOADIMAGE(TEXT("IconAtk"), TEXT("Image\\IconAtk.bmp"));
+            icon = LOADIMAGE(TEXT("IconAtk"), TEXT("Image\\IconAtkUp.bmp"));
         else if (o.type == UpgradeType::MaxHpUpHeal)
-            icon = LOADIMAGE(TEXT("IconHP"), TEXT("Image\\IconHP.bmp"));
+            icon = LOADIMAGE(TEXT("IconHP"), TEXT("Image\\IconMaxHpUpHeal.bmp"));
         else if (o.type == UpgradeType::CritChanceUp)
-            icon = LOADIMAGE(TEXT("IconCrit"), TEXT("Image\\IconCrit.bmp"));
+            icon = LOADIMAGE(TEXT("IconCrit"), TEXT("Image\\IconCritChanceUp.bmp"));
 
         if (icon) {
             btn->SetIcon(icon);
             btn->SetIconTransparent(RGB(255,0,255));
         }
-        */
+        
 
         EVENT->AddChild(this, btn);
     }

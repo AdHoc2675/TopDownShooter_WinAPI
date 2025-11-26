@@ -173,7 +173,6 @@
     <ClInclude Include="CEngine.h" />
     <ClInclude Include="CEventManager.h" />
     <ClInclude Include="CGameObject.h" />
-    <ClInclude Include="CIconTextButton.h" />
     <ClInclude Include="CImage.h" />
     <ClInclude Include="CInputManager.h" />
     <ClInclude Include="Component.h" />
@@ -208,7 +207,6 @@
     <ClCompile Include="CEngine.cpp" />
     <ClCompile Include="CEventManager.cpp" />
     <ClCompile Include="CGameObject.cpp" />
-    <ClCompile Include="CIconTextButton.cpp" />
     <ClCompile Include="CImage.cpp" />
     <ClCompile Include="CInputManager.cpp" />
     <ClCompile Include="CPanel.cpp" />

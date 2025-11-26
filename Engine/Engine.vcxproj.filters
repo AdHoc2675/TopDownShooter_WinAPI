@@ -123,7 +123,6 @@
     <ClInclude Include="CCombatSystem.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="CIconTextButton.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -201,6 +200,5 @@
     <ClCompile Include="CCombatSystem.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="CIconTextButton.cpp" />
   </ItemGroup>
 </Project>

@@ -70,6 +70,9 @@
     <ClInclude Include="CUpgradePanel.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Engine\CIconTextButton.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -109,6 +112,9 @@
       <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CUpgradePanel.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Engine\CIconTextButton.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
