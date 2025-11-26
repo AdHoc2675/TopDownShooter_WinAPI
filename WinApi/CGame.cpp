@@ -135,7 +135,10 @@ void CGame::Update()
 
 	// 순서 주의! : 충돌 매니저는 업데이트 가장 마지막에 진행
 	// 씬에서 움직인 결과위치를 기준으로 충돌판정을 진행하기 위해
-	SINGLE(CCollisionManager)->Update();
+	// 일시 정지 상태에서는 충돌 처리를 하지 않음
+	if (SINGLE(CSceneManager)->GetCurScene()->isPaused() == false) {
+		SINGLE(CCollisionManager)->Update();
+	}
 }
 
 void CGame::Render()

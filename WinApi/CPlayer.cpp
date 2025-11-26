@@ -2,6 +2,7 @@
 #include "CPlayer.h"
 #include "CGame.h"
 #include "CCombatSystem.h"
+#include "CUpgradePanel.h"
 
 CPlayer::CPlayer()
 {
@@ -80,13 +81,13 @@ void CPlayer::Update()
 	isMove = false;
 
 	// 이동
-	if (INPUT->ButtonStay('A'))
+	if (INPUT->ButtonStay('A', true))
 	{
 		pos.x -= speed * DT;
 		isMove = true;
 		moveDir.x = -1;
 	}
-	else if (INPUT->ButtonStay('D'))
+	else if (INPUT->ButtonStay('D', true))
 	{
 		pos.x += speed * DT;
 		isMove = true;
@@ -97,13 +98,13 @@ void CPlayer::Update()
 		moveDir.x = 0;
 	}
 
-	if (INPUT->ButtonStay('W'))
+	if (INPUT->ButtonStay('W', true))
 	{
 		pos.y -= speed * DT;
 		isMove = true;
 		moveDir.y = +1;
 	}
-	else if (INPUT->ButtonStay('S'))
+	else if (INPUT->ButtonStay('S', true))
 	{
 		pos.y += speed * DT;
 		isMove = true;
@@ -214,6 +215,11 @@ void CPlayer::AddExp(int amount)
 		exp = exp - maxExp;
 		level++;
 		maxExp = static_cast<int>(maxExp * 1.4f);
+
+		CUpgradePanel* panel = new CUpgradePanel();
+		EVENT->AddUI(GetScene(), panel);   // 씬에 먼저 추가
+		panel->Configure(this);            // 구성 정보 설정
+		GetScene()->SetPaused(true);
 	}
 }
 

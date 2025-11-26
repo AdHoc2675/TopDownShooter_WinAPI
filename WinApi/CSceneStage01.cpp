@@ -102,7 +102,7 @@ void CSceneStage01::Enter()
 
 void CSceneStage01::Update()
 {
-    if (INPUT->ButtonDown(VK_ESCAPE))
+    if (INPUT->ButtonDown(VK_ESCAPE, true))
     {
         CAMERA->FadeOut(0.5f);
         EVENT->ChangeScene(SceneType::Title, 0.5f);

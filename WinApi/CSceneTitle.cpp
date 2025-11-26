@@ -22,7 +22,7 @@ void CSceneTitle::Enter()
 
 void CSceneTitle::Update()
 {
-	if (INPUT->ButtonDown(VK_SPACE))
+	if (INPUT->ButtonDown(VK_SPACE, true))
 	{
 		CAMERA->FadeOut(0.5f);
 		EVENT->ChangeScene(SceneType::Stage01, 0.5f);

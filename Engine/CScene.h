@@ -25,6 +25,10 @@ public:
 	void				DeleteUI(CUI* ui);
 	void				DeleteAllUI();
 
+	// 일시정지 제어
+	bool				isPaused();
+	void				SetPaused(bool p);
+
 private:
 	// 순수가상함수 :
 	// 함수를 추상화하여 구체화하지 않을 경우 인스턴스 생성을 막음
@@ -49,6 +53,7 @@ private:
 	list<CGameObject*>						objList;
 	list<CUI*>								uiList;
 	bool									active;
+	bool									paused;
 	priority_queue<pair<float, IRender*>>	renderPQueue;
 };
 

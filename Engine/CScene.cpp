@@ -72,6 +72,16 @@ void CScene::DeleteAllUI()
 	}
 }
 
+bool CScene::isPaused()
+{
+	return paused;
+}
+
+void CScene::SetPaused(bool p)
+{
+	paused = p;
+}
+
 void CScene::SceneInit()
 {
 	Init();
@@ -99,12 +109,15 @@ void CScene::SceneEnter()
 
 void CScene::SceneUpdate()
 {
-	Update();
+	if (paused == false) {
+		Update();
 
-	for (CGameObject* obj : objList)
-	{
-		obj->ComponentUpdate();
+		for (CGameObject* obj : objList)
+		{
+			obj->ComponentUpdate();
+		}
 	}
+
 	for (CUI* ui : uiList)
 	{
 		ui->ComponentUpdate();

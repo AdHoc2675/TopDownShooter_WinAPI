@@ -7,8 +7,8 @@ CMissile::CMissile()
 	name = TEXT("미사일");
 	scale = Vec2(15, 15);
 	dir = Vec2(0, -1);
-	speed = 700.f;
-	lifeTime = 3.f;
+	speed = 600.f;
+	lifeTime = 1.f;
 
 	stats.attack = 10.f;
 	stats.hp = 1.f;
