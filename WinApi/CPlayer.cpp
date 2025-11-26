@@ -110,19 +110,6 @@ void CPlayer::Update()
 
 #pragma endregion
 
-
-	// 경험치 및 레벨업 테스트
-	if (INPUT->ButtonDown(VK_SPACE))
-	{
-		exp += 30;
-		if (exp >= maxExp)
-		{
-			exp = exp - maxExp;
-			level++;
-			maxExp = static_cast<int>(maxExp * 1.2f);
-		}
-	}
-
 	AnimatorUpdate();
 }
 
@@ -178,7 +165,7 @@ void CPlayer::AddExp(int amount)
 	{
 		exp = exp - maxExp;
 		level++;
-		maxExp = static_cast<int>(maxExp * 1.2f);
+		maxExp = static_cast<int>(maxExp * 1.4f);
 	}
 }
 

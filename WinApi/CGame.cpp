@@ -7,7 +7,7 @@
 #include "CSceneStage01.h"
 
 const Vec2 CGame::WINSTART	= Vec2(100, 100);
-const Vec2 CGame::WINSIZE	= Vec2(1280, 720);
+const Vec2 CGame::WINSIZE	= Vec2(1600, 900);
 
 CGame::CGame()
 {
@@ -146,10 +146,10 @@ void CGame::Render()
 	SINGLE(CSceneManager)->Render();
 	SINGLE(CCameraManager)->Render();
 
-	// 게임의 우상단에 게임 FPS 출력 (60프레임 이상을 목표로 최적화 해야함)
+	// 게임의 우하단에 게임 FPS 출력 (60프레임 이상을 목표로 최적화 해야함)
 	wstring frame = to_wstring(FPS);
 	RENDER->SetText(20, RGB(0, 255, 0), TextAlign::Right);
-	RENDER->Text(WINSIZE.x - 30, 10, frame);
+	RENDER->Text(WINSIZE.x - 30, WINSIZE.y * 0.9f, frame);
 	RENDER->SetText();
 
 	SINGLE(CRenderManager)->EndDraw();

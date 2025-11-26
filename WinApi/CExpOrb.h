@@ -2,6 +2,7 @@
 #include "CCombatSystem.h"
 
 class CPlayer;
+class CImage;
 
 class CExpOrb : public CGameObject
 {
@@ -24,6 +25,7 @@ private:
 
 private:
     CPlayer* player = nullptr;
+	CImage*  CExpOrb_image = nullptr;
     int      value;      // 획득 경험치
     float    attractRadius;
     float    moveSpeed;

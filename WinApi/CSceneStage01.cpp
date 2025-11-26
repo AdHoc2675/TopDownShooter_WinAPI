@@ -26,11 +26,21 @@ void CSceneStage01::Init()
     player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
     AddGameObject(player);
 
-    // 처음 한마리 소환
+    // 처음 몇 마리 소환
     CMonster* monster = new CMonster();
-    monster->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, 100));
+    monster->SetPos(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
     monster->SetPlayer(player);
     AddGameObject(monster);
+
+    CMonster* monster2 = new CMonster();
+    monster2->SetPos(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
+    monster2->SetPlayer(player);
+    AddGameObject(monster2);
+
+    CMonster* monster3 = new CMonster();
+    monster3->SetPos(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
+    monster3->SetPlayer(player);
+    AddGameObject(monster3);
 
     CWeapon* weapon = new CWeapon();
     player->AddChild(weapon);

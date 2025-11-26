@@ -10,6 +10,12 @@ CWeapon::CWeapon()
 {
 	name  = TEXT("무기");
 	scale = Vec2(10, 25);
+	fireCooldown = 0.25f;      // 발사 간 최소 간격(초)
+	curCooldown = 0.f;
+	maxChamberSize = 6.f;    // 탄창 크기
+	curChamberSize = 6.f; // 현재 남은 탄창 크기
+	reloadTime = 1.f;          // 재장전 시간(초)
+	curReloadTime = 0.f;
 }
 
 CWeapon::~CWeapon()
