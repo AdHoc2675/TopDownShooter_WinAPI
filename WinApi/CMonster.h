@@ -10,6 +10,7 @@ public:
     CMonster();
     virtual ~CMonster();
     void SetPlayer(CPlayer* p) { player = p; }
+    CombatStats& GetCombatStats() { return stats; }
 
 private:
     void Init()         override;

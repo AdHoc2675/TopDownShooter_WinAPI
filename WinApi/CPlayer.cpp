@@ -3,6 +3,7 @@
 #include "CGame.h"
 #include "CCombatSystem.h"
 #include "CUpgradePanel.h"
+#include "CMonster.h"
 
 CPlayer::CPlayer()
 {
@@ -19,6 +20,7 @@ CPlayer::CPlayer()
 	stats.attack = 15.f;
 	stats.critChance = 0.f;
 	stats.critMultiplier = 1.5f;
+	hitCooldown = 0.f;
 
 	level		= 1;
 	exp			= 0;
@@ -116,6 +118,12 @@ void CPlayer::Update()
 	}
 
 #pragma endregion
+
+	// 피해 쿨다운 감소
+	if (hitCooldown > 0.f)
+		hitCooldown = hitCooldown - DT;
+	if (hitCooldown < 0.f)
+		hitCooldown = 0.f;
 
 	AnimatorUpdate();
 }
@@ -240,4 +248,43 @@ void CPlayer::AnimatorUpdate()
 	else if (lookDir.y < 0) str += TEXT("Down");
 
 	animator->Play(str, false);
+}
+
+void CPlayer::OnCollisionEnter(CCollider* other)
+{
+	if (other->GetLayer() == Layer::Monster)
+	{
+		if (hitCooldown > 0.f) return; // 쿨다운 중이면 피해 무시
+
+		CGameObject* orbObj = other->GetOwner();
+		CMonster* monster = dynamic_cast<CMonster*>(orbObj);
+
+		if (monster)
+		{
+			CombatStats& attackerStats = monster->GetCombatStats();
+			COMBAT->ApplyDamage(monster, this, attackerStats, stats);
+
+			// 1초 무적 (쿨다운 설정)
+			hitCooldown = 1.0f;
+		}
+	}
+}
+
+void CPlayer::OnCollisionStay(CCollider* other)
+{
+	if (other->GetLayer() == Layer::Monster)
+	{
+		if (hitCooldown > 0.f) return; // 쿨다운 중이면 피해 무시
+
+		CGameObject* obj = other->GetOwner();
+		CMonster* monster = dynamic_cast<CMonster*>(obj);
+		if (monster)
+		{
+			CombatStats& attackerStats = monster->GetCombatStats();
+			COMBAT->ApplyDamage(monster, this, attackerStats, stats);
+
+			// 1초 무적 (쿨다운 설정)
+			hitCooldown = 1.0f;
+		}
+	}
 }

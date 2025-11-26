@@ -53,40 +53,6 @@ void CSceneStage01::Init()
     CSoundController* sound = new CSoundController();
     AddGameObject(sound);
 
-    CPanel* panel1 = new CPanel();
-    panel1->SetScale(Vec2(200, 200));
-    panel1->SetPos(Vec2(100, 100));
-    AddUI(panel1);
-
-    auto click1 = [](DWORD_PTR button1, DWORD_PTR param2) {
-        CButton* button = (CButton*)button1;
-        wstring text = button->GetName() + TEXT("이 클릭됨");
-        Logger::Debug(text);
-        };
-
-    CButton* button1 = new CButton();
-    button1->SetScale(Vec2(100, 50));
-    button1->SetPos(Vec2(50, 50));
-    button1->SetName(TEXT("버튼1"));
-    button1->SetClickCallback(click1, (DWORD_PTR)button1, 0);
-    panel1->AddChild(button1);
-
-    CPanel* panel2 = new CPanel();
-    panel2->SetScale(Vec2(200, 200));
-    panel2->SetPos(Vec2(300, 100));
-    AddUI(panel2);
-
-    auto click2 = [](DWORD_PTR panel1, DWORD_PTR param2) {
-        CPanel* panel = (CPanel*)panel1;
-        EVENT->ShowUI(panel, !panel->IsShow());
-        };
-
-    CButton* button2 = new CButton();
-    button2->SetScale(Vec2(100, 50));
-    button2->SetPos(Vec2(50, 50));
-    button2->SetClickCallback(click2, (DWORD_PTR)panel1, 0);
-    panel2->AddChild(button2);
-
     CCollisionManager::GetInstance()->CheckLayer(Layer::Player,  Layer::ExpOrb);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Player,  Layer::Monster);

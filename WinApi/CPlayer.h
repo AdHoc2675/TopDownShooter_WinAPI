@@ -23,6 +23,8 @@ private:
 
 private:
 	void	AnimatorUpdate();
+	void	OnCollisionEnter(CCollider* other) override;
+	void	OnCollisionStay(CCollider* other) override;
 
 	CAnimator*	animator;
 	CombatStats stats;
@@ -32,6 +34,7 @@ private:
 	int 		level;
 	int			exp;
 	int			maxExp;
+	float		hitCooldown;
 
 	Vec2		moveDir;
 	Vec2		lookDir;
