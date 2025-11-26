@@ -3,6 +3,7 @@
 
 struct CombatStats;
 class CAnimator;
+class CImage;
 
 class CPlayer : public CGameObject
 {
@@ -25,6 +26,8 @@ private:
 
 	CAnimator*	animator;
 	CombatStats stats;
+	CImage*		heartFullImage;
+	CImage*		heartEmptyImage;
 	float		speed;
 	int 		level;
 	int			exp;

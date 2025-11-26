@@ -8,6 +8,8 @@ CPlayer::CPlayer()
 	name		= TEXT("플레이어");
 	scale		= Vec2(100, 100);
 	animator	= nullptr;
+	heartFullImage = nullptr;
+	heartEmptyImage = nullptr;
 	speed		= 200.f;
 
 	stats.hp = 5.f;
@@ -31,6 +33,10 @@ CPlayer::~CPlayer()
 
 void CPlayer::Init()
 {
+	heartEmptyImage = LOADIMAGE(TEXT("HeartEmpty"), TEXT("Image\\CPlayer_hpEmpty.bmp"));
+	heartFullImage = LOADIMAGE(TEXT("HeartFull"), TEXT("Image\\CPlayer_hpFull.bmp"));
+
+
 	CImage* idleImage = LOADIMAGE(TEXT("PlayerIdle"), TEXT("Image\\PlayerIdle.bmp"));
 	CImage* moveImage = LOADIMAGE(TEXT("PlayerMove"), TEXT("Image\\PlayerMove.bmp"));
 
@@ -115,10 +121,11 @@ void CPlayer::Update()
 
 void CPlayer::Render()
 {
+#pragma region 경험치 바 & 레벨 렌더링
 	// 경험치 바 렌더링 (노란 사각형)
 	float progress = ((float)exp / (float)maxExp); // 0→1
 	float barWidth = CGame::WINSIZE.x;
-	float barHeight = 20.f;
+	float barHeight = 30.f;
 	float offsetY = scale.y * 0.5f + 25.f; // 머리 위 여백 간격
 	float barX = 0.f;
 	float barY = 0.f;
@@ -146,8 +153,49 @@ void CPlayer::Render()
 	RENDER->SetTextBackMode(TextBackMode::Null);
 	RENDER->Text(
 		barWidth * 0.5f,
-		barHeight + 5.f,
+		5.f,
 		levelText);
+#pragma endregion
+
+#pragma region 체력 아이콘 렌더링
+	// 체력 아이콘 렌더링
+	if (heartFullImage && heartEmptyImage)
+	{
+		// 아이콘 크기 및 간격
+		const float iconW = 48.f;
+		const float iconH = 48.f;
+		const float marginX = 10.f;
+		const float marginY = 40.f; // 경험치 바 아래쪽 여백
+		const float spacing = 6.f;
+
+		// 좌상단 기준 위치
+		float startX = 10.f;
+		float startY = marginY;
+
+		// 현재/최대 체력 정수화 및 클램프
+		int curHp = (int)floorf(stats.hp);
+		int maxHp = (int)floorf(stats.maxHp);
+		if (curHp < 0) curHp = 0;
+		if (curHp > maxHp) curHp = maxHp;
+		if (maxHp < 0) maxHp = 0;
+
+		for (int i = 0; i < maxHp; ++i)
+		{
+			float x0 = startX + i * (iconW + spacing);
+			float y0 = startY;
+			float x1 = x0 + iconW;
+			float y1 = y0 + iconH;
+
+			CImage* img = (i < curHp) ? heartFullImage : heartEmptyImage;
+
+			RENDER->TransparentImage(
+				img,
+				x0, y0,    // 시작 좌표
+				x1, y1,    // 끝 좌표 (width/height 아님)
+				RGB(255, 0, 255)); // 마젠타 투명색
+		}
+	}
+#pragma endregion
 }
 
 void CPlayer::OnDisable()
