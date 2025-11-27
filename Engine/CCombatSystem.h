@@ -13,6 +13,7 @@ struct CombatStats
     float defense       = 0.f;      // 단순 감소치
     float critChance    = 0.1f;     // 0~1
     float critMultiplier= 1.5f;     // 치명타 배수
+	float speed         = 200.f;    // 이동 속도
     bool  alive() const { return hp > 0.f; }
 };
 

@@ -30,7 +30,6 @@ private:
     CPlayer*    player = nullptr;
     CCollider*  collider = nullptr;   // Ãß°¡
     CombatStats stats;
-    float       speed;
     float       hitMsgDuration;
     float       curHitMsgTime;
     wstring     hitMsg;

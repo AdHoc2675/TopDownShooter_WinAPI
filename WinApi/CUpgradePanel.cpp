@@ -1,12 +1,14 @@
-#include "pch.h"
+ï»¿#include "pch.h"
+#include <algorithm>
+#include <random>
+
 #include "CUpgradePanel.h"
 #include "CPlayer.h"
 #include "CGame.h"
 #include "CButton.h"
 #include "CCombatSystem.h"
-#include "CIconTextButton.h" // Ãß°¡
-// ÇÊ¿ä ½Ã ¾ÆÀÌÄÜ ·Îµå ½Ã¿¡¸¸ »ç¿ë
-// #include "CResourceManager.h"
+#include "CIconTextButton.h"
+#include "CResourceManager.h"
 
 using namespace std;
 
@@ -36,22 +38,22 @@ void CUpgradePanel::OnEnable()
     if (buttonsCreated) return;
     buttonsCreated = true;
 
-    // ¹öÆ° »ı¼º (ÆĞ³ÎÀÇ ÀÚ½Ä UI·Î Ãß°¡)
+    // ë²„íŠ¼ ìƒì„± (íŒ¨ë„ì˜ ìì‹ UIë¡œ ì¶”ê°€)
     for (const auto& o : options)
     {
         auto* btn = new CIconTextButton();
         btn->SetName(TEXT("UpgradeButton"));
-        btn->SetPos(o.btnPos);      // ÆĞ³Î ±âÁØ »ó´ë ÁÂÇ¥
+        btn->SetPos(o.btnPos);      // íŒ¨ë„ ê¸°ì¤€ ìƒëŒ€ ì¢Œí‘œ
         btn->SetScale(o.btnSize);
         btn->SetClickCallback(&CUpgradePanel::OnButtonClicked,
                               (DWORD_PTR)this, (DWORD_PTR)o.type);
 
-        // ¶óº§/½ºÅ¸ÀÏ
+        // ë¼ë²¨/ìŠ¤íƒ€ì¼
         btn->SetLabel(o.label);
         btn->SetLabelSize(18);
         btn->SetLabelColor(RGB(20, 20, 20));
 
-        // Å¸ÀÔº° ¾ÆÀÌÄÜÀÌ ÇÊ¿äÇÏ¸é ÁÖ¼® ÇØÁ¦ ÈÄ »ç¿ë
+        // íƒ€ì…ë³„ ì•„ì´ì½˜ì´ í•„ìš”í•˜ë©´ ì£¼ì„ í•´ì œ í›„ ì‚¬ìš©
         
         CImage* icon = nullptr;
         if (o.type == UpgradeType::AtkUp)
@@ -78,19 +80,19 @@ void CUpgradePanel::Update()
 
 void CUpgradePanel::Render()
 {
-    // ÆĞ³Î ¹è°æ
+    // íŒ¨ë„ ë°°ê²½
     RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 2);
     RENDER->SetBrush(BrushType::Solid, RGB(240, 240, 240));
     RENDER->Rect(renderPos.x, renderPos.y, renderPos.x + scale.x, renderPos.y + scale.y);
 
-    // Á¦¸ñ
+    // ì œëª©
     int titleSize = 28;
     RENDER->SetText(titleSize, RGB(0, 0, 0), TextAlign::Center);
     RENDER->SetTextBackMode(TextBackMode::Null);
     RENDER->Text(renderPos.x + scale.x * 0.5f, renderPos.y + 20.f, L"Level Up!");
 
-    // ¹öÆ° ³»ºÎ¿¡¼­ ¶óº§À» ±×¸®¹Ç·Î ÆĞ³Î¿¡¼­´Â ¿É¼Ç ¶óº§À» µû·Î ±×¸®Áö ¾ÊÀ½
-    // (¾Æ·¡ ÄÚµå´Â Á¦°Å/ÁÖ¼® Ã³¸®)
+    // ë²„íŠ¼ ë‚´ë¶€ì—ì„œ ë¼ë²¨ì„ ê·¸ë¦¬ë¯€ë¡œ íŒ¨ë„ì—ì„œëŠ” ì˜µì…˜ ë¼ë²¨ì„ ë”°ë¡œ ê·¸ë¦¬ì§€ ì•ŠìŒ
+    // (ì•„ë˜ ì½”ë“œëŠ” ì œê±°/ì£¼ì„ ì²˜ë¦¬)
     /*
     int labelSize = 18;
     RENDER->SetText(labelSize, RGB(20, 20, 20), TextAlign::Left);
@@ -122,21 +124,35 @@ void CUpgradePanel::Configure(CPlayer* p)
     const float startY = 90.f;
     const float gap = 70.f;
 
-    vector<pair<wstring, UpgradeType>> defs = {
-        { L"°ø°İ·Â +5",                UpgradeType::AtkUp },
-        { L"ÃÖ´ë Ã¼·Â +2 ¹× Áï½Ã +2 È¸º¹", UpgradeType::MaxHpUpHeal },
-        { L"Ä¡¸íÅ¸ È®·ü +10%",         UpgradeType::CritChanceUp },
+    vector<pair<wstring, UpgradeType>> pool = {
+        { L"ê³µê²©ë ¥ +5",                      UpgradeType::AtkUp },
+        { L"ìµœëŒ€ ì²´ë ¥ +2 ë° ì¦‰ì‹œ +2 íšŒë³µ",   UpgradeType::MaxHpUpHeal },
+        { L"ì¹˜ëª…íƒ€ í™•ë¥  +10%",               UpgradeType::CritChanceUp },
+        { L"ì´ë™ ì†ë„ +10%",                 UpgradeType::SpdUp },
+        { L"ì¹˜ëª…íƒ€ ë°°ìˆ˜ +0.25",              UpgradeType::CritDmgUp },
     };
 
-    for (int i = 0; i < (int)defs.size(); ++i)
+    vector<pair<wstring, UpgradeType>> shuffled = pool;
+    random_device rd;
+    mt19937 gen(rd());
+    shuffle(shuffled.begin(), shuffled.end(), gen);
+
+    const size_t pickCount = 3;
+    const size_t actualCount = min(pickCount, shuffled.size());
+
+    for (size_t i = 0; i < actualCount; ++i)
     {
+        const auto& def = shuffled[i];
+
         Option o;
-        o.label   = defs[i].first;
-        o.type    = defs[i].second;
-        o.btnPos  = Vec2(startX, startY + i * gap);
-        o.btnSize = btnSize;
+        o.label  = def.first;
+        o.type   = def.second;
+        o.btnPos = Vec2(startX, startY + (float)i * gap);
+        o.btnSize= btnSize;
         options.push_back(o);
     }
+
+    buttonsCreated = false;
 }
 
 void CUpgradePanel::OnButtonClicked(DWORD_PTR param1, DWORD_PTR param2)
@@ -164,11 +180,17 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
     case UpgradeType::CritChanceUp:
         s.critChance = min(1.f, s.critChance + 0.10f);
         break;
+    case UpgradeType::SpdUp:
+        s.speed = min(s.speed * 1.10f, s.speed); // ìƒˆ API í˜¸ì¶œ
+        break;
+    case UpgradeType::CritDmgUp:
+        s.critMultiplier += 0.25f;
+        break;
     default:
         break;
     }
 
-    // ÆĞ³Î ´İ°í ÀÏ½ÃÁ¤Áö ÇØÁ¦
+    // íŒ¨ë„ ë‹«ê³  ì¼ì‹œì •ì§€ í•´ì œ
     if (GetScene())
     {
         GetScene()->SetPaused(false);

@@ -12,8 +12,8 @@ CPlayer::CPlayer()
 	animator	= nullptr;
 	heartFullImage = nullptr;
 	heartEmptyImage = nullptr;
-	speed		= 200.f;
-
+	
+	stats.speed		= 200.f;
 	stats.hp = 5.f;
 	stats.maxHp = 5.f;
 	stats.defense = 0.f;
@@ -85,13 +85,13 @@ void CPlayer::Update()
 	// 이동
 	if (INPUT->ButtonStay('A', true))
 	{
-		pos.x -= speed * DT;
+		pos.x -= stats.speed * DT;
 		isMove = true;
 		moveDir.x = -1;
 	}
 	else if (INPUT->ButtonStay('D', true))
 	{
-		pos.x += speed * DT;
+		pos.x += stats.speed * DT;
 		isMove = true;
 		moveDir.x = +1;
 	}
@@ -102,13 +102,13 @@ void CPlayer::Update()
 
 	if (INPUT->ButtonStay('W', true))
 	{
-		pos.y -= speed * DT;
+		pos.y -= stats.speed * DT;
 		isMove = true;
 		moveDir.y = +1;
 	}
 	else if (INPUT->ButtonStay('S', true))
 	{
-		pos.y += speed * DT;
+		pos.y += stats.speed * DT;
 		isMove = true;
 		moveDir.y = -1;
 	}

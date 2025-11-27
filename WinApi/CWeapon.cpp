@@ -263,7 +263,9 @@ void CWeapon::CreateMissile(const Vec2& spawnPos, const Vec2& dir)
 
 	if (player)
 	{
-		missile->CopyStats(player->GetCombatStats());
+		// 이동속도 등 플레이어 비전투 속성은 복사하지 않음
+		missile->InheritCombat(player->GetCombatStats());
 	}
+
 	EVENT->AddGameObject(GetScene(), missile);
 }

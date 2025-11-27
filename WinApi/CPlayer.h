@@ -30,7 +30,6 @@ private:
 	CombatStats stats;
 	CImage*		heartFullImage;
 	CImage*		heartEmptyImage;
-	float		speed;
 	int 		level;
 	int			exp;
 	int			maxExp;

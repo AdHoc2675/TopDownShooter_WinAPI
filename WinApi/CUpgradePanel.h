@@ -8,6 +8,8 @@ enum class UpgradeType
     AtkUp,
     MaxHpUpHeal,
     CritChanceUp,
+    SpdUp,
+	CritDmgUp
 };
 
 class CUpgradePanel : public CPanel

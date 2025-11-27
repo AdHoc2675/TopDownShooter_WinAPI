@@ -16,8 +16,8 @@ CMonster::CMonster()
     stats.attack = 1.f;
     stats.critChance = 0.f;
     stats.critMultiplier = 1.0f;
+    stats.speed = 100.f;
 
-    speed = 100.f;
     hitMsgDuration = 0.4f;
     curHitMsgTime = 0.f;
 	droppedExpOrb = false;
@@ -56,7 +56,7 @@ void CMonster::Update()
     {
         Vec2 dir = player->GetWorldPos() - worldPos;
         dir.Normalize();
-        pos = pos + (dir * speed * DT);
+        pos = pos + (dir * stats.speed * DT);
 	}
 }
 
