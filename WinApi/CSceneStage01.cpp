@@ -60,6 +60,9 @@ void CSceneStage01::Init()
 void CSceneStage01::Enter()
 {
     CAMERA->FadeIn(0.5f);
+
+    CSound* bgm = LOADSOUND(TEXT("Wasteland Combat Loop"), TEXT("Sound\\Wasteland Combat Loop.wav"));
+    SOUND->PlayLoop(TEXT("Stage01_BGM"), bgm);
 }
 
 void CSceneStage01::Update()
@@ -100,6 +103,7 @@ void CSceneStage01::Render()
 
 void CSceneStage01::Exit()
 {
+    SOUND->Stop(TEXT("Wasteland Combat Loop"));
 }
 
 void CSceneStage01::Release()
