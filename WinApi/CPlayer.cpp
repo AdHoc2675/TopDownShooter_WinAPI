@@ -205,6 +205,32 @@ void CPlayer::Render()
 		}
 	}
 #pragma endregion
+
+#pragma region 상세 스탯 정보 렌더링
+	// 상세 스탯 정보 렌더링
+	const int statSize = 16;
+	const float startX = 10.f;
+	const float startY = 40.f + 56.f; // 체력 하트 아래쪽(아이콘 높이+여백 고려)
+	float y = startY;
+
+	RENDER->SetText(statSize, RGB(20, 20, 20), TextAlign::Left);
+	RENDER->SetTextBackMode(TextBackMode::Null);
+
+	// 보기 좋게 반올림
+	auto round1 = [](float v) { return (int)(v + 0.5f); };
+
+	wstring s1 = L"ATK: " + to_wstring(round1(stats.attack)) +
+		L"  DEF: " + to_wstring(round1(stats.defense));
+	wstring s2 = L"CRIT: " + to_wstring((int)(stats.critChance * 100)) + L"%  x" +
+		to_wstring(stats.critMultiplier);
+	// 이동 속도 표시가 필요하면
+	wstring s3 = L"SPD: " + to_wstring(round1(stats.speed));
+
+	RENDER->Text(startX, y, s1); y += statSize + 4.f;
+	RENDER->Text(startX, y, s2); y += statSize + 4.f;
+	RENDER->Text(startX, y, s3);
+
+#pragma endregion
 }
 
 void CPlayer::OnDisable()

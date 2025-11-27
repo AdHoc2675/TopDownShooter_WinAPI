@@ -181,7 +181,7 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         s.critChance = min(1.f, s.critChance + 0.10f);
         break;
     case UpgradeType::SpdUp:
-        s.speed = min(s.speed * 1.10f, s.speed); // 새 API 호출
+        s.speed = s.speed * 1.1f;
         break;
     case UpgradeType::CritDmgUp:
         s.critMultiplier += 0.25f;
