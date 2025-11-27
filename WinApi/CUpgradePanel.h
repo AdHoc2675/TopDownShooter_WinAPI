@@ -9,7 +9,8 @@ enum class UpgradeType
     MaxHpUpHeal,
     CritChanceUp,
     SpdUp,
-	CritDmgUp
+    CritDmgUp,
+    SummonRanged, // Ãß°¡
 };
 
 class CUpgradePanel : public CPanel

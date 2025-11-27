@@ -5,6 +5,7 @@
 #include "CCombatSystem.h"
 #include "CCollider.h"
 #include "CExpOrb.h"
+#include "CSceneStage01.h"
 
 CMonster::CMonster() 
 {
@@ -89,6 +90,11 @@ void CMonster::Render()
 
 void CMonster::OnDisable()
 {
+    CScene* s = GetScene();
+    CSceneStage01* stage = dynamic_cast<CSceneStage01*>(s);
+    if (stage)
+        stage->UnregisterMonster(this);
+
 }
 
 void CMonster::Release()

@@ -73,6 +73,7 @@
     <ClInclude Include="..\Engine\CIconTextButton.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="CMissileTurret.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -117,6 +118,7 @@
     <ClCompile Include="..\Engine\CIconTextButton.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="CMissileTurret.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

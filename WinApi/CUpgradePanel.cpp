@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include <algorithm>
 #include <random>
+#include <unordered_set>
 
 #include "CUpgradePanel.h"
 #include "CPlayer.h"
@@ -9,8 +10,12 @@
 #include "CCombatSystem.h"
 #include "CIconTextButton.h"
 #include "CResourceManager.h"
+#include "CMissileTurret.h"
 
 using namespace std;
+
+// 반복 불가능(한 번만 선택 가능한) 업그레이드의 획득 상태를 전역적으로 기록
+static unordered_set<UpgradeType> gTakenOneTimeUpgrades;
 
 CUpgradePanel::CUpgradePanel()
 {
@@ -38,23 +43,19 @@ void CUpgradePanel::OnEnable()
     if (buttonsCreated) return;
     buttonsCreated = true;
 
-    // 버튼 생성 (패널의 자식 UI로 추가)
     for (const auto& o : options)
     {
         auto* btn = new CIconTextButton();
         btn->SetName(TEXT("UpgradeButton"));
-        btn->SetPos(o.btnPos);      // 패널 기준 상대 좌표
+        btn->SetPos(o.btnPos);
         btn->SetScale(o.btnSize);
         btn->SetClickCallback(&CUpgradePanel::OnButtonClicked,
                               (DWORD_PTR)this, (DWORD_PTR)o.type);
 
-        // 라벨/스타일
         btn->SetLabel(o.label);
         btn->SetLabelSize(18);
         btn->SetLabelColor(RGB(20, 20, 20));
 
-        // 타입별 아이콘이 필요하면 주석 해제 후 사용
-        
         CImage* icon = nullptr;
         if (o.type == UpgradeType::AtkUp)
             icon = LOADIMAGE(TEXT("IconAtk"), TEXT("Image\\IconAtkUp.bmp"));
@@ -62,12 +63,13 @@ void CUpgradePanel::OnEnable()
             icon = LOADIMAGE(TEXT("IconHP"), TEXT("Image\\IconMaxHpUpHeal.bmp"));
         else if (o.type == UpgradeType::CritChanceUp)
             icon = LOADIMAGE(TEXT("IconCrit"), TEXT("Image\\IconCritChanceUp.bmp"));
+        else if (o.type == UpgradeType::SummonRanged)
+            icon = LOADIMAGE(TEXT("IconSummon"), TEXT("Image\\IconSummonRanged.bmp"));
 
         if (icon) {
             btn->SetIcon(icon);
             btn->SetIconTransparent(RGB(255,0,255));
         }
-        
 
         EVENT->AddChild(this, btn);
     }
@@ -80,30 +82,14 @@ void CUpgradePanel::Update()
 
 void CUpgradePanel::Render()
 {
-    // 패널 배경
     RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 2);
     RENDER->SetBrush(BrushType::Solid, RGB(240, 240, 240));
     RENDER->Rect(renderPos.x, renderPos.y, renderPos.x + scale.x, renderPos.y + scale.y);
 
-    // 제목
     int titleSize = 28;
     RENDER->SetText(titleSize, RGB(0, 0, 0), TextAlign::Center);
     RENDER->SetTextBackMode(TextBackMode::Null);
     RENDER->Text(renderPos.x + scale.x * 0.5f, renderPos.y + 20.f, L"Level Up!");
-
-    // 버튼 내부에서 라벨을 그리므로 패널에서는 옵션 라벨을 따로 그리지 않음
-    // (아래 코드는 제거/주석 처리)
-    /*
-    int labelSize = 18;
-    RENDER->SetText(labelSize, RGB(20, 20, 20), TextAlign::Left);
-    RENDER->SetTextBackMode(TextBackMode::Null);
-    for (const auto& opt : options)
-    {
-        float tx = renderPos.x + opt.btnPos.x + 14.f;
-        float ty = renderPos.y + opt.btnPos.y + opt.btnSize.y * 0.5f - labelSize * 0.5f;
-        RENDER->Text(tx, ty, opt.label);
-    }
-    */
 }
 
 void CUpgradePanel::OnDisable()
@@ -119,12 +105,15 @@ void CUpgradePanel::Configure(CPlayer* p)
     player = p;
     options.clear();
 
-    const Vec2 btnSize(520.f, 56.f);
-    const float startX = 40.f;
-    const float startY = 90.f;
-    const float gap = 70.f;
+#pragma region 업그레이드 옵션 풀 정의
+    // 반복 불가능 옵션
+    vector<pair<wstring, UpgradeType>> oneTimePool = {
+        { L"소환수: 원거리 지원",            UpgradeType::SummonRanged },
+       
+    };
 
-    vector<pair<wstring, UpgradeType>> pool = {
+    // 반복 가능한 옵션
+    vector<pair<wstring, UpgradeType>> repeatablePool = {
         { L"공격력 +5",                      UpgradeType::AtkUp },
         { L"최대 체력 +2 및 즉시 +2 회복",   UpgradeType::MaxHpUpHeal },
         { L"치명타 확률 +10%",               UpgradeType::CritChanceUp },
@@ -132,17 +121,46 @@ void CUpgradePanel::Configure(CPlayer* p)
         { L"치명타 배수 +0.25",              UpgradeType::CritDmgUp },
     };
 
-    vector<pair<wstring, UpgradeType>> shuffled = pool;
+    // 아직 획득하지 않은 반복 불가능 옵션만 추림
+    vector<pair<wstring, UpgradeType>> oneTimeCandidates;
+    oneTimeCandidates.reserve(oneTimePool.size());
+    for (auto& kv : oneTimePool) {
+        if (gTakenOneTimeUpgrades.find(kv.second) == gTakenOneTimeUpgrades.end()) {
+            oneTimeCandidates.push_back(kv);
+        }
+    }
+
+#pragma endregion
+
+    const Vec2 btnSize(520.f, 56.f);
+    const float startX = 40.f;
+    const float startY = 90.f;
+    const float gap = 70.f;
+
+    // 셔플
     random_device rd;
     mt19937 gen(rd());
-    shuffle(shuffled.begin(), shuffled.end(), gen);
+    shuffle(oneTimeCandidates.begin(), oneTimeCandidates.end(), gen);
+    shuffle(repeatablePool.begin(), repeatablePool.end(), gen);
 
     const size_t pickCount = 3;
-    const size_t actualCount = min(pickCount, shuffled.size());
+    vector<pair<wstring, UpgradeType>> picked;
+    picked.reserve(pickCount);
 
-    for (size_t i = 0; i < actualCount; ++i)
+    // 1) 반복 불가능 옵션을 가능한 한 많이 먼저 채움
+    for (size_t i = 0; i < oneTimeCandidates.size() && picked.size() < pickCount; ++i) {
+        picked.push_back(oneTimeCandidates[i]);
+    }
+
+    // 2) 부족하면 반복 가능한 옵션에서 채움
+    for (size_t i = 0; i < repeatablePool.size() && picked.size() < pickCount; ++i) {
+        picked.push_back(repeatablePool[i]);
+    }
+
+    // 버튼 배치
+    for (size_t i = 0; i < picked.size(); ++i)
     {
-        const auto& def = shuffled[i];
+        const auto& def = picked[i];
 
         Option o;
         o.label  = def.first;
@@ -186,11 +204,27 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
     case UpgradeType::CritDmgUp:
         s.critMultiplier += 0.25f;
         break;
+    case UpgradeType::SummonRanged:
+    {
+        // 반복 불가능 옵션: 획득 상태 기록
+        gTakenOneTimeUpgrades.insert(UpgradeType::SummonRanged);
+
+        CMissileTurret* ally = new CMissileTurret();
+        ally->SetPos(player->GetWorldPos() + Vec2(60.f, 0.f));
+        ally->SetOwnerPlayer(player);
+
+        ally->GetCombatStats().attack         = 10.f;
+        ally->GetCombatStats().defense        = s.defense;
+        ally->GetCombatStats().critChance     = 0.f;
+        ally->GetCombatStats().critMultiplier = 1.0f;
+
+        EVENT->AddGameObject(GetScene(), ally);
+        break;
+    }
     default:
         break;
     }
 
-    // 패널 닫고 일시정지 해제
     if (GetScene())
     {
         GetScene()->SetPaused(false);

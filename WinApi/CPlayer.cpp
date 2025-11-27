@@ -125,6 +125,10 @@ void CPlayer::Update()
 	if (hitCooldown < 0.f)
 		hitCooldown = 0.f;
 
+	if (INPUT->ButtonDown('T', true)) {
+		AddExp(100);
+	}
+
 	AnimatorUpdate();
 }
 

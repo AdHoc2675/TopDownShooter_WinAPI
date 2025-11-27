@@ -26,21 +26,17 @@ void CSceneStage01::Init()
     player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
     AddGameObject(player);
 
-    // 처음 몇 마리 소환
-    CMonster* monster = new CMonster();
-    monster->SetPos(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
-    monster->SetPlayer(player);
-    AddGameObject(monster);
+    auto addMonster = [&](const Vec2& pos) {
+        CMonster* m = new CMonster();
+        m->SetPos(pos);
+        m->SetPlayer(player);
+        AddGameObject(m);
+        RegisterMonster(m);
+    };
 
-    CMonster* monster2 = new CMonster();
-    monster2->SetPos(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
-    monster2->SetPlayer(player);
-    AddGameObject(monster2);
-
-    CMonster* monster3 = new CMonster();
-    monster3->SetPos(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
-    monster3->SetPlayer(player);
-    AddGameObject(monster3);
+    addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
+    addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
+    addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
 
     CWeapon* weapon = new CWeapon();
     player->AddChild(weapon);
@@ -116,11 +112,44 @@ void CSceneStage01::SpawnMonster()
         return;
 
     Vec2 spawnPos = GetSpawnPosPlayerDistance();
-
     CMonster* monster = new CMonster();
     monster->SetPos(spawnPos);
     monster->SetPlayer(player);
     EVENT->AddGameObject(this, monster);
+    RegisterMonster(monster);
+}
+
+void CSceneStage01::RegisterMonster(CMonster* m)
+{
+    if (m) enemies.push_back(m);
+}
+
+void CSceneStage01::UnregisterMonster(CMonster* m)
+{
+    if (!m) return;
+    auto it = std::find(enemies.begin(), enemies.end(), m);
+    if (it != enemies.end())
+        enemies.erase(it);
+}
+
+CMonster* CSceneStage01::GetNearestEnemy(const Vec2& from, float maxRange) const
+{
+    CMonster* best = nullptr;
+    float bestSqr = maxRange * maxRange;
+    for (CMonster* m : enemies)
+    {
+        if (!m) continue;
+        const CombatStats& st = m->GetCombatStats();
+        if (!st.alive()) continue; // 사망 처리된 몬스터 제외
+        Vec2 diff = m->GetWorldPos() - from;
+        float sqr = diff.SqrMagnitude();
+        if (sqr < bestSqr)
+        {
+            bestSqr = sqr;
+            best = m;
+        }
+    }
+    return best;
 }
 
 Vec2 CSceneStage01::GetSpawnPosPlayerDistance() const {

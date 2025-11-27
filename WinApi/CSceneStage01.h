@@ -1,5 +1,8 @@
 #pragma once
+#include "CMonster.h"
 class CPlayer;
+
+using namespace std;
 
 class CSceneStage01 : public CScene
 {
@@ -15,11 +18,18 @@ public:
     void Exit()     override;
     void Release()  override;
 
+public:
+    const std::vector<CMonster*>& GetEnemies() const { return enemies; }
+    void RegisterMonster(CMonster* m);
+    void UnregisterMonster(CMonster* m);
+    CMonster* GetNearestEnemy(const Vec2& from, float maxRange) const;
+
 private:
     void SpawnMonster();                 // 몬스터 1마리 스폰
     Vec2 GetSpawnPosPlayerDistance() const;
 
 private:
+    vector<CMonster*> enemies;
     CPlayer* player = nullptr;           // 플레이어 참조
     float    spawnInterval = 3.f;        // 기본 스폰 주기(초)
     float    spawnTimer    = 0.f;        // 타이머
