@@ -3,6 +3,8 @@
 
 class CPlayer;
 class CCollider;
+class CAnimator;
+class CImage;
 
 class CMonster : public CGameObject
 {
@@ -10,8 +12,9 @@ public:
     CMonster();
     virtual ~CMonster();
     void SetPlayer(CPlayer* p) { player = p; }
-    CPlayer* GetPlayer() const { return player; }          // Ãß°¡
+    CPlayer* GetPlayer() const { return player; }
     CombatStats& GetCombatStats() { return stats; }
+	CAnimator* GetAnimator() const { return animator; }
 
 private:
     void Init()         override;
@@ -30,7 +33,9 @@ private:
 private:
     CPlayer*    player = nullptr;
     CCollider*  collider = nullptr;
+    CAnimator* animator = nullptr;
     CombatStats stats;
+
     float       hitMsgDuration;
     float       curHitMsgTime;
     wstring     hitMsg;

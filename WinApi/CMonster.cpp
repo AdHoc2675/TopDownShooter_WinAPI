@@ -6,6 +6,7 @@
 #include "CCollider.h"
 #include "CExpOrb.h"
 #include "CSceneStage01.h"
+#include "CAnimator.h"
 
 CMonster::CMonster() 
 {
@@ -36,6 +37,28 @@ void CMonster::Init()
     collider->SetScale(Vec2(45, 45));
     collider->SetLayer(Layer::Monster);
     AddChild(collider);
+
+    animator = new CAnimator();
+
+
+    // 우측 이동: T_GhostMonster0 (64x64 / 7프레임, 가로로 배치 가정)
+    CImage* moveRight = LOADIMAGE(TEXT("T_GhostMonster0"), TEXT("Image\\T_GhostMonster0.bmp"));
+    animator->CreateAnimation(TEXT("MoveRight"), moveRight,
+        0.1f, 7, true,
+        Vec2(0.f, 0.f),        // 첫 프레임 시작 위치
+        Vec2(64.f, 64.f),      // 프레임 크기
+        Vec2(64.f, 0.f));      // 프레임 간 이동(가로)
+
+    // 좌측 이동: T_GhostMonster1 (64x64 / 7프레임)
+    CImage* moveLeft = LOADIMAGE(TEXT("T_GhostMonster1"), TEXT("Image\\T_GhostMonster1.bmp"));
+    animator->CreateAnimation(TEXT("MoveLeft"), moveLeft,
+        0.1f, 7, true,
+        Vec2(0.f, 0.f),
+        Vec2(64.f, 64.f),
+        Vec2(64.f, 0.f));
+
+    AddChild(animator);
+    animator->Play(TEXT("MoveRight"), true);
 }
 
 void CMonster::OnEnable()
@@ -53,24 +76,35 @@ void CMonster::Update()
     }
 
 	// 플레이어 쪽으로 이동
+    Vec2 dir(0.f, 0.f);
+
     if (player != nullptr)
     {
-        Vec2 dir = player->GetWorldPos() - worldPos;
+        dir = player->GetWorldPos() - worldPos;
         dir.Normalize();
         pos = pos + (dir * stats.speed * DT);
 	}
+
+    if (animator)
+    {
+        if (dir.x < -0.01f)
+            animator->Play(TEXT("MoveLeft"), false);
+        else
+            animator->Play(TEXT("MoveRight"), false);
+    }
+
 }
 
 void CMonster::Render()
 {
-    RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
-    RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
+    //RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+    //RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
 
-    RENDER->Rect(
-        renderPos.x - scale.x * 0.5f,
-        renderPos.y - scale.y * 0.5f,
-        renderPos.x + scale.x * 0.5f,
-        renderPos.y + scale.y * 0.5f);
+    //RENDER->Rect(
+    //    renderPos.x - scale.x * 0.5f,
+    //    renderPos.y - scale.y * 0.5f,
+    //    renderPos.x + scale.x * 0.5f,
+    //    renderPos.y + scale.y * 0.5f);
 
 	//=====//
 
