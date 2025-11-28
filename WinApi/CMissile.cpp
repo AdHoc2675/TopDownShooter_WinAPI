@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CMissile.h"
 #include "CCombatSystem.h"
+#include "CPlayer.h"
 
 CMissile::CMissile()
 {
@@ -9,6 +10,7 @@ CMissile::CMissile()
     dir       = Vec2(0, -1);
     lifeTime  = 0.75f;
     moveSpeed = 500.f;
+    friendly  = true;
 
     stats.attack         = 10.f;
     stats.hp             = 1.f;
@@ -42,7 +44,7 @@ void CMissile::Update()
 void CMissile::Render()
 {
     RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
-    RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
+    RENDER->SetBrush(BrushType::Solid, friendly ? RGB(255, 255, 255) : RGB(255, 180, 140));
     RENDER->Ellipse(
         renderPos.x - scale.x * 0.5f,
         renderPos.y - scale.y * 0.5f,
@@ -56,9 +58,30 @@ void CMissile::Release() {}
 
 void CMissile::OnCollisionEnter(CCollider* other)
 {
-    if (other->GetLayer() == Layer::Monster)
+    // 아군 미사일: 몬스터에서 처리 (기존 로직 유지)
+    if (friendly)
     {
-        // 데미지 적용은 몬스터 쪽에서 처리하도록 설계 가능
+        EVENT->Delete(GetScene(), this);
+        return;
     }
-    EVENT->Delete(GetScene(), this);
+
+    // 적 미사일: 플레이어 충돌 시 피해 적용
+    if (other->GetLayer() == Layer::Player)
+    {
+        CGameObject* playerObj = other->GetOwner();
+        CPlayer* player = dynamic_cast<CPlayer*>(playerObj);
+        if (player)
+        {
+            CombatStats& victimStats = player->GetCombatStats();
+            float dealt = 0.f;
+            bool crit = false;
+            COMBAT->ApplyDamage(this, player, stats, victimStats, &dealt, &crit);
+            // (플레이어가 피격 메시지 UI를 갖고 있다면 여기서 트리거할 수 있음)
+        }
+        EVENT->Delete(GetScene(), this);
+    }
+    else
+    {
+
+    }
 }

@@ -10,6 +10,7 @@ public:
     CMonster();
     virtual ~CMonster();
     void SetPlayer(CPlayer* p) { player = p; }
+    CPlayer* GetPlayer() const { return player; }          // 추가
     CombatStats& GetCombatStats() { return stats; }
 
 private:
@@ -28,7 +29,7 @@ private:
 
 private:
     CPlayer*    player = nullptr;
-    CCollider*  collider = nullptr;   // 추가
+    CCollider*  collider = nullptr;
     CombatStats stats;
     float       hitMsgDuration;
     float       curHitMsgTime;

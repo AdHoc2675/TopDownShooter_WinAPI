@@ -124,25 +124,29 @@ void CMonster::OnCollisionEnter(CCollider* other)
     {
         CGameObject* missileObj = other->GetOwner();
         CMissile* missile = dynamic_cast<CMissile*>(missileObj);
-        if (missile)
+        if (!missile)
+            return;
+
+        // 아군(플레이어/터렛) 미사일만 몬스터에 피해 적용
+        if (!missile->GetFriendly())
+            return;
+
+        CombatStats& attackerStats = missile->GetCombatStats();
+
+        float dealt = 0.f;
+        bool  crit  = false;
+        COMBAT->ApplyDamage(missile, this, attackerStats, stats, &dealt, &crit);
+
+        curHitMsgTime = hitMsgDuration;
+        if (crit)
+            hitMsg = L"CRIT -" + to_wstring((int)dealt);
+        else
+            hitMsg = L"-" + to_wstring((int)dealt);
+
+        if (!stats.alive() && !droppedExpOrb)
         {
-            CombatStats& attackerStats = missile->GetCombatStats();
-
-            float dealt = 0.f;
-            bool  crit  = false;
-            COMBAT->ApplyDamage(missile, this, attackerStats, stats, &dealt, &crit);
-
-            curHitMsgTime = hitMsgDuration;
-            if (crit)
-                hitMsg = L"CRIT -" + to_wstring((int)dealt);
-            else
-                hitMsg = L"-" + to_wstring((int)dealt);
-
-            if (!stats.alive() && !droppedExpOrb)
-            {
-                DropExpOrb();
-                droppedExpOrb = true;
-            }
+            DropExpOrb();
+            droppedExpOrb = true;
         }
     }
 }
@@ -151,6 +155,9 @@ void CMonster::OnCollisionStay(CCollider* other)
 {
     if (other->GetLayer() != Layer::Monster)
         return;
+
+    if (collider == nullptr || other == nullptr)
+		return;
 
     // 중복 분리 방지: collider ID가 더 작은 쪽만 처리
     if (collider->GetID() >= other->GetID())

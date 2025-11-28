@@ -4,6 +4,7 @@
 #include "CGame.h"
 #include "CPlayer.h"
 #include "CMonster.h"
+#include "CRangedMonster.h"
 #include "CCameraController.h"
 #include "CSoundController.h"
 #include "CPanel.h"
@@ -67,9 +68,10 @@ void CSceneStage01::Init()
     CSoundController* sound = new CSoundController();
     AddGameObject(sound);
 
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Player,  Layer::ExpOrb);
+    CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::ExpOrb);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Player,  Layer::Monster);
+    CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Player);
+    CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::Monster);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster);
 
     spawnTimer = spawnInterval;
@@ -139,7 +141,19 @@ void CSceneStage01::SpawnMonster()
         return;
 
     Vec2 spawnPos = GetSpawnPosPlayerDistance();
-    CMonster* monster = new CMonster();
+
+    // 5% 확률로 원거리 몬스터
+    int r = rand() % 100;
+    CMonster* monster = nullptr;
+    if (r < 5)
+    {
+        monster = new CRangedMonster();
+    }
+    else
+    {
+        monster = new CMonster();
+    }
+
     monster->SetPos(spawnPos);
     monster->SetPlayer(player);
     EVENT->AddGameObject(this, monster);

@@ -75,6 +75,7 @@
     </ClInclude>
     <ClInclude Include="CMissileTurret.h" />
     <ClInclude Include="CTiledBackground.h" />
+    <ClInclude Include="CRangedMonster.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -121,6 +122,7 @@
     </ClCompile>
     <ClCompile Include="CMissileTurret.cpp" />
     <ClCompile Include="CTiledBackground.cpp" />
+    <ClCompile Include="CRangedMonster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">
