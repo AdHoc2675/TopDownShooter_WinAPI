@@ -127,14 +127,21 @@ void CMonster::OnCollisionEnter(CCollider* other)
         if (missile)
         {
             CombatStats& attackerStats = missile->GetCombatStats();
-            COMBAT->ApplyDamage(missile, this, attackerStats, stats);
-            curHitMsgTime = hitMsgDuration;
-            hitMsg = L"-" + to_wstring((int)attackerStats.attack);
 
-            if (stats.alive() == false && droppedExpOrb == false)
+            float dealt = 0.f;
+            bool  crit  = false;
+            COMBAT->ApplyDamage(missile, this, attackerStats, stats, &dealt, &crit);
+
+            curHitMsgTime = hitMsgDuration;
+            if (crit)
+                hitMsg = L"CRIT -" + to_wstring((int)dealt);
+            else
+                hitMsg = L"-" + to_wstring((int)dealt);
+
+            if (!stats.alive() && !droppedExpOrb)
             {
                 DropExpOrb();
-				droppedExpOrb = true;
+                droppedExpOrb = true;
             }
         }
     }

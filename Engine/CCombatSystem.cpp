@@ -3,11 +3,10 @@
 #include "CGameObject.h"
 #include "CEventManager.h"
 
-float CCombatSystem::CalculateDamage(const CombatStats& attacker, const CombatStats& victim, bool& critOut)
+float CCombatSystem::CalculateDamage(const CombatStats& attacker, const CombatStats& victim, bool crit)
 {
     float base = attacker.attack - victim.defense;
-    if (base < 1.f) base = 1.f; // 최소 1
-    bool crit = IsCritical(attacker);
+    if (base < 1.f) base = 1.f;
     if (crit)
         base *= attacker.critMultiplier;
     return base;
@@ -21,23 +20,24 @@ bool CCombatSystem::IsCritical(const CombatStats& attacker)
 }
 
 void CCombatSystem::ApplyDamage(CGameObject* attackerObj, CGameObject* victimObj,
-                                CombatStats& attackerStats, CombatStats& victimStats)
+                                CombatStats& attackerStats, CombatStats& victimStats,
+                                float* damageOut, bool* critOut)
 {
     if (!attackerObj || !victimObj) return;
     if (!victimStats.alive()) return;
 
-    bool crit = false;
+    // 크리티컬 1회 판정
+    bool crit = IsCritical(attackerStats);
 
-    // 치명타 여부 계산을 위해 별도 호출
-    float r = (float)rand() / (float)RAND_MAX;
-    crit = (r < attackerStats.critChance);
+    float dmg = CalculateDamage(attackerStats, victimStats, crit);
 
-    float base = CalculateDamage(attackerStats, victimStats, crit);;
-
-    victimStats.hp -= base;
+    victimStats.hp -= dmg;
     if (victimStats.hp < 0.f) victimStats.hp = 0.f;
 
-    DebugDamageLog(attackerObj, victimObj, base, crit);
+    DebugDamageLog(attackerObj, victimObj, dmg, crit);
+
+    if (damageOut) *damageOut = dmg;
+    if (critOut)   *critOut   = crit;
 
     if (!victimStats.alive())
         HandleDeath(victimObj, victimStats);

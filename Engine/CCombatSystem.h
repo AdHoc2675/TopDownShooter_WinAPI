@@ -25,20 +25,16 @@ private:
     ~CCombatSystem() {}
 
 public:
-    // 기본 데미지 공식: (공격력 - 방어력) * 치명타
-    float CalculateDamage(const CombatStats& attacker, const CombatStats& victim, bool& critOut);
+    // 기본 데미지 공식: (공격력 - 방어력) * (크리티컬이면 배수)
+    float CalculateDamage(const CombatStats& attacker, const CombatStats& victim, bool crit);
 
-    // 실제 피해 적용 (사망 처리 등)
+    // 실제 피해 적용 (사망 처리 등) + 선택적 결과 반환
     void ApplyDamage(CGameObject* attackerObj, CGameObject* victimObj,
-                     CombatStats& attackerStats, CombatStats& victimStats);
+                     CombatStats& attackerStats, CombatStats& victimStats,
+                     float* damageOut = nullptr, bool* critOut = nullptr);
 
-    // 치명타 판정
     bool IsCritical(const CombatStats& attacker);
-
-    // HP 감소 후 사망 처리 콜백 분리 가능
     void HandleDeath(CGameObject* obj, CombatStats& stats);
-
-    // 로깅 / 디버그 출력(옵션)
     void DebugDamageLog(CGameObject* attackerObj, CGameObject* victimObj,
                         float dmg, bool crit);
 };
