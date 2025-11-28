@@ -24,8 +24,11 @@ public:
     void UnregisterMonster(CMonster* m);
     CMonster* GetNearestEnemy(const Vec2& from, float maxRange) const;
 
+	float playTime = 0.f;          // 플레이 시간(초)
+
 private:
     void SpawnMonster();                 // 몬스터 1마리 스폰
+    void SpawnEliteWingedMonster();
     Vec2 GetSpawnPosPlayerDistance() const;
 
 private:
@@ -36,5 +39,7 @@ private:
 	int      currentMonsterCount = 0;    // 현재 씬 몬스터 수
     int      maxMonsters   = 15;         // 씬 최대 몬스터
     float    offScreenMargin = 80.f;     // 화면 밖으로 얼마나 떨어뜨릴지
+    int      eliteWingSpawned = 0;              // 엘리트 1회 소환 여부
+    float    eliteWingSpawnTriggerTime = 60.f;      // 소환 트리거 시간(초)
 };
 

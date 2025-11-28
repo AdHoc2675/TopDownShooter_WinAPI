@@ -5,6 +5,7 @@
 #include "CPlayer.h"
 #include "CMonster.h"
 #include "CRangedMonster.h"
+#include "CEliteWingedMonster.h"
 #include "CCameraController.h"
 #include "CSoundController.h"
 #include "CPanel.h"
@@ -87,13 +88,23 @@ void CSceneStage01::Enter()
 
 void CSceneStage01::Update()
 {
+	playTime = playTime + DT;
+
     if (INPUT->ButtonDown(VK_ESCAPE, true))
     {
         CAMERA->FadeOut(0.5f);
         EVENT->ChangeScene(SceneType::Title, 0.5f);
         return;
     }
-               
+    
+    // 엘리트 날개 몬스터 5회 소환
+    if (eliteWingSpawned < 5 && playTime >= eliteWingSpawnTriggerTime)
+    {
+        SpawnEliteWingedMonster();
+        eliteWingSpawned++;
+		eliteWingSpawnTriggerTime = eliteWingSpawnTriggerTime + 60.f; // 다음 소환 트리거 시간 갱신
+    }
+
     // 몬스터 지속 스폰
     spawnTimer = spawnTimer - DT;
     if (spawnTimer <= 0.f)
@@ -225,4 +236,16 @@ Vec2 CSceneStage01::GetSpawnPosPlayerDistance() const {
     }
 
     return pos;
+}
+
+void CSceneStage01::SpawnEliteWingedMonster()
+{
+    if (!player) return;
+
+    Vec2 spawnPos = GetSpawnPosPlayerDistance();
+    auto* elite = new CEliteWingedMonster();
+    elite->SetPos(spawnPos);
+    elite->SetPlayer(player);
+    EVENT->AddGameObject(this, elite);
+    RegisterMonster(elite);
 }

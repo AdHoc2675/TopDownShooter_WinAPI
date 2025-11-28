@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CRangedMonster.h"
 #include "CPlayer.h"
 #include "CMissile.h"
@@ -6,23 +6,23 @@
 
 CRangedMonster::CRangedMonster()
 {
-    name  = TEXT("¿ø°Å¸® ¸ó½ºÅÍ");
+    name  = TEXT("ì›ê±°ë¦¬ ëª¬ìŠ¤í„°");
     scale = Vec2(40, 40);
 
-    // ±âº» ÀüÅõ ¼öÄ¡ Á¶Á¤ (GetCombatStats() ÅëÇØ ¼³Á¤)
+    // ê¸°ë³¸ ì „íˆ¬ ìˆ˜ì¹˜ ì¡°ì • (GetCombatStats() í†µí•´ ì„¤ì •)
     CombatStats& st = GetCombatStats();
     st.hp             = 40.f;
     st.maxHp          = 40.f;
     st.attack         = 1.f;
     st.defense        = 0.f;
-    st.critChance     = 0.05f;
-    st.critMultiplier = 1.5f;
-    st.speed          = 70.f;   // ±âº» ¸ó½ºÅÍº¸´Ù ´À¸²
+    st.critChance     = 0.00f;
+    st.critMultiplier = 1.0f;
+    st.speed          = 70.f;   // ê¸°ë³¸ ëª¬ìŠ¤í„°ë³´ë‹¤ ëŠë¦¼
 
     fireInterval  = 1.8f;
     fireCooldown  = 0.f;
-    missileSpeed  = 220.f;       // ´À¸° Åõ»çÃ¼
-    attackRange   = 650.f;       // »ç°Å¸®
+    missileSpeed  = 220.f;       // ëŠë¦° íˆ¬ì‚¬ì²´
+    attackRange   = 650.f;       // ì‚¬ê±°ë¦¬
 }
 
 CRangedMonster::~CRangedMonster() {}
@@ -36,15 +36,15 @@ void CRangedMonster::Init()
 
     animator = new CAnimator();
 
-    // ¿À¸¥ÂÊ ÀÌµ¿: T_EyeMonster0 (40x40 / 3ÇÁ·¹ÀÓ, °¡·Î ¹èÄ¡ °¡Á¤)
+    // ì˜¤ë¥¸ìª½ ì´ë™: T_EyeMonster0 (40x40 / 3í”„ë ˆìž„, ê°€ë¡œ ë°°ì¹˜ ê°€ì •)
     CImage* moveRight = LOADIMAGE(TEXT("T_EyeMonster0"), TEXT("Image\\T_EyeMonster0.bmp"));
     animator->CreateAnimation(TEXT("MoveRight"), moveRight,
         0.12f, 3, true,
-        Vec2(0.f, 0.f),        // Ã¹ ÇÁ·¹ÀÓ ½ÃÀÛ
-        Vec2(40.f, 40.f),      // ÇÁ·¹ÀÓ Å©±â
-        Vec2(40.f, 0.f));      // °¡·Î stride
+        Vec2(0.f, 0.f),        // ì²« í”„ë ˆìž„ ì‹œìž‘
+        Vec2(40.f, 40.f),      // í”„ë ˆìž„ í¬ê¸°
+        Vec2(40.f, 0.f));      // ê°€ë¡œ stride
 
-    // ¿ÞÂÊ ÀÌµ¿: T_EyeMonster1 (40x40 / 3ÇÁ·¹ÀÓ, °¡·Î ¹èÄ¡ °¡Á¤)
+    // ì™¼ìª½ ì´ë™: T_EyeMonster1 (40x40 / 3í”„ë ˆìž„, ê°€ë¡œ ë°°ì¹˜ ê°€ì •)
     CImage* moveLeft = LOADIMAGE(TEXT("T_EyeMonster1"), TEXT("Image\\T_EyeMonster1.bmp"));
     animator->CreateAnimation(TEXT("MoveLeft"), moveLeft,
         0.12f, 3, true,
@@ -66,7 +66,7 @@ void CRangedMonster::Update()
         if (curHitMsgTime < 0.f) curHitMsgTime = 0.f;
     }
 
-    // ÀÌµ¿
+    // ì´ë™
     CPlayer* p = GetPlayer();
     CombatStats& st = GetCombatStats();
     Vec2 dir(0.f, 0.f);
@@ -82,7 +82,7 @@ void CRangedMonster::Update()
         }
     }
 
-    // ÀÌµ¿ ¹æÇâ¿¡ µû¶ó ¾Ö´Ï¸ÞÀÌ¼Ç ¼±ÅÃ
+    // ì´ë™ ë°©í–¥ì— ë”°ë¼ ì• ë‹ˆë©”ì´ì…˜ ì„ íƒ
     if (animator)
     {
         if (dir.x < -0.01f)
@@ -91,7 +91,7 @@ void CRangedMonster::Update()
             animator->Play(TEXT("MoveRight"), false);
     }
 
-    // »ç°Å¸® ³»¸é ¹ß»ç ½Ãµµ
+    // ì‚¬ê±°ë¦¬ ë‚´ë©´ ë°œì‚¬ ì‹œë„
     if (p)
     {
         Vec2 diff = p->GetWorldPos() - worldPos;
@@ -132,7 +132,7 @@ void CRangedMonster::SpawnMissile(const Vec2& dir)
     m->SetMoveSpeed(missileSpeed);
     m->SetLifeTime(5.f);
 
-    // ÀüÅõ ¼öÄ¡ Àü´Þ
+    // ì „íˆ¬ ìˆ˜ì¹˜ ì „ë‹¬
     CombatStats& ms = m->GetCombatStats();
     ms.attack         = st.attack;
     ms.defense        = st.defense;
