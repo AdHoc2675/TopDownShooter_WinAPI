@@ -31,6 +31,10 @@ int CTiledBackground::PickDecorIndex(int cellX, int cellY) const
 
 void CTiledBackground::Render()
 {
+    RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
+    RENDER->SetBrush(BrushType::Solid, RGB(39, 32, 48));
+    RENDER->Rect(0, 0, CGame::WINSIZE.x, CGame::WINSIZE.y);
+
     if (!sparseDecor || tiles.empty())
         return;
 
@@ -46,38 +50,5 @@ void CTiledBackground::Render()
     int cellEndX   = (int)ceilf(worldBR.x / decorCellW);
     int cellEndY   = (int)ceilf(worldBR.y / decorCellH);
 
-    for (int cy = cellStartY; cy < cellEndY; ++cy)
-    {
-        for (int cx = cellStartX; cx < cellEndX; ++cx)
-        {
-            float r = Hash01(cx, cy);
-            if (r > decorDensity) // ¹èÄ¡ È®·ü
-                continue;
-
-            int idx = PickDecorIndex(cx, cy);
-            if (idx < 0) continue;
-
-            // ¼¿ Áß¾Ó ±âÁØ ¹èÄ¡ (¾à°£ ·£´ý ¿ÀÇÁ¼Â)
-            float jitterX = (Hash01(cx*7, cy*11) - 0.5f) * (decorCellW * 0.3f);
-            float jitterY = (Hash01(cx*13, cy*5) - 0.5f) * (decorCellH * 0.3f);
-
-            Vec2 worldPos(
-                cx * (float)decorCellW + decorCellW * 0.5f + jitterX,
-                cy * (float)decorCellH + decorCellH * 0.5f + jitterY
-            );
-
-            Vec2 scr = CAMERA->WorldToScreenPoint(worldPos);
-
-            float x0 = scr.x - tileW * 0.5f;
-            float y0 = scr.y - tileH * 0.5f;
-            float x1 = x0 + (float)tileW;
-            float y1 = y0 + (float)tileH;
-
-            RENDER->TransparentImage(
-                tiles[idx],
-                x0, y0,
-                x1, y1,
-                RGB(255, 0, 255));
-        }
-    }
+    
 }
