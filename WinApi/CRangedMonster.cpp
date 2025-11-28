@@ -29,10 +29,31 @@ CRangedMonster::~CRangedMonster() {}
 
 void CRangedMonster::Init()
 {
-    CCollider* collider = new CCollider();
+    collider = new CCollider();
     collider->SetScale(Vec2(45, 45));
     collider->SetLayer(Layer::Monster);
     AddChild(collider);
+
+    animator = new CAnimator();
+
+    // 오른쪽 이동: T_EyeMonster0 (40x40 / 3프레임, 가로 배치 가정)
+    CImage* moveRight = LOADIMAGE(TEXT("T_EyeMonster0"), TEXT("Image\\T_EyeMonster0.bmp"));
+    animator->CreateAnimation(TEXT("MoveRight"), moveRight,
+        0.12f, 3, true,
+        Vec2(0.f, 0.f),        // 첫 프레임 시작
+        Vec2(40.f, 40.f),      // 프레임 크기
+        Vec2(40.f, 0.f));      // 가로 stride
+
+    // 왼쪽 이동: T_EyeMonster1 (40x40 / 3프레임, 가로 배치 가정)
+    CImage* moveLeft = LOADIMAGE(TEXT("T_EyeMonster1"), TEXT("Image\\T_EyeMonster1.bmp"));
+    animator->CreateAnimation(TEXT("MoveLeft"), moveLeft,
+        0.12f, 3, true,
+        Vec2(0.f, 0.f),
+        Vec2(40.f, 40.f),
+        Vec2(40.f, 0.f));
+
+    AddChild(animator);
+    animator->Play(TEXT("MoveRight"), true);
 }
 
 void CRangedMonster::Update()
@@ -48,15 +69,26 @@ void CRangedMonster::Update()
     // 이동
     CPlayer* p = GetPlayer();
     CombatStats& st = GetCombatStats();
+    Vec2 dir(0.f, 0.f);
+
     if (p)
     {
-        Vec2 dir = p->GetWorldPos() - worldPos;
+        dir = p->GetWorldPos() - worldPos;
         float len = dir.Length();
-        if (len > 250.f)
+        if (len > 0.0001f)
         {
             dir /= len;
             pos = pos + (dir * st.speed * DT);
         }
+    }
+
+    // 이동 방향에 따라 애니메이션 선택
+    if (animator)
+    {
+        if (dir.x < -0.01f)
+            animator->Play(TEXT("MoveLeft"), false);
+        else
+            animator->Play(TEXT("MoveRight"), false);
     }
 
     // 사거리 내면 발사 시도

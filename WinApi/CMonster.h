@@ -16,6 +16,10 @@ public:
     CombatStats& GetCombatStats() { return stats; }
 	CAnimator* GetAnimator() const { return animator; }
 
+protected:
+    CCollider* collider = nullptr;
+    CAnimator* animator = nullptr;
+
 private:
     void Init()         override;
     void OnEnable()     override;
@@ -32,8 +36,6 @@ private:
 
 private:
     CPlayer*    player = nullptr;
-    CCollider*  collider = nullptr;
-    CAnimator* animator = nullptr;
     CombatStats stats;
 
     float       hitMsgDuration;
