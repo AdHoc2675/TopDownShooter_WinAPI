@@ -74,6 +74,7 @@
       <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="CMissileTurret.h" />
+    <ClInclude Include="CTiledBackground.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -119,6 +120,7 @@
       <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CMissileTurret.cpp" />
+    <ClCompile Include="CTiledBackground.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

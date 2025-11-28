@@ -11,6 +11,7 @@
 #include "CWeapon.h"
 #include "CCollisionManager.h"
 #include "CExpOrb.h"
+#include "CTiledBackground.h"
 
 CSceneStage01::CSceneStage01()
 {
@@ -22,6 +23,23 @@ CSceneStage01::~CSceneStage01()
 
 void CSceneStage01::Init()
 {
+
+    //CTiledBackground* bg = new CTiledBackground();
+    //bg->SetTileSize(32, 32);
+    //bg->SetMargin(64.f);
+
+    //// 8개 타일 로드 
+    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_0"), TEXT("Image\\T_ForestTile_0.bmp")));
+    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_1"), TEXT("Image\\T_ForestTile_1.bmp")));
+    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_2"), TEXT("Image\\T_ForestTile_2.bmp")));
+    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_3"), TEXT("Image\\T_ForestTile_3.bmp")));
+    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_4"), TEXT("Image\\T_ForestTile_4.bmp")));
+    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_5"), TEXT("Image\\T_ForestTile_5.bmp")));
+    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_6"), TEXT("Image\\T_ForestTile_6.bmp")));
+    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_7"), TEXT("Image\\T_ForestTile_7.bmp")));
+
+    //AddGameObject(bg);
+
     player = new CPlayer();
     player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
     AddGameObject(player);
@@ -97,6 +115,11 @@ void CSceneStage01::Update()
 
 void CSceneStage01::Render()
 {
+	//// 배경 그리기
+    //RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
+    //RENDER->SetBrush(BrushType::Solid, RGB(39, 32, 48));
+    //RENDER->Rect(0, 0, CGame::WINSIZE.x, CGame::WINSIZE.y);
+
     Vec2 startPos = CAMERA->WorldToScreenPoint(Vec2(0, 0));
     Vec2 endPos = CAMERA->WorldToScreenPoint(Vec2(CGame::WINSIZE.x, CGame::WINSIZE.y));
 }

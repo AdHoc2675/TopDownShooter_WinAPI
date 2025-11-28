@@ -170,6 +170,7 @@
     <ClInclude Include="CSceneTitle.h" />
     <ClInclude Include="CSoundController.h" />
     <ClInclude Include="CMissileTurret.h" />
+    <ClInclude Include="CTiledBackground.h" />
     <ClInclude Include="CUpgradePanel.h" />
     <ClInclude Include="CWeapon.h" />
     <ClInclude Include="Enum.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="CSceneTitle.cpp" />
     <ClCompile Include="CSoundController.cpp" />
     <ClCompile Include="CMissileTurret.cpp" />
+    <ClCompile Include="CTiledBackground.cpp" />
     <ClCompile Include="CUpgradePanel.cpp" />
     <ClCompile Include="CWeapon.cpp" />
     <ClCompile Include="pch.cpp">
