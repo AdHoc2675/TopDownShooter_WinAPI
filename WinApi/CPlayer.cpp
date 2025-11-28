@@ -28,6 +28,12 @@ CPlayer::CPlayer()
 	moveDir		= Vec2(0, 0);
 	lookDir		= Vec2(0, -1);
 	isMove		= false;
+
+	// 발소리 초기화 (추가)
+	footstepInterval = 0.35f;
+	footstepTimer = 0.f;
+	footstepSounds[0] = footstepSounds[1] = footstepSounds[2] = nullptr;
+
 }
 
 CPlayer::~CPlayer()
@@ -70,6 +76,11 @@ void CPlayer::Init()
 	collider->SetScale(Vec2(70, 70));
 	collider->SetLayer(Layer::Player);
 	AddChild(collider);
+
+	// 발소리 로드
+	footstepSounds[0] = LOADSOUND(TEXT("Footsteps_Casual_Grass_01"), TEXT("Sound\\Footsteps_Casual_Grass_01.wav"));
+	footstepSounds[1] = LOADSOUND(TEXT("Footsteps_Casual_Grass_02"), TEXT("Sound\\Footsteps_Casual_Grass_02.wav"));
+	footstepSounds[2] = LOADSOUND(TEXT("Footsteps_Casual_Grass_03"), TEXT("Sound\\Footsteps_Casual_Grass_03.wav"));
 }
 
 void CPlayer::OnEnable()
@@ -125,6 +136,25 @@ void CPlayer::Update()
 	if (hitCooldown < 0.f)
 		hitCooldown = 0.f;
 
+	// 발소리 재생
+	if (isMove)
+	{
+		footstepTimer -= DT;
+		if (footstepTimer <= 0.f)
+		{
+			int idx = rand() % 3;
+			if (footstepSounds[idx])
+				SOUND->PlayOnce(footstepSounds[idx]);
+			footstepTimer = footstepInterval;
+		}
+	}
+	else
+	{
+		// 멈추면 타이머를 0으로 두어, 다시 움직일 때 즉시 한 번 재생되도록
+		footstepTimer = 0.f;
+	}
+
+	// 경험치 테스트용
 	if (INPUT->ButtonDown('T', true)) {
 		AddExp(100);
 	}

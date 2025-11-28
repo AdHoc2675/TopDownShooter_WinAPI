@@ -38,5 +38,11 @@ private:
 	Vec2		moveDir;
 	Vec2		lookDir;
 	bool		isMove;
+
+	// 발소리 관련 (추가)
+	CSound*		footstepSounds[3] = { nullptr, nullptr, nullptr };
+	float       footstepInterval; // 발소리 간격(초)
+	float       footstepTimer;   // 다음 발소리까지 남은 시간
+
 };
 
