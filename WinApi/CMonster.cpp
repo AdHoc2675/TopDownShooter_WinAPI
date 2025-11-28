@@ -59,6 +59,7 @@ void CMonster::Init()
 
     AddChild(animator);
     animator->Play(TEXT("MoveRight"), true);
+    animator->SetRatio(1.5f); // 150% 확대
 }
 
 void CMonster::OnEnable()

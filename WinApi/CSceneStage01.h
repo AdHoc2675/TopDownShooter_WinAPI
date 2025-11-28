@@ -40,6 +40,6 @@ private:
     int      maxMonsters   = 15;         // 씬 최대 몬스터
     float    offScreenMargin = 80.f;     // 화면 밖으로 얼마나 떨어뜨릴지
     int      eliteWingSpawned = 0;              // 엘리트 1회 소환 여부
-    float    eliteWingSpawnTriggerTime = 60.f;      // 소환 트리거 시간(초)
+    float    eliteWingSpawnTriggerTime = 5.f;      // 소환 트리거 시간(초)
 };
 
