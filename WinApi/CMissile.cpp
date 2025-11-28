@@ -53,7 +53,6 @@ void CMissile::Render()
 }
 
 void CMissile::OnDisable() {}
-
 void CMissile::Release() {}
 
 void CMissile::OnCollisionEnter(CCollider* other)
@@ -61,12 +60,13 @@ void CMissile::OnCollisionEnter(CCollider* other)
     // 아군 미사일: 몬스터에서 처리 (기존 로직 유지)
     if (friendly)
     {
-        EVENT->Delete(GetScene(), this);
-        return;
+        if (other->GetLayer() == Layer::Monster) {
+            EVENT->Delete(GetScene(), this);
+            return;
+        }
     }
-
     // 적 미사일: 플레이어 충돌 시 피해 적용
-    if (other->GetLayer() == Layer::Player)
+    else if (friendly == false && other->GetLayer() == Layer::Player)
     {
         CGameObject* playerObj = other->GetOwner();
         CPlayer* player = dynamic_cast<CPlayer*>(playerObj);
@@ -82,6 +82,7 @@ void CMissile::OnCollisionEnter(CCollider* other)
     }
     else
     {
-
+        //// 다른 것과 충돌 시 그냥 제거
+        //EVENT->Delete(GetScene(), this);
     }
 }

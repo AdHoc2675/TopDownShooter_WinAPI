@@ -52,7 +52,7 @@ void CRangedMonster::Update()
     {
         Vec2 dir = p->GetWorldPos() - worldPos;
         float len = dir.Length();
-        if (len > 0.0001f)
+        if (len > 250.f)
         {
             dir /= len;
             pos = pos + (dir * st.speed * DT);
