@@ -11,6 +11,7 @@
 #include "CIconTextButton.h"
 #include "CResourceManager.h"
 #include "CMissileTurret.h"
+#include "CScythe.h"
 
 using namespace std;
 
@@ -109,7 +110,7 @@ void CUpgradePanel::Configure(CPlayer* p)
     // 반복 불가능 옵션
     vector<pair<wstring, UpgradeType>> oneTimePool = {
         { L"소환수: 원거리 지원",            UpgradeType::SummonRanged },
-       
+		{ L"소환수: 회전 낫",                UpgradeType::SummonScythe },
     };
 
     // 반복 가능한 옵션
@@ -221,6 +222,21 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         EVENT->AddGameObject(GetScene(), ally);
         break;
     }
+    case UpgradeType::SummonScythe:
+    {
+        // 반복 불가능 옵션: 획득 상태 기록
+        gTakenOneTimeUpgrades.insert(UpgradeType::SummonScythe);
+
+        CScythe* s1 = new CScythe();
+        CScythe* s2 = new CScythe();
+        s1->SetOwnerPlayer(player);
+        s2->SetOwnerPlayer(player);
+        s1->SetInitialAngle(0.f);
+        s2->SetInitialAngle(3.141592f); // 반대편
+        EVENT->AddGameObject(GetScene(), s1);
+        EVENT->AddGameObject(GetScene(), s2);
+        break;
+	}
     default:
         break;
     }

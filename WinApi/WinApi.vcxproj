@@ -169,6 +169,7 @@
     <ClInclude Include="CRangedMonster.h" />
     <ClInclude Include="CSceneStage01.h" />
     <ClInclude Include="CSceneTitle.h" />
+    <ClInclude Include="CScythe.h" />
     <ClInclude Include="CSoundController.h" />
     <ClInclude Include="CMissileTurret.h" />
     <ClInclude Include="CTiledBackground.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="CRangedMonster.cpp" />
     <ClCompile Include="CSceneStage01.cpp" />
     <ClCompile Include="CSceneTitle.cpp" />
+    <ClCompile Include="CScythe.cpp" />
     <ClCompile Include="CSoundController.cpp" />
     <ClCompile Include="CMissileTurret.cpp" />
     <ClCompile Include="CTiledBackground.cpp" />

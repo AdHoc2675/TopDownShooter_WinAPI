@@ -10,7 +10,8 @@ enum class UpgradeType
     CritChanceUp,
     SpdUp,
     CritDmgUp,
-    SummonRanged, // Ãß°¡
+    SummonRanged,
+    SummonScythe
 };
 
 class CUpgradePanel : public CPanel

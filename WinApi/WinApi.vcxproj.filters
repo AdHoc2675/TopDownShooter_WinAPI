@@ -88,6 +88,7 @@
     <ClInclude Include="CEliteWingedMonster.h">
       <Filter>GameObject\MonsterObject</Filter>
     </ClInclude>
+    <ClInclude Include="CScythe.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -144,6 +145,7 @@
     <ClCompile Include="CEliteWingedMonster.cpp">
       <Filter>GameObject\MonsterObject</Filter>
     </ClCompile>
+    <ClCompile Include="CScythe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

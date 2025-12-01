@@ -7,6 +7,7 @@
 #include "CExpOrb.h"
 #include "CSceneStage01.h"
 #include "CAnimator.h"
+#include "CScythe.h"
 
 CMonster::CMonster() 
 {
@@ -41,7 +42,6 @@ void CMonster::Init()
     AddChild(collider);
 
     animator = new CAnimator();
-
 
     // 우측 이동: T_GhostMonster0 (64x64 / 7프레임, 가로로 배치 가정)
     CImage* moveRight = LOADIMAGE(TEXT("T_GhostMonster0"), TEXT("Image\\T_GhostMonster0.bmp"));
@@ -173,32 +173,53 @@ void CMonster::OnCollisionEnter(CCollider* other)
 {
     if (other->GetLayer() == Layer::Missile)
     {
-        CGameObject* missileObj = other->GetOwner();
-        CMissile* missile = dynamic_cast<CMissile*>(missileObj);
-        if (!missile)
-            return;
+        CGameObject* attackerObj = other->GetOwner();
 
-        // 아군(플레이어/터렛) 미사일만 몬스터에 피해 적용
-        if (!missile->GetFriendly())
-            return;
-
-        CombatStats& attackerStats = missile->GetCombatStats();
-
-        float dealt = 0.f;
-        bool  crit  = false;
-        COMBAT->ApplyDamage(missile, this, attackerStats, stats, &dealt, &crit);
-
-        curHitMsgTime = hitMsgDuration;
-        if (crit)
-            hitMsg = L"CRIT -" + to_wstring((int)dealt);
-        else
-            hitMsg = L"-" + to_wstring((int)dealt);
-
-        if (!stats.alive() && !droppedExpOrb)
+        // 1) 투사체 처리
+        if (CMissile* missile = dynamic_cast<CMissile*>(attackerObj))
         {
-            DropExpOrb(ExpValue, ExpCount);
-            droppedExpOrb = true;
+            // 아군(플레이어/터렛) 미사일만 몬스터에 피해 적용
+            if (!missile->GetFriendly())
+                return;
+
+            CombatStats& attackerStats = missile->GetCombatStats();
+
+            float dealt = 0.f;
+            bool  crit  = false;
+            COMBAT->ApplyDamage(missile, this, attackerStats, stats, &dealt, &crit);
+
+            curHitMsgTime = hitMsgDuration;
+            hitMsg = (crit ? L"CRIT -" : L"-") + to_wstring((int)dealt);
+
+            if (!stats.alive() && !droppedExpOrb)
+            {
+                DropExpOrb(ExpValue, ExpCount);
+                droppedExpOrb = true;
+            }
+            return;
         }
+
+        // 2) 소환수(CScythe) 처리
+        if (CScythe* scythe = dynamic_cast<CScythe*>(attackerObj))
+        {
+            // 플레이어 소유 소환수는 항상 적 몬스터에 피해 적용
+            CombatStats attackerStats = scythe->GetCombatStats(); // 복사 또는 참조 제공 함수가 있으면 교체
+
+            float dealt = 0.f;
+            bool  crit  = false;
+            COMBAT->ApplyDamage(scythe, this, attackerStats, stats, &dealt, &crit);
+
+            curHitMsgTime = hitMsgDuration;
+            hitMsg = (crit ? L"CRIT -" : L"-") + to_wstring((int)dealt);
+
+            if (!stats.alive() && !droppedExpOrb)
+            {
+                DropExpOrb(ExpValue, ExpCount);
+                droppedExpOrb = true;
+            }
+            return;
+        }
+
     }
 }
 
