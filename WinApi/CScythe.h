@@ -2,8 +2,8 @@
 #include "CCombatSystem.h"
 
 class CPlayer;
-class CCollider;
 class CImage;
+class CCollider;
 
 class CScythe : public CGameObject
 {
@@ -14,6 +14,7 @@ public:
     void SetOwnerPlayer(CPlayer* p) { ownerPlayer = p; }
     void SetInitialAngle(float rad) { orbitAngle = rad; }
     void SetOrbit(float radius, float radPerSec) { orbitRadius = radius; angularSpeed = radPerSec; }
+
     CombatStats& GetCombatStats() { return stats; }
 
 private:
@@ -36,6 +37,10 @@ private:
 
     // 공전 파라미터
     float orbitRadius;
-    float angularSpeed;    // 라디안/초
+    float angularSpeed;   // 라디안/초
     float orbitAngle;
+
+    // 자전 파라미터
+    float spinSpeed; // 라디안/초
+    float spinAngle;
 };

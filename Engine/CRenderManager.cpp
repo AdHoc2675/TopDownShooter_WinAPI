@@ -1,6 +1,12 @@
 ﻿#include "pch.h"
 #include "CRenderManager.h"
 
+using std::unordered_map;
+
+// 컬러키 마스크 캐시 (이미지별 1bpp 마스크 생성 비용 절약)
+static unordered_map<CImage*, HBITMAP> gMaskCache;
+
+
 CRenderManager::CRenderManager()
 {
 	hWnd	= 0;
@@ -178,6 +184,77 @@ void CRenderManager::BlendImage(CImage* pImg, float dstStartX, float dstStartY, 
 
 	AlphaBlend(hMemDC, (int)dstStartX, (int)dstStartY, (int)(dstEndX - dstStartX), (int)(dstEndY - dstStartY),
 		pImg->GetImageDC(), (int)srcStartX, (int)srcStartY, (int)(srcEndX - srcStartX), (int)(srcEndY - srcStartY), bf);
+}
+
+// src 이미지에서 투명색을 기준으로 모노크롬 마스크 생성(1=보이기, 0=숨기기)
+static HBITMAP BuildColorKeyMask(CImage* img, HDC refDC, COLORREF colorKey)
+{
+	const int w = img->GetBmpWidth();
+	const int h = img->GetBmpHeight();
+
+	HDC srcDC = img->GetImageDC();
+	HDC maskDC = CreateCompatibleDC(refDC);
+	HBITMAP hMask = CreateBitmap(w, h, 1, 1, nullptr); // 1bpp
+	HBITMAP old = static_cast<HBITMAP>(SelectObject(maskDC, hMask));
+
+	// 픽셀 스캔으로 마스크 생성 (작은 이미지 기준 성능 OK)
+	for (int y = 0; y < h; ++y)
+	{
+		for (int x = 0; x < w; ++x)
+		{
+			COLORREF c = GetPixel(srcDC, x, y);
+			// 컬러키면 0(검정: 복사 안함), 아니면 1(흰색: 복사)
+			SetPixel(maskDC, x, y, (c == colorKey) ? RGB(0, 0, 0) : RGB(255, 255, 255));
+		}
+	}
+
+	SelectObject(maskDC, old);
+	DeleteDC(maskDC);
+	return hMask;
+}
+
+void CRenderManager::RotateImage(CImage* pImg, float centerX, float centerY, float dstW, float dstH, float rad, COLORREF transparent)
+{
+	if (!pImg) return;
+
+	// 목적지 평행사변형 좌표(왼위, 오른위, 왼아래) 계산
+	const float hw = dstW * 0.5f;
+	const float hh = dstH * 0.5f;
+
+	auto rot = [&](float x, float y) -> POINT {
+		float rx = x * cosf(rad) - y * sinf(rad);
+		float ry = x * sinf(rad) + y * cosf(rad);
+		POINT p;
+		p.x = (LONG)(centerX + rx);
+		p.y = (LONG)(centerY + ry);
+		return p;
+		};
+
+	POINT pts[3];
+	pts[0] = rot(-hw, -hh); // left-top
+	pts[1] = rot(+hw, -hh); // right-top
+	pts[2] = rot(-hw, +hh); // left-bottom
+
+	// 소스와 마스크
+	HDC srcDC = pImg->GetImageDC();
+	const int srcW = pImg->GetBmpWidth();
+	const int srcH = pImg->GetBmpHeight();
+
+	// 마스크는 이미지별 1회 생성/캐시
+	HBITMAP hMask = nullptr;
+	auto it = gMaskCache.find(pImg);
+	if (it == gMaskCache.end())
+	{
+		hMask = BuildColorKeyMask(pImg, hMemDC, transparent);
+		gMaskCache.emplace(pImg, hMask);
+	}
+	else
+	{
+		hMask = it->second;
+	}
+
+	// 회전/스케일/이동 + 마스크 적용
+	PlgBlt(hMemDC, pts, srcDC, 0, 0, srcW, srcH, hMask, 0, 0);
 }
 
 void CRenderManager::SetPen(PenType type, COLORREF color, int width)

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 class CImage;
 
@@ -20,25 +20,33 @@ public:
 	void		EndDraw();
 	void		Release();
 
-	void		Pixel(float x, float y, COLORREF color);						// ÇÈ¼¿ ±×¸®±â
-	void		Line(float startX, float startY, float endX, float endY);		// ¼± ±×¸®±â
-	void		Rect(float startX, float startY, float endX, float endY);		// »ç°¢Çü ±×¸®±â
-	void		Circle(float x, float y, float radius);							// ¿ø ±×¸®±â
-	void		Ellipse(float startX, float startY, float endX, float endY);	// Å¸¿ø ±×¸®±â
-	void		Text(float x, float y, wstring str);							// ÅØ½ºÆ® ±×¸®±â
+	void		Pixel(float x, float y, COLORREF color);						// í”½ì…€ ê·¸ë¦¬ê¸°
+	void		Line(float startX, float startY, float endX, float endY);		// ì„  ê·¸ë¦¬ê¸°
+	void		Rect(float startX, float startY, float endX, float endY);		// ì‚¬ê°í˜• ê·¸ë¦¬ê¸°
+	void		Circle(float x, float y, float radius);							// ì› ê·¸ë¦¬ê¸°
+	void		Ellipse(float startX, float startY, float endX, float endY);	// íƒ€ì› ê·¸ë¦¬ê¸°
+	void		Text(float x, float y, wstring str);							// í…ìŠ¤íŠ¸ ê·¸ë¦¬ê¸°
 
-	void		BitImage(CImage* pImg, float startX, float startY, float endX, float endY);			// ÀÌ¹ÌÁö ±×¸®±â
-	void		StrectchImage(CImage* pImg, float startX, float startY, float endX, float endY);	// Å©±âº¯°æÀÌ¹ÌÁö ±×¸®±â
-	void		TransparentImage(CImage* pImg, float startX, float startY, float endX, float endY,	// Åõ¸íÀÌ¹ÌÁö ±×¸®±â
+	void		BitImage(CImage* pImg, float startX, float startY, float endX, float endY);			// ì´ë¯¸ì§€ ê·¸ë¦¬ê¸°
+	void		StrectchImage(CImage* pImg, float startX, float startY, float endX, float endY);	// í¬ê¸°ë³€ê²½ì´ë¯¸ì§€ ê·¸ë¦¬ê¸°
+	void		TransparentImage(CImage* pImg, float startX, float startY, float endX, float endY,	// íˆ¬ëª…ì´ë¯¸ì§€ ê·¸ë¦¬ê¸°
 								COLORREF transparent = RGB(255, 0, 255));
 	void		FrameImage(CImage* pImg,
 					float dstStartX, float dstStartY, float dstEndX, float dstEndY,
 					float srcStartX, float srcStartY, float srcEndX, float srcEndY,
-					COLORREF transparent = RGB(255, 0, 255));		// ÀÌ¹ÌÁö ÀÏºÎºĞ ±×¸®±â
+					COLORREF transparent = RGB(255, 0, 255));		// ì´ë¯¸ì§€ ì¼ë¶€ë¶„ ê·¸ë¦¬ê¸°
 	void		BlendImage(CImage* pImg,
 					float dstStartX, float dstStartY, float dstEndX, float dstEndY,
 					float srcStartX, float srcStartY, float srcEndX, float srcEndY,
-					float ratio);									// ÀÌ¹ÌÁö ºÒÅõ¸í ±×¸®±â
+					float ratio);									// ì´ë¯¸ì§€ ë¶ˆíˆ¬ëª… ê·¸ë¦¬ê¸°
+
+	// ì´ë¯¸ì§€ ì „ì²´ë¥¼ ì¤‘ì‹¬(cx,cy) ê¸°ì¤€, ê°€ë¡œ/ì„¸ë¡œ dstW/dstH í¬ê¸°ë¡œ rad(ë¼ë””ì•ˆ) íšŒì „í•˜ì—¬ ë Œë”
+	// transparent: ì»¬ëŸ¬í‚¤(RGB(255,0,255) ë“±)
+	void		RotateImage(CImage* pImg,
+						 float centerX, float centerY,
+						 float dstW, float dstH,
+						 float rad,
+						 COLORREF transparent = RGB(255, 0, 255));
 
 	void		SetPen(PenType type = PenType::Solid, COLORREF color = RGB(0, 0, 0), int width = 1);
 	void		SetBrush(BrushType type = BrushType::Solid, COLORREF color = RGB(255, 255, 255));
@@ -48,24 +56,24 @@ public:
 	HDC			GetMemDC() { return hMemDC; }
 
 private:
-	HWND			hWnd;			// À©µµ¿ì ÇÚµé
-	HDC				hDC;			// ÇÁ·ĞÆ®¹öÆÛ(°á°ú °ÔÀÓÈ­¸é)¿¡ ±×¸± dc
-	HDC				hMemDC;			// ¹é¹öÆÛ(±×¸®´ÂÁß °ÔÀÓÈ­¸é)¿¡ ±×¸± dc
-	HBITMAP			hBMP;			// ¹é¹öÆÛ¿ë ºñÆ®¸Ê(ÀÌ¹ÌÁö)
-	Vec2			winSize;		// À©µµ¿ì »çÀÌÁî
+	HWND			hWnd;			// ìœˆë„ìš° í•¸ë“¤
+	HDC				hDC;			// í”„ë¡ íŠ¸ë²„í¼(ê²°ê³¼ ê²Œì„í™”ë©´)ì— ê·¸ë¦´ dc
+	HDC				hMemDC;			// ë°±ë²„í¼(ê·¸ë¦¬ëŠ”ì¤‘ ê²Œì„í™”ë©´)ì— ê·¸ë¦´ dc
+	HBITMAP			hBMP;			// ë°±ë²„í¼ìš© ë¹„íŠ¸ë§µ(ì´ë¯¸ì§€)
+	Vec2			winSize;		// ìœˆë„ìš° ì‚¬ì´ì¦ˆ
 
-	// Ææ
+	// íœ
 	HPEN			hCurPen;
 	PenType			penType;
 	int				penWidth;
 	COLORREF		penColor;
 
-	// ºê·¯½Ã
+	// ë¸ŒëŸ¬ì‹œ
 	HBRUSH			hCurBrush;
 	BrushType		brushType;
 	COLORREF		brushColor;
 
-	// ÅØ½ºÆ®
+	// í…ìŠ¤íŠ¸
 	HFONT			hFont;
 	int				textSize;
 	COLORREF		textColor;
