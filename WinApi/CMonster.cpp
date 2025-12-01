@@ -8,6 +8,7 @@
 #include "CSceneStage01.h"
 #include "CAnimator.h"
 #include "CScythe.h"
+#include "CDamageText.h"
 
 CMonster::CMonster() 
 {
@@ -21,13 +22,10 @@ CMonster::CMonster()
     stats.critMultiplier = 1.0f;
     stats.speed = 100.f;
 
-    hitMsgDuration = 0.4f;
-    curHitMsgTime = 0.f;
 	droppedExpOrb = false;
     ExpValue = 15;
 	ExpCount = 1;
 
-    hitMsg = L"Hit!";
 }
 
 CMonster::~CMonster()
@@ -70,14 +68,6 @@ void CMonster::OnEnable()
 
 void CMonster::Update()
 {
-    if (curHitMsgTime > 0.f)
-    {
-        curHitMsgTime = curHitMsgTime - DT;
-        if (curHitMsgTime < 0.f) {
-            curHitMsgTime = 0.f;
-        }
-    }
-
 	// 플레이어 쪽으로 이동
     Vec2 dir(0.f, 0.f);
 
@@ -100,29 +90,7 @@ void CMonster::Update()
 
 void CMonster::Render()
 {
-    //RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
-    //RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
 
-    //RENDER->Rect(
-    //    renderPos.x - scale.x * 0.5f,
-    //    renderPos.y - scale.y * 0.5f,
-    //    renderPos.x + scale.x * 0.5f,
-    //    renderPos.y + scale.y * 0.5f);
-
-	//=====//
-
-    // 피격 메시지
-    int textSize = 12;
-    if (curHitMsgTime > 0.f)
-    {
-        // 피격 메시지 출력
-        RENDER->SetText(textSize, RGB(255, 0, 0), TextAlign::Center);
-        RENDER->SetTextBackMode(TextBackMode::Null);
-        RENDER->Text(
-            renderPos.x,
-            renderPos.y - scale.y * 0.5f - 20.f,
-            hitMsg);
-	}
 }
 
 void CMonster::OnDisable()
@@ -188,8 +156,10 @@ void CMonster::OnCollisionEnter(CCollider* other)
             bool  crit  = false;
             COMBAT->ApplyDamage(missile, this, attackerStats, stats, &dealt, &crit);
 
-            curHitMsgTime = hitMsgDuration;
-            hitMsg = (crit ? L"CRIT -" : L"-") + to_wstring((int)dealt);
+            // 피격 이펙트 텍스트
+            CDamageText* dt = new CDamageText();
+            dt->Configure(worldPos, (int)dealt, crit);
+            EVENT->AddGameObject(GetScene(), dt);
 
             if (!stats.alive() && !droppedExpOrb)
             {
@@ -209,8 +179,10 @@ void CMonster::OnCollisionEnter(CCollider* other)
             bool  crit  = false;
             COMBAT->ApplyDamage(scythe, this, attackerStats, stats, &dealt, &crit);
 
-            curHitMsgTime = hitMsgDuration;
-            hitMsg = (crit ? L"CRIT -" : L"-") + to_wstring((int)dealt);
+            // 피격 이펙트 텍스트
+            CDamageText* dt = new CDamageText();
+            dt->Configure(worldPos, (int)dealt, crit);
+            EVENT->AddGameObject(GetScene(), dt);
 
             if (!stats.alive() && !droppedExpOrb)
             {
@@ -259,7 +231,7 @@ void CMonster::OnCollisionStay(CCollider* other)
     float overlap = targetDist - dist;
     if (overlap > 0.f)
     {
-        Vec2 n = diff / dist;               // 정규화 방향
+        Vec2 n = diff / dist;   // 정규화 방향
         Vec2 correction = n * (overlap * 0.5f);
 
         // 두 몬스터를 반씩 이동

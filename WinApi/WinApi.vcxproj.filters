@@ -89,6 +89,8 @@
       <Filter>GameObject\MonsterObject</Filter>
     </ClInclude>
     <ClInclude Include="CScythe.h" />
+    <ClInclude Include="CBossMonster.h" />
+    <ClInclude Include="CDamageText.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -146,6 +148,7 @@
       <Filter>GameObject\MonsterObject</Filter>
     </ClCompile>
     <ClCompile Include="CScythe.cpp" />
+    <ClCompile Include="CBossMonster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

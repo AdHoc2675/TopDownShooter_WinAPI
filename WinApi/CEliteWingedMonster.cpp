@@ -81,13 +81,6 @@ void CEliteWingedMonster::Init()
 
 void CEliteWingedMonster::Update()
 {
-	static float hitMsgDuration = 0.4f;
-	static float curHitMsgTime = 0.f;
-	if (curHitMsgTime > 0.f)
-	{
-		curHitMsgTime -= DT;
-		if (curHitMsgTime < 0.f) curHitMsgTime = 0.f;
-	}
 
 	CPlayer* p = GetPlayer();
 	CombatStats& st = GetCombatStats();

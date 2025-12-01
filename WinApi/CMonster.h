@@ -24,6 +24,7 @@ protected:
 
     void DropExpOrb();
     void DropExpOrb(int value, int count);
+    bool        droppedExpOrb = false;
 
 private:
     void Init()         override;
@@ -40,10 +41,5 @@ private:
 private:
     CPlayer*    player = nullptr;
     CombatStats stats;
-
-    float       hitMsgDuration;
-    float       curHitMsgTime;
-    wstring     hitMsg;
-    bool        droppedExpOrb = false;
 };
 

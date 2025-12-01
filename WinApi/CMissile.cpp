@@ -57,7 +57,7 @@ void CMissile::Release() {}
 
 void CMissile::OnCollisionEnter(CCollider* other)
 {
-    // 아군 미사일: 몬스터에서 처리 (기존 로직 유지)
+    // 아군 미사일: 몬스터에서 처리
     if (friendly)
     {
         if (other->GetLayer() == Layer::Monster) {
