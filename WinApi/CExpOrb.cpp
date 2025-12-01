@@ -27,7 +27,19 @@ void CExpOrb::Init()
     col->SetScale(scale);
     col->SetLayer(Layer::ExpOrb); // Layer::ExpOrb 추가 필요
     AddChild(col);
-	CExpOrb_image = LOADIMAGE(TEXT("ExpOrb"), TEXT("Image\\ExpOrb1.bmp"));
+	CExpOrb_image1 = LOADIMAGE(TEXT("ExpOrb"), TEXT("Image\\ExpOrb1.bmp"));
+    CExpOrb_image2 = LOADIMAGE(TEXT("ExpOrb"), TEXT("Image\\ExpOrb2.bmp"));
+    CExpOrb_image3 = LOADIMAGE(TEXT("ExpOrb"), TEXT("Image\\ExpOrb3.bmp"));
+
+    if (value >= 100) {
+        CurrentImage = CExpOrb_image3;
+    }
+    else if (value >= 30) {
+        CurrentImage = CExpOrb_image2;
+    }
+    else {
+        CurrentImage = CExpOrb_image1;
+	}
 }
 
 void CExpOrb::OnEnable()
@@ -60,15 +72,15 @@ void CExpOrb::Update()
 
 void CExpOrb::Render()
 {
-    // 경험치 오브 스프라이트 이미지 렌더링
-    if (CExpOrb_image) {
+    if (CurrentImage) {
         RENDER->TransparentImage(
-            CExpOrb_image,
+            CurrentImage,
             renderPos.x - scale.x * 0.5f,
             renderPos.y - scale.y * 0.5f,
             renderPos.x + scale.x * 0.5f,
             renderPos.y + scale.y * 0.5f,
             RGB(255, 0, 255));
+
     }
 
     // 경험치 값 표시

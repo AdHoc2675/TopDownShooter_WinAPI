@@ -34,14 +34,17 @@ CEliteWingedMonster::CEliteWingedMonster()
 	// 돌진 파라미터
 	chargeInterval = 8.0f;
 	chargeCooldown = 4.0f; // 시작 시 약간 대기
-	chargePrep = 1.0f;  // 고정 1초(하위 호환 유지용 변수)
+	chargePrep = 1.0f;  // 고정 1초
 	chargePrepTimer = 0.f;
 	chargePreparing = false;
 	charging = false;
-	chargeOvershootDist = 140.f; // 현재 로직에선 사용하지 않음(목표점을 정확히 설정)
 	chargeSpeed = 600.f;
+	chargeTriggerRange = 500.f;
 
 	lastMoveDir = Vec2(0.f, 0.f);
+
+	ExpValue = 200;
+	ExpCount = 1;
 }
 
 CEliteWingedMonster::~CEliteWingedMonster() {}
@@ -108,11 +111,11 @@ void CEliteWingedMonster::Update()
 	}
 	else
 	{
+		Vec2 toPlayer = p->GetWorldPos() - worldPos;
+		float dist = toPlayer.Length();
 		// 평상시 이동: 유지 거리 밴드 내에서는 멈추고, 너무 가까우면 뒤로, 너무 멀면 앞으로
 		if (p)
 		{
-			Vec2 toPlayer = p->GetWorldPos() - worldPos;
-			float dist = toPlayer.Length();
 			if (dist > 0.0001f)
 			{
 				Vec2 toDir = toPlayer / dist;
@@ -139,7 +142,7 @@ void CEliteWingedMonster::Update()
 		if (chargeCooldown > 0.f) chargeCooldown -= DT;
 
 		// 돌진(유예) 우선, 그 다음 사격
-		if (chargeCooldown <= 0.f)
+		if (chargeCooldown <= 0.f && dist < chargeTriggerRange )
 		{
 			BeginChargePrep();
 			chargeCooldown = chargeInterval; // 다음 돌진까지 대기
@@ -230,7 +233,7 @@ void CEliteWingedMonster::BeginChargePrep()
 
 	// 현재 플레이어 위치 기억
 	//    돌진 시작 시 현재 몬스터 위치 M과 기억 위치 P로부터
-	//    목표점 = M + 2*(P - M) = 2P - M 으로 설정할 것
+	//    목표점 = M + 2*(P - M) = 2P - M 으로 설정
 	chargeTargetPos = p->GetWorldPos(); // 여기서는 '기억한 플레이어 위치'를 임시로 저장
 }
 

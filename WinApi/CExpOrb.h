@@ -25,7 +25,10 @@ private:
 
 private:
     CPlayer* player = nullptr;
-	CImage*  CExpOrb_image = nullptr;
+	CImage*  CExpOrb_image1 = nullptr;
+    CImage*  CExpOrb_image2 = nullptr;
+    CImage*  CExpOrb_image3 = nullptr;
+	CImage*  CurrentImage = nullptr;
     int      value;      // 획득 경험치
     float    attractRadius;
     float    moveSpeed;

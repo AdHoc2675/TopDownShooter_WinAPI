@@ -23,6 +23,8 @@ CMonster::CMonster()
     hitMsgDuration = 0.4f;
     curHitMsgTime = 0.f;
 	droppedExpOrb = false;
+    ExpValue = 15;
+	ExpCount = 1;
 
     hitMsg = L"Hit!";
 }
@@ -153,6 +155,20 @@ void CMonster::DropExpOrb()
 	}
 }
 
+void CMonster::DropExpOrb(int value, int count)
+{
+    if (player == nullptr|| count == 0)
+        return;
+    for (int i = 0 ; i < count; i++)
+    {
+        CExpOrb* expOrb = new CExpOrb();
+        expOrb->SetPos(worldPos);
+        expOrb->SetPlayer(player);
+        expOrb->SetValue(value);
+        EVENT->AddGameObject(GetScene(), expOrb);
+	}
+}
+
 void CMonster::OnCollisionEnter(CCollider* other)
 {
     if (other->GetLayer() == Layer::Missile)
@@ -180,7 +196,7 @@ void CMonster::OnCollisionEnter(CCollider* other)
 
         if (!stats.alive() && !droppedExpOrb)
         {
-            DropExpOrb();
+            DropExpOrb(ExpValue, ExpCount);
             droppedExpOrb = true;
         }
     }

@@ -19,6 +19,11 @@ public:
 protected:
     CCollider* collider = nullptr;
     CAnimator* animator = nullptr;
+	int ExpValue;
+    int ExpCount;
+
+    void DropExpOrb();
+    void DropExpOrb(int value, int count);
 
 private:
     void Init()         override;
@@ -31,8 +36,6 @@ private:
     void OnCollisionEnter(CCollider* other) override;
     void OnCollisionStay(CCollider* other)  override;
     void OnCollisionExit(CCollider* other)  override;
-
-    void DropExpOrb();
 
 private:
     CPlayer*    player = nullptr;

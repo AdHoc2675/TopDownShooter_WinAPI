@@ -34,14 +34,13 @@ private:
 	// 돌진 관련
 	float chargeInterval;          // 돌진 간격(초)
 	float chargeCooldown;          // 남은 돌진 쿨다운
-	float chargePrep;           // 유예 최소(초)
-	float chargePrepMax;           // 유예 최대(초)
+	float chargePrep;			   // 유예 시간
 	float chargePrepTimer;         // 현재 유예 남은 시간
 	bool  chargePreparing;         // 유예 진행 중
 	bool  charging;                // 실제 돌진 중
 	Vec2  chargeTargetPos;         // 유예 시작 시점 플레이어 위치(기억)
-	float chargeOvershootDist;     // 목표 지점 넘어 더 가는 거리
 	float chargeSpeed;             // 돌진 속도
+	float chargeTriggerRange;     // 돌진 트리거 거리
 
 	// 내부 상태
 	Vec2  lastMoveDir;             // 애니메이션 방향 선택에 쓰기 위한 마지막 이동 방향
