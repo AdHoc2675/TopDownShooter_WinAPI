@@ -8,7 +8,7 @@
 CPlayer::CPlayer()
 {
 	name		= TEXT("플레이어");
-	scale		= Vec2(100, 100);
+	scale		= Vec2(50, 50);
 	animator	= nullptr;
 	heartFullImage = nullptr;
 	heartEmptyImage = nullptr;
@@ -73,7 +73,7 @@ void CPlayer::Init()
 
 	// 충돌 컴포넌트 추가
 	CCollider* collider = new CCollider();
-	collider->SetScale(Vec2(70, 70));
+	collider->SetScale(scale);
 	collider->SetLayer(Layer::Player);
 	AddChild(collider);
 

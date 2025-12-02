@@ -1,14 +1,16 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CBossMonster.h"
 #include "CPlayer.h"
 #include "CCombatSystem.h"
+#include "CGame.h"
+#include "CMissile.h" // ì˜¤íƒ€ ìˆ˜ì •: ë’¤ì˜ 'a' ì œê±°
 
 CBossMonster::CBossMonster()
 {
-	name  = TEXT("º¸½º ¸ó½ºÅÍ");
-	scale = Vec2(180.f, 180.f);
+	name  = TEXT("ë³´ìŠ¤ ëª¬ìŠ¤í„°");
+	scale = Vec2(112.f, 112.f);
 
-	// ±âº» ÀüÅõ ¼öÄ¡
+	// ê¸°ë³¸ ì „íˆ¬ ìˆ˜ì¹˜
 	CombatStats& st = GetCombatStats();
 	st.hp             = 2000.f;
 	st.maxHp          = 2000.f;
@@ -16,7 +18,30 @@ CBossMonster::CBossMonster()
 	st.defense        = 0.f;
 	st.critChance     = 0.f;
 	st.critMultiplier = 2.0f;
-	st.speed          = 80.f; // º¸½º´Â ´À¸®°Ô ÀÌµ¿
+	st.speed          = 80.f; // ë³´ìŠ¤ëŠ” ëŠë¦¬ê²Œ ì´ë™
+
+	// ê³µí†µ ë°œì‚¬ íŒŒë¼ë¯¸í„°
+	fireInterval       = 3.0f;  // ë” ìì£¼ ë°œì‚¬í•˜ì—¬ íŒ¨í„´ì´ ë³´ì´ë„ë¡
+	fireCooldown       = 0.f;
+	missileSpeed       = 250.f;
+	missileLife        = 4.0f;
+
+	// íšŒì „ ë§ íŒŒë¼ë¯¸í„°
+	radialBulletCount  = 18;          // 18ë°©í–¥
+	phase              = 0.0f;        // ì‹œì‘ ê°ë„
+	rotationSpeed      = 0.75f;       // ë¼ë””ì•ˆ/ì´ˆ
+
+	// ë‹¤ì¤‘ ë§ íŒŒë¼ë¯¸í„°
+	multiRingCount     = 3;           // ë™ì‹œ ë§ 3ê°œ
+	multiRingSpacing   = 25.f;        // ë§ ê°„ ìŠ¤í° ë°˜ê²½ ì°¨ì´
+	multiRingSpeedScale= 0.20f;       // ê° ë§ ì†ë„ ê°€ì¤‘ì¹˜ ì¦ê°€ë¶„
+
+	// íŒ¨í„´ í˜ì´ì¦ˆ ê´€ë¦¬
+	currentPattern       = FirePattern::RotatingRing;
+	patternSwitchInterval= 8.0f;      // 8ì´ˆë§ˆë‹¤ íŒ¨í„´ êµì²´
+	patternTimer         = patternSwitchInterval;
+
+	chaseRange = 1200.f;
 
 	ExpValue = 1000;
 	ExpCount = 5;
@@ -26,16 +51,16 @@ CBossMonster::~CBossMonster() {}
 
 void CBossMonster::Init()
 {
-	// Äİ¶óÀÌ´õ ¼³Á¤
+	// ì½œë¼ì´ë” ì„¤ì •
 	collider = new CCollider();
-	collider->SetScale(scale);          // º¸½º Å©±â¿¡ ¸ÂÃá È÷Æ®¹Ú½º
-	collider->SetLayer(Layer::Monster); // ¸ó½ºÅÍ ·¹ÀÌ¾î À¯Áö
+	collider->SetScale(scale);          // ë³´ìŠ¤ í¬ê¸°ì— ë§ì¶˜ íˆíŠ¸ë°•ìŠ¤
+	collider->SetLayer(Layer::Monster); // ëª¬ìŠ¤í„° ë ˆì´ì–´ ìœ ì§€
 	AddChild(collider);
 
-#pragma region ¾Ö´Ï¸ŞÀÌ¼Ç ¼³Á¤
+#pragma region ì• ë‹ˆë©”ì´ì…˜ ì„¤ì •
 	animator = new CAnimator();
 
-	// ¿À¸¥ÂÊ ÀÌµ¿: T_EliteWingedMonster0 (112x112 / 6ÇÁ·¹ÀÓ, °¡·Î ¹èÄ¡ °¡Á¤)
+	// ì˜¤ë¥¸ìª½ ì´ë™: T_HasturBoss0 (112x112 / 6í”„ë ˆì„, ê°€ë¡œ ë°°ì¹˜ ê°€ì •)
 	CImage* moveRight = LOADIMAGE(TEXT("T_HasturBoss0"), TEXT("Image\\T_HasturBoss0.bmp"));
 	animator->CreateAnimation(TEXT("MoveRight"), moveRight,
 		0.2f, 6, true,
@@ -43,7 +68,7 @@ void CBossMonster::Init()
 		Vec2(112.f, 112.f),
 		Vec2(112.f, 0.f));
 
-	// ¿ŞÂÊ ÀÌµ¿: T_EliteWingedMonster1 (112x112 / 6ÇÁ·¹ÀÓ, °¡·Î ¹èÄ¡ °¡Á¤)
+	// ì™¼ìª½ ì´ë™: T_HasturBoss1 (112x112 / 6í”„ë ˆì„, ê°€ë¡œ ë°°ì¹˜ ê°€ì •)
 	CImage* moveLeft = LOADIMAGE(TEXT("T_HasturBoss1"), TEXT("Image\\T_HasturBoss1.bmp"));
 	animator->CreateAnimation(TEXT("MoveLeft"), moveLeft,
 		0.2f, 6, true,
@@ -53,48 +78,192 @@ void CBossMonster::Init()
 
 	AddChild(animator);
 	animator->Play(TEXT("MoveRight"), true);
-	animator->SetRatio(1.5f); // 150% È®´ë
+	animator->SetRatio(1.5f); // 150% í™•ëŒ€
 #pragma endregion
 }
 
 void CBossMonster::Update()
 {
-	// °£´ÜÇÑ ÃßÀû ÀÌµ¿ (±âº» Æ²)
+	// ê°„ë‹¨í•œ ì¶”ì  ì´ë™ (ê¸°ë³¸ í‹€)
 	CPlayer* p = GetPlayer();
-
 	CombatStats& st = GetCombatStats();
-	Vec2 dir = p->GetWorldPos() - worldPos;
-	float len = dir.Length();
 
-	if (!p) return;
-
-	if (len > 0.0001f)
+	if (p)
 	{
-		dir /= len;
-		pos += dir * st.speed * DT;
+		Vec2 toPlayer = p->GetWorldPos() - worldPos;
+		float dist = toPlayer.Length();
+		if (dist < chaseRange && dist > 0.0001f)
+		{
+			Vec2 dir = toPlayer / dist;
+			pos += dir * st.speed * DT;
+
+			// ë°©í–¥ì— ë”°ë¥¸ ì• ë‹ˆë©”ì´ì…˜
+			if (animator)
+			{
+				if (dir.x < -0.01f) animator->Play(TEXT("MoveLeft"), false);
+				else                animator->Play(TEXT("MoveRight"), false);
+			}
+		}
 	}
 
-	if (animator)
+	// íŒ¨í„´ í˜ì´ì¦ˆ íƒ€ì´ë¨¸
+	patternTimer -= DT;
+	if (patternTimer <= 0.f)
 	{
-		float ax = dir.x;
-		if (ax < -0.01f) animator->Play(TEXT("MoveLeft"), false);
-		else             animator->Play(TEXT("MoveRight"), false);
+		// íŒ¨í„´ êµì²´
+		currentPattern = (currentPattern == FirePattern::RotatingRing)
+			? FirePattern::MultiRing
+			: FirePattern::RotatingRing;
+		patternTimer = patternSwitchInterval;
 	}
+
+	// ë°œì‚¬ ì¿¨ë‹¤ìš´ ì²˜ë¦¬
+	if (fireCooldown > 0.f) fireCooldown -= DT;
+
+	// íšŒì „ ìœ„ìƒ ëˆ„ì : íšŒì „ ë§ íŒ¨í„´ì˜ ì—°ì†ì„± ìœ ì§€
+	phase += rotationSpeed * DT;
+	if (phase > 2.0f * 3.141592f) phase -= 2.0f * 3.141592f;
+
+	// íŒ¨í„´ì— ë”°ë¼ ë°œì‚¬
+	if (fireCooldown <= 0.f)
+	{
+		if (currentPattern == FirePattern::RotatingRing)
+			TryFireRotatingRing();
+		else
+			TryFireMultiRing();
+
+		fireCooldown = fireInterval;
+	}
+}
+
+void CBossMonster::Render()
+{
+#pragma region ì²´ë ¥ ë°” ë Œë”ë§
+	// ì²´ë ¥ ë°” ë Œë”ë§ (ë¹¨ê°„ ì‚¬ê°í˜•)
+	CombatStats& st = GetCombatStats();
+	float progress = ((float)st.hp / (float)st.maxHp); // 0â†’1
+	float barWidth = CGame::WINSIZE.x * 0.7f;
+	float barHeight = 30.f;
+	float offsetY = scale.y * 0.5f + 70.f; // ë¨¸ë¦¬ ìœ„ ì—¬ë°± ê°„ê²©
+	float barX = CGame::WINSIZE.x * 0.15f;
+	float barY = offsetY;
+
+	// ì²´ë ¥ ë°°ê²½ ë°” ë Œë”ë§ (ê²€ì€ ì‚¬ê°í˜•)
+	RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+	RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
+	RENDER->Rect(barX, barY, barX + barWidth, barY + barHeight);
+
+	// ìµœì†Œ í­ ë³´í˜¸
+	float fillW = barWidth * progress;
+	if (fillW < 2.f && progress > 0.f) fillW = 2.f;
+
+	// ì²´ë ¥ ì§„í–‰ ë°”
+	COLORREF fillColor = RGB(255, 0, 0);
+
+	RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
+	RENDER->SetBrush(BrushType::Solid, fillColor);
+	RENDER->Rect(barX + 1.f, barY + 1.f, barX + fillW - 1.f, barY + barHeight - 1.f);
+
+#pragma endregion
+}
+
+// íšŒì „í•˜ëŠ” ë§(ìŠ¤íŒŒì´ëŸ´): ì´ì „ ìœ„ìƒ(phase)ì„ ê¸°ì¤€ìœ¼ë¡œ ê· ë“± ë¶„í•  + ì•½ê°„ì˜ íšŒì „ì´ ëˆ„ì ë¨
+void CBossMonster::TryFireRotatingRing()
+{
+	const int count = radialBulletCount;
+	if (count <= 0) return;
+
+	const float spawnBase = scale.y * 0.5f + 12.f;
+
+	for (int i = 0; i < count; ++i)
+	{
+		// ê· ë“± ë¶„í•  ê°ë„ + í˜„ì¬ ìœ„ìƒ
+		const float t   = (float)i / (float)count;
+		const float ang = phase + t * 2.0f * 3.141592f;
+
+		Vec2 dir(cosf(ang), sinf(ang));
+		Vec2 spawnPos = worldPos + dir * spawnBase;
+		
+		SpawnMissile(spawnPos, dir);
+	}
+}
+
+// ë‹¤ì¤‘ ë§(ê²¹ ë§): ì„œë¡œ ë‹¤ë¥¸ ë°˜ê²½/ì†ë„ë¥¼ ê°€ì§„ ì—¬ëŸ¬ ë§ì„ ë™ì‹œì— ë°œì‚¬
+void CBossMonster::TryFireMultiRing()
+{
+	const int count = radialBulletCount;
+	if (count <= 0 || multiRingCount <= 0) return;
+
+	const float baseRadius = scale.y * 0.5f + 12.f;
+
+	for (int r = 0; r < multiRingCount; ++r)
+	{
+		const float radius = baseRadius + (float)r * multiRingSpacing;
+		const float speedScale = 1.0f + (float)r * multiRingSpeedScale;
+
+		for (int i = 0; i < count; ++i)
+		{
+			const float t   = (float)i / (float)count;
+			// ë§ë§ˆë‹¤ ì•½ê°„ì˜ ê°ë„ ì˜¤í”„ì…‹ì„ ë‘¬ ê²¹ì¹¨ì„ í”¼í•¨
+			const float ang = phase + t * 2.0f * 3.141592f + (float)r * 0.12f;
+
+			Vec2 dir(cosf(ang), sinf(ang));
+			Vec2 spawnPos = worldPos + dir * radius;
+
+			// ë§ë³„ ì†ë„ ê°€ì¤‘ì¹˜ë¥¼ ë°˜ì˜í•œ ë¯¸ì‚¬ì¼ ìƒì„±
+			CMissile* m = new CMissile();
+			m->SetPos(spawnPos);
+			m->SetDir(dir);
+			m->SetFriendly(false);
+			m->SetMoveSpeed(missileSpeed * speedScale);
+			m->SetLifeTime(missileLife);
+
+			// ê³µê²© ìŠ¤íƒ¯ ì „ë‹¬
+			CombatStats& st = GetCombatStats();
+			CombatStats& ms = m->GetCombatStats();
+			ms.attack         = st.attack;
+			ms.defense        = st.defense;
+			ms.critChance     = st.critChance;
+			ms.critMultiplier = st.critMultiplier;
+
+			EVENT->AddGameObject(GetScene(), m);
+		}
+	}
+}
+
+void CBossMonster::SpawnMissile(const Vec2& spawnPos, const Vec2& dir)
+{
+	CMissile* m = new CMissile();
+	m->SetPos(spawnPos);
+	m->SetDir(dir.Normalized());
+	m->SetFriendly(false);
+	m->SetMoveSpeed(missileSpeed);
+	m->SetLifeTime(missileLife);
+
+	// ê³µê²© ìŠ¤íƒ¯ ì „ë‹¬
+	CombatStats& st = GetCombatStats();
+	CombatStats& ms = m->GetCombatStats();
+	ms.attack = st.attack;
+	ms.defense = st.defense;
+	ms.critChance = st.critChance;
+	ms.critMultiplier = st.critMultiplier;
+
+	EVENT->AddGameObject(GetScene(), m);
 }
 
 void CBossMonster::OnCollisionEnter(CCollider* other)
 {
-	// ¸ó½ºÅÍ-¸ó½ºÅÍ Ãæµ¹¿¡¼­´Â º¸½º°¡ ¹Ğ·Á³ªÁö ¾Êµµ·Ï ¾Æ¹« °Íµµ ÇÏÁö ¾ÊÀ½
+	// ëª¬ìŠ¤í„°-ëª¬ìŠ¤í„° ì¶©ëŒì—ì„œëŠ” ë³´ìŠ¤ê°€ ë°€ë ¤ë‚˜ì§€ ì•Šë„ë¡ ì•„ë¬´ ê²ƒë„ í•˜ì§€ ì•ŠìŒ
 	if (other && other->GetLayer() == Layer::Monster)
 		return;
 
-	// ±× ¿Ü(ÇÃ·¹ÀÌ¾î/Åõ»çÃ¼ µî)´Â ±âº» µ¿ÀÛ À¯Áö
+	// ê·¸ ì™¸(í”Œë ˆì´ì–´/íˆ¬ì‚¬ì²´ ë“±)ëŠ” ê¸°ë³¸ ë™ì‘ ìœ ì§€
 	CMonster::OnCollisionEnter(other);
 }
 
 void CBossMonster::OnCollisionStay(CCollider* other)
 {
-	// ¸ó½ºÅÍ-¸ó½ºÅÍ Ãæµ¹ À¯Áö ½Ã¿¡µµ º¸½º´Â À§Ä¡ º¸Á¤(¹Ğ¸²)À» ÇÏÁö ¾ÊÀ½
+	// ëª¬ìŠ¤í„°-ëª¬ìŠ¤í„° ì¶©ëŒ ìœ ì§€ ì‹œì—ë„ ë³´ìŠ¤ëŠ” ìœ„ì¹˜ ë³´ì •(ë°€ë¦¼)ì„ í•˜ì§€ ì•ŠìŒ
 	if (other && other->GetLayer() == Layer::Monster)
 		return;
 
@@ -103,6 +272,6 @@ void CBossMonster::OnCollisionStay(CCollider* other)
 
 void CBossMonster::OnCollisionExit(CCollider* other)
 {
-	// ±âº» µ¿ÀÛ À¯Áö (»óÅÂ Å¬¸®¾î µî)
+	// ê¸°ë³¸ ë™ì‘ ìœ ì§€ (ìƒíƒœ í´ë¦¬ì–´ ë“±)
 	CMonster::OnCollisionExit(other);
 }

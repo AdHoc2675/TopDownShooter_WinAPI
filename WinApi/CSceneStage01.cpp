@@ -31,16 +31,6 @@ void CSceneStage01::Init()
     //bg->SetTileSize(32, 32);
     //bg->SetMargin(64.f);
 
-    //// 8개 타일 로드 
-    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_0"), TEXT("Image\\T_ForestTile_0.bmp")));
-    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_1"), TEXT("Image\\T_ForestTile_1.bmp")));
-    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_2"), TEXT("Image\\T_ForestTile_2.bmp")));
-    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_3"), TEXT("Image\\T_ForestTile_3.bmp")));
-    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_4"), TEXT("Image\\T_ForestTile_4.bmp")));
-    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_5"), TEXT("Image\\T_ForestTile_5.bmp")));
-    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_6"), TEXT("Image\\T_ForestTile_6.bmp")));
-    //bg->AddTile(LOADIMAGE(TEXT("GroundTile_7"), TEXT("Image\\T_ForestTile_7.bmp")));
-
     //AddGameObject(bg);
 
     player = new CPlayer();
