@@ -35,19 +35,18 @@ CBossMonster::CBossMonster()
 	multiRingSpacing = 30.f; // 링 간 스폰 반경 차이(픽셀)
 	multiRingSpeedScale = 0.25f;  // 각 링마다 속도 가중치
 
+	// 패턴/페이즈
 	currentPattern = FirePattern::RotatingRing;
-	patternSwitchInterval = 9.0f;  // 패턴 교체 간격(초)
-	patternTimer = patternSwitchInterval;  // 초기화
+	bulletPatternDuration = 9.0f;   // 발사 페이즈 유지 시간
+	patternTimer = bulletPatternDuration;
 
 	chaseRange = 1200.f;
 
-	// 촉수 소환 파라미터(요구사항: Init에서 값 설정)
+	// 촉수 소환 파라미터
 	tentaclePreparing = false;
 	tentaclePrepDuration = 1.5f;  // 유예 1.5초
 	tentaclePrepTimer = 0.f;
-	tentacleSummonInterval = 10.0f; // 10초마다 소환
-	tentacleSummonCooldown = 3.0f;  // 시작 약간 지연
-	tentacleCount = 4;     // 소환 개수
+	tentacleCount = 5;     // 소환 개수
 
 	tentacleMinRadius = 140.f; // 플레이어 너무 근접 방지
 	tentacleMaxRadius = 320.f; // 너무 멀리 퍼지지 않도록
@@ -88,7 +87,6 @@ void CBossMonster::Init()
 	AddChild(animator);
 	animator->Play(TEXT("MoveRight"), true);
 	animator->SetRatio(1.5f);
-
 }
 
 void CBossMonster::Update()
@@ -114,50 +112,69 @@ void CBossMonster::Update()
 		}
 	}
 
-	// 패턴 페이즈(회전 링/다중 링 전환)
-	patternTimer -= DT;
-	if (patternTimer <= 0.f)
-	{
-		currentPattern = (currentPattern == FirePattern::RotatingRing)
-			? FirePattern::MultiRing
-			: FirePattern::RotatingRing;
-		patternTimer = patternSwitchInterval;
-	}
-
-	// 발사 쿨다운 및 회전 위상
-	if (fireCooldown > 0.f) fireCooldown -= DT;
+	// 회전 위상은 발사 페이즈에서만 눈에 띄도록 계속 누적
 	phase += rotationSpeed * DT;
 	if (phase > 2.0f * 3.141592f) phase -= 2.0f * 3.141592f;
 
-	// 발사 패턴
-	if (fireCooldown <= 0.f)
+	// 패턴 페이즈 진행
+	patternTimer -= DT;
+
+	switch (currentPattern)
 	{
-		if (currentPattern == FirePattern::RotatingRing)
+	case FirePattern::RotatingRing:
+	{
+		// 발사 페이즈: 발사만 수행
+		if (fireCooldown > 0.f) fireCooldown -= DT;
+		if (fireCooldown <= 0.f)
+		{
 			TryFireRotatingRing();
-		else
+			fireCooldown = fireInterval;
+		}
+
+		if (patternTimer <= 0.f)
+			SwitchToNextPattern();
+	}
+	break;
+
+	case FirePattern::MultiRing:
+	{
+		if (fireCooldown > 0.f) fireCooldown -= DT;
+		if (fireCooldown <= 0.f)
+		{
 			TryFireMultiRing();
+			fireCooldown = fireInterval;
+		}
 
-		fireCooldown = fireInterval;
+		if (patternTimer <= 0.f)
+			SwitchToNextPattern();
 	}
+	break;
 
-	// 촉수 소환 패턴
-	if (tentaclePreparing)
+	case FirePattern::Tentacle:
 	{
-		tentaclePrepTimer -= DT;
-		if (tentaclePrepTimer <= 0.f)
+		// 촉수 페이즈: 유예 표시 후 소환만 수행(발사 안 함)
+		if (!tentaclePreparing)
 		{
-			tentaclePreparing = false;
-			PerformTentacleSummon();
-			tentacleSummonCooldown = tentacleSummonInterval;
+			// 페이즈 진입 직후 1회 설정
+			BeginTentacleSummonPrep();
+			// Tentacle 페이즈의 타이머는 유예 시간과 동일하게 맞춤
+			patternTimer = tentaclePrepDuration;
+		}
+
+		// 유예 진행
+		if (tentaclePreparing)
+		{
+			tentaclePrepTimer -= DT;
+			if (tentaclePrepTimer <= 0.f)
+			{
+				tentaclePreparing = false;
+				PerformTentacleSummon();
+				// 소환 직후 다음 패턴으로 전환
+				SwitchToNextPattern();
+			}
 		}
 	}
-	else
-	{
-		if (tentacleSummonCooldown > 0.f) tentacleSummonCooldown -= DT;
-		if (tentacleSummonCooldown <= 0.f)
-		{
-			TryBeginTentacleSummon();
-		}
+	break;
 	}
 }
 
@@ -190,12 +207,13 @@ void CBossMonster::Render()
 	}
 }
 
+#pragma region 발사 패턴
 void CBossMonster::TryFireRotatingRing()
 {
 	const int count = radialBulletCount;
 	if (count <= 0) return;
 
-	const float spawnDistance = scale.y * 0.5f + 12.f;
+	const float spawnDistance = scale.y * 0.5f + 6.f;
 
 	for (int i = 0; i < count; ++i)
 	{
@@ -214,7 +232,7 @@ void CBossMonster::TryFireMultiRing()
 	const int count = radialBulletCount;
 	if (count <= 0 || multiRingCount <= 0) return;
 
-	const float baseRadius = scale.y * 0.5f + 12.f;
+	const float baseRadius = scale.y * 0.5f;
 
 	for (int r = 0; r < multiRingCount; ++r)
 	{
@@ -266,6 +284,7 @@ void CBossMonster::SpawnMissile(const Vec2& spawnPos, const Vec2& dir)
 
 	EVENT->AddGameObject(GetScene(), m);
 }
+#pragma endregion
 
 #pragma region 촉수 소환 패턴
 
@@ -394,14 +413,34 @@ void CBossMonster::RenderSummonIndicators()
 Vec2 CBossMonster::WorldToScreen(const Vec2& w) const
 {
 	CPlayer* p = GetPlayer();
-	if (!p) return w; // 플레이어 없으면 보정 불가: 그대로 ㅈ용
+	if (!p) return w;
 
-	// 플레이어의 worldPos - renderPos = 카메라 쉬프트(화면이 당겨진 양)
+	// 플레이어의 worldPos - renderPos = 카메라 쉬프트
 	Vec2 camShift = p->GetWorldPos() - p->GetRenderPos();
 	return w - camShift;
 }
-
 #pragma endregion
+
+// 패턴 순환
+void CBossMonster::SwitchToNextPattern()
+{
+	switch (currentPattern)
+	{
+	case FirePattern::RotatingRing:
+		currentPattern = FirePattern::MultiRing;
+		patternTimer = bulletPatternDuration;
+		break;
+	case FirePattern::MultiRing:
+		currentPattern = FirePattern::Tentacle;
+		// Tentacle 페이즈는 Update 내 진입 시점에 BeginTentacleSummonPrep() 수행
+		// patternTimer는 Tentacle 진입 시 유예 시간으로 재설정됨
+		break;
+	case FirePattern::Tentacle:
+		currentPattern = FirePattern::RotatingRing;
+		patternTimer = bulletPatternDuration;
+		break;
+	}
+}
 
 #pragma region 충돌 처리
 
@@ -426,4 +465,4 @@ void CBossMonster::OnCollisionExit(CCollider* other)
 	CMonster::OnCollisionExit(other);
 }
 
-#pragma endregionㅈ
+#pragma endregion

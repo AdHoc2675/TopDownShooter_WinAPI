@@ -18,19 +18,25 @@ private:
 	void OnCollisionStay(CCollider* other) override;
 	void OnCollisionExit(CCollider* other) override;
 
-	// 발사 패턴
+#pragma region 발사 패턴
 	void TryFireRotatingRing();                 // 회전하는 링(스파이럴) 패턴
 	void TryFireMultiRing();                    // 다중 링(겹 링) 패턴
 	void SpawnMissile(const Vec2& spawnPos, const Vec2& dir);
+#pragma endregion
 
-	// 촉수 소환 패턴
-	void TryBeginTentacleSummon();     // 조건 만족 시 유예 시작
+#pragma region 촉수 소환 패턴
+	void TryBeginTentacleSummon();     // Tentacle 페이즈 진입 시 호출
 	void BeginTentacleSummonPrep();    // 유예 상태 진입 및 소환 위치 계획
 	void PerformTentacleSummon();      // 유예 종료 후 실제 소환
 	void PlanTentaclePositions();      // 플레이어 주변 랜덤 배치
 	void RenderSummonIndicators();     // 유예 중 소환 위치 시각화(링)
+#pragma endregion
 
+	// 월드→스크린 변환 (카메라 오프셋 보정)
 	Vec2 WorldToScreen(const Vec2& w) const;
+
+	// 패턴 전이
+	void SwitchToNextPattern();
 
 private:
 	// 공통 발사 파라미터
@@ -53,17 +59,15 @@ private:
 	float chaseRange;          // 추적 범위
 
 	// 패턴 페이즈 관리
-	enum class FirePattern { RotatingRing, MultiRing } ;
+	enum class FirePattern { RotatingRing, MultiRing, Tentacle } ;
 	FirePattern currentPattern;
-	float patternSwitchInterval; // 패턴 교체 간격(초)
-	float patternTimer;
+	float       patternTimer;          // 현 페이즈 잔여 시간(초)
+	float       bulletPatternDuration; // 발사 페이즈 지속시간(초) (Rotating/Multi 공통)
 
-	// 촉수 소환 파라미터(값은 Init에서 설정)
+	// 촉수 소환 파라미터 (Tentacle 페이즈에서만 사용)
 	bool  tentaclePreparing;           // 유예 중 여부
 	float tentaclePrepDuration;        // 유예 총 시간(초)
 	float tentaclePrepTimer;           // 유예 남은 시간
-	float tentacleSummonInterval;      // 소환 쿨다운(초)
-	float tentacleSummonCooldown;      // 소환 남은 쿨다운
 	int   tentacleCount;               // 소환할 촉수 개수
 
 	// 랜덤 배치 반경(도넛 영역) 및 간격
@@ -73,6 +77,5 @@ private:
 	float tentacleMinSeparation;       // 촉수들 간 최소 간격
 
 	std::vector<Vec2> plannedTentaclePos;
-
 };
 
