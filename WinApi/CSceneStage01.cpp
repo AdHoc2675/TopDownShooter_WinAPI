@@ -14,6 +14,7 @@
 #include "CCollisionManager.h"
 #include "CExpOrb.h"
 #include "CTiledBackground.h"
+#include "CBossMonster.h"
 
 CSceneStage01::CSceneStage01()
 {
@@ -104,6 +105,12 @@ void CSceneStage01::Update()
         eliteWingSpawned++;
 		eliteWingSpawnTriggerTime = eliteWingSpawnTriggerTime + 60.f; // 다음 소환 트리거 시간 갱신
     }
+
+    if (bossSpawned == 0 && playTime >= bossSpawnTriggerTime)
+    {
+        SpawnBossMonster();
+        bossSpawned++;
+	}
 
     // 몬스터 지속 스폰
     spawnTimer = spawnTimer - DT;
@@ -248,4 +255,15 @@ void CSceneStage01::SpawnEliteWingedMonster()
     elite->SetPlayer(player);
     EVENT->AddGameObject(this, elite);
     RegisterMonster(elite);
+}
+
+void CSceneStage01::SpawnBossMonster()
+{
+    if (!player) return;
+    Vec2 spawnPos = GetSpawnPosPlayerDistance();
+    auto* boss = new CBossMonster();
+    boss->SetPos(spawnPos);
+    boss->SetPlayer(player);
+    EVENT->AddGameObject(this, boss);
+	RegisterMonster(boss);
 }

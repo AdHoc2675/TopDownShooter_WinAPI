@@ -26,6 +26,10 @@ protected:
     void DropExpOrb(int value, int count);
     bool        droppedExpOrb = false;
 
+    void OnCollisionEnter(CCollider* other) override;
+    void OnCollisionStay(CCollider* other)  override;
+    void OnCollisionExit(CCollider* other)  override;
+
 private:
     void Init()         override;
     void OnEnable()     override;
@@ -33,10 +37,6 @@ private:
     void Render()       override;
     void OnDisable()    override;
     void Release()      override;
-
-    void OnCollisionEnter(CCollider* other) override;
-    void OnCollisionStay(CCollider* other)  override;
-    void OnCollisionExit(CCollider* other)  override;
 
 private:
     CPlayer*    player = nullptr;
