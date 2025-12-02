@@ -28,8 +28,6 @@ void CSceneStage01::Init()
 {
 
     //CTiledBackground* bg = new CTiledBackground();
-    //bg->SetTileSize(32, 32);
-    //bg->SetMargin(64.f);
 
     //AddGameObject(bg);
 

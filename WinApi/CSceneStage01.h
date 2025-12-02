@@ -35,6 +35,7 @@ private:
 private:
     vector<CMonster*> enemies;
     CPlayer* player = nullptr;           // 플레이어 참조
+
     float    spawnInterval = 3.f;        // 기본 스폰 주기(초)
     float    spawnTimer    = 0.f;        // 타이머
 	int      currentMonsterCount = 0;    // 현재 씬 몬스터 수
