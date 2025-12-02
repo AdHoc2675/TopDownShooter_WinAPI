@@ -3,7 +3,8 @@
 #include "CPlayer.h"
 #include "CCombatSystem.h"
 #include "CGame.h"
-#include "CMissile.h" // 오타 수정: 뒤의 'a' 제거
+#include "CMissile.h"
+#include "CTentacleMonster.h"
 
 CBossMonster::CBossMonster()
 {
@@ -18,30 +19,40 @@ CBossMonster::CBossMonster()
 	st.defense        = 0.f;
 	st.critChance     = 0.f;
 	st.critMultiplier = 2.0f;
-	st.speed          = 80.f; // 보스는 느리게 이동
+	st.speed          = 80.f;
 
-	// 공통 발사 파라미터
-	fireInterval       = 3.0f;  // 더 자주 발사하여 패턴이 보이도록
-	fireCooldown       = 0.f;
-	missileSpeed       = 250.f;
-	missileLife        = 4.0f;
+	// 공통 발사/패턴 파라미터
+	fireInterval = 4.0f; // 기본 발사 간격(초)
+	fireCooldown = 0.f;  // 남은 발사 쿨다운
+	missileSpeed = 200.f;  // 탄 속도
+	missileLife = 4.0f; // 탄 생존 시간
 
-	// 회전 링 파라미터
-	radialBulletCount  = 18;          // 18방향
-	phase              = 0.0f;        // 시작 각도
-	rotationSpeed      = 0.75f;       // 라디안/초
+	radialBulletCount = 15; // 링에서 균등 분할할 탄 수(360도)
+	phase = 0.0f;  // 현재 시작 각도(라디안)
+	rotationSpeed = 0.8f;  // 회전 속도(라디안/초) - 매 발사마다 누적
 
-	// 다중 링 파라미터
-	multiRingCount     = 3;           // 동시 링 3개
-	multiRingSpacing   = 25.f;        // 링 간 스폰 반경 차이
-	multiRingSpeedScale= 0.20f;       // 각 링 속도 가중치 증가분
+	multiRingCount = 3; // 동시에 생성할 링 개수
+	multiRingSpacing = 30.f; // 링 간 스폰 반경 차이(픽셀)
+	multiRingSpeedScale = 0.25f;  // 각 링마다 속도 가중치
 
-	// 패턴 페이즈 관리
-	currentPattern       = FirePattern::RotatingRing;
-	patternSwitchInterval= 8.0f;      // 8초마다 패턴 교체
-	patternTimer         = patternSwitchInterval;
+	currentPattern = FirePattern::RotatingRing;
+	patternSwitchInterval = 9.0f;  // 패턴 교체 간격(초)
+	patternTimer = patternSwitchInterval;  // 초기화
 
 	chaseRange = 1200.f;
+
+	// 촉수 소환 파라미터(요구사항: Init에서 값 설정)
+	tentaclePreparing = false;
+	tentaclePrepDuration = 1.5f;  // 유예 1.5초
+	tentaclePrepTimer = 0.f;
+	tentacleSummonInterval = 10.0f; // 10초마다 소환
+	tentacleSummonCooldown = 3.0f;  // 시작 약간 지연
+	tentacleCount = 4;     // 소환 개수
+
+	tentacleMinRadius = 140.f; // 플레이어 너무 근접 방지
+	tentacleMaxRadius = 320.f; // 너무 멀리 퍼지지 않도록
+	tentacleMinPlayerDistance = 120.f; // 안전 여유
+	tentacleMinSeparation = 96.f;  // 촉수 간 최소 간격(콜라이더 직경 수준)
 
 	ExpValue = 1000;
 	ExpCount = 5;
@@ -51,16 +62,15 @@ CBossMonster::~CBossMonster() {}
 
 void CBossMonster::Init()
 {
-	// 콜라이더 설정
+	// 콜라이더
 	collider = new CCollider();
-	collider->SetScale(scale);          // 보스 크기에 맞춘 히트박스
-	collider->SetLayer(Layer::Monster); // 몬스터 레이어 유지
+	collider->SetScale(scale);
+	collider->SetLayer(Layer::Monster);
 	AddChild(collider);
 
-#pragma region 애니메이션 설정
+	// 애니메이션
 	animator = new CAnimator();
 
-	// 오른쪽 이동: T_HasturBoss0 (112x112 / 6프레임, 가로 배치 가정)
 	CImage* moveRight = LOADIMAGE(TEXT("T_HasturBoss0"), TEXT("Image\\T_HasturBoss0.bmp"));
 	animator->CreateAnimation(TEXT("MoveRight"), moveRight,
 		0.2f, 6, true,
@@ -68,7 +78,6 @@ void CBossMonster::Init()
 		Vec2(112.f, 112.f),
 		Vec2(112.f, 0.f));
 
-	// 왼쪽 이동: T_HasturBoss1 (112x112 / 6프레임, 가로 배치 가정)
 	CImage* moveLeft = LOADIMAGE(TEXT("T_HasturBoss1"), TEXT("Image\\T_HasturBoss1.bmp"));
 	animator->CreateAnimation(TEXT("MoveLeft"), moveLeft,
 		0.2f, 6, true,
@@ -78,13 +87,13 @@ void CBossMonster::Init()
 
 	AddChild(animator);
 	animator->Play(TEXT("MoveRight"), true);
-	animator->SetRatio(1.5f); // 150% 확대
-#pragma endregion
+	animator->SetRatio(1.5f);
+
 }
 
 void CBossMonster::Update()
 {
-	// 간단한 추적 이동 (기본 틀)
+	// 추적
 	CPlayer* p = GetPlayer();
 	CombatStats& st = GetCombatStats();
 
@@ -97,7 +106,6 @@ void CBossMonster::Update()
 			Vec2 dir = toPlayer / dist;
 			pos += dir * st.speed * DT;
 
-			// 방향에 따른 애니메이션
 			if (animator)
 			{
 				if (dir.x < -0.01f) animator->Play(TEXT("MoveLeft"), false);
@@ -106,25 +114,22 @@ void CBossMonster::Update()
 		}
 	}
 
-	// 패턴 페이즈 타이머
+	// 패턴 페이즈(회전 링/다중 링 전환)
 	patternTimer -= DT;
 	if (patternTimer <= 0.f)
 	{
-		// 패턴 교체
 		currentPattern = (currentPattern == FirePattern::RotatingRing)
 			? FirePattern::MultiRing
 			: FirePattern::RotatingRing;
 		patternTimer = patternSwitchInterval;
 	}
 
-	// 발사 쿨다운 처리
+	// 발사 쿨다운 및 회전 위상
 	if (fireCooldown > 0.f) fireCooldown -= DT;
-
-	// 회전 위상 누적: 회전 링 패턴의 연속성 유지
 	phase += rotationSpeed * DT;
 	if (phase > 2.0f * 3.141592f) phase -= 2.0f * 3.141592f;
 
-	// 패턴에 따라 발사
+	// 발사 패턴
 	if (fireCooldown <= 0.f)
 	{
 		if (currentPattern == FirePattern::RotatingRing)
@@ -134,61 +139,76 @@ void CBossMonster::Update()
 
 		fireCooldown = fireInterval;
 	}
+
+	// 촉수 소환 패턴
+	if (tentaclePreparing)
+	{
+		tentaclePrepTimer -= DT;
+		if (tentaclePrepTimer <= 0.f)
+		{
+			tentaclePreparing = false;
+			PerformTentacleSummon();
+			tentacleSummonCooldown = tentacleSummonInterval;
+		}
+	}
+	else
+	{
+		if (tentacleSummonCooldown > 0.f) tentacleSummonCooldown -= DT;
+		if (tentacleSummonCooldown <= 0.f)
+		{
+			TryBeginTentacleSummon();
+		}
+	}
 }
 
 void CBossMonster::Render()
 {
-#pragma region 체력 바 렌더링
-	// 체력 바 렌더링 (빨간 사각형)
+	// 체력 바
 	CombatStats& st = GetCombatStats();
-	float progress = ((float)st.hp / (float)st.maxHp); // 0→1
+	float progress = st.maxHp > 0.f ? (st.hp / st.maxHp) : 0.f;
 	float barWidth = CGame::WINSIZE.x * 0.7f;
 	float barHeight = 30.f;
-	float offsetY = scale.y * 0.5f + 70.f; // 머리 위 여백 간격
+	float offsetY = scale.y * 0.5f + 70.f;
 	float barX = CGame::WINSIZE.x * 0.15f;
 	float barY = offsetY;
 
-	// 체력 배경 바 렌더링 (검은 사각형)
 	RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
 	RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
 	RENDER->Rect(barX, barY, barX + barWidth, barY + barHeight);
 
-	// 최소 폭 보호
 	float fillW = barWidth * progress;
 	if (fillW < 2.f && progress > 0.f) fillW = 2.f;
 
-	// 체력 진행 바
-	COLORREF fillColor = RGB(255, 0, 0);
-
 	RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
-	RENDER->SetBrush(BrushType::Solid, fillColor);
+	RENDER->SetBrush(BrushType::Solid, RGB(255, 0, 0));
 	RENDER->Rect(barX + 1.f, barY + 1.f, barX + fillW - 1.f, barY + barHeight - 1.f);
 
-#pragma endregion
+	// 유예 중 소환 인디케이터
+	if (tentaclePreparing)
+	{
+		RenderSummonIndicators();
+	}
 }
 
-// 회전하는 링(스파이럴): 이전 위상(phase)을 기준으로 균등 분할 + 약간의 회전이 누적됨
 void CBossMonster::TryFireRotatingRing()
 {
 	const int count = radialBulletCount;
 	if (count <= 0) return;
 
-	const float spawnBase = scale.y * 0.5f + 12.f;
+	const float spawnDistance = scale.y * 0.5f + 12.f;
 
 	for (int i = 0; i < count; ++i)
 	{
-		// 균등 분할 각도 + 현재 위상
-		const float t   = (float)i / (float)count;
+		const float t = (float)i / (float)count;
 		const float ang = phase + t * 2.0f * 3.141592f;
 
 		Vec2 dir(cosf(ang), sinf(ang));
-		Vec2 spawnPos = worldPos + dir * spawnBase;
-		
+		Vec2 spawnPos = worldPos + dir * spawnDistance;
+
 		SpawnMissile(spawnPos, dir);
 	}
 }
 
-// 다중 링(겹 링): 서로 다른 반경/속도를 가진 여러 링을 동시에 발사
 void CBossMonster::TryFireMultiRing()
 {
 	const int count = radialBulletCount;
@@ -203,14 +223,12 @@ void CBossMonster::TryFireMultiRing()
 
 		for (int i = 0; i < count; ++i)
 		{
-			const float t   = (float)i / (float)count;
-			// 링마다 약간의 각도 오프셋을 둬 겹침을 피함
+			const float t = (float)i / (float)count;
 			const float ang = phase + t * 2.0f * 3.141592f + (float)r * 0.12f;
 
 			Vec2 dir(cosf(ang), sinf(ang));
 			Vec2 spawnPos = worldPos + dir * radius;
 
-			// 링별 속도 가중치를 반영한 미사일 생성
 			CMissile* m = new CMissile();
 			m->SetPos(spawnPos);
 			m->SetDir(dir);
@@ -218,7 +236,6 @@ void CBossMonster::TryFireMultiRing()
 			m->SetMoveSpeed(missileSpeed * speedScale);
 			m->SetLifeTime(missileLife);
 
-			// 공격 스탯 전달
 			CombatStats& st = GetCombatStats();
 			CombatStats& ms = m->GetCombatStats();
 			ms.attack         = st.attack;
@@ -240,7 +257,6 @@ void CBossMonster::SpawnMissile(const Vec2& spawnPos, const Vec2& dir)
 	m->SetMoveSpeed(missileSpeed);
 	m->SetLifeTime(missileLife);
 
-	// 공격 스탯 전달
 	CombatStats& st = GetCombatStats();
 	CombatStats& ms = m->GetCombatStats();
 	ms.attack = st.attack;
@@ -251,19 +267,154 @@ void CBossMonster::SpawnMissile(const Vec2& spawnPos, const Vec2& dir)
 	EVENT->AddGameObject(GetScene(), m);
 }
 
+#pragma region 촉수 소환 패턴
+
+void CBossMonster::TryBeginTentacleSummon()
+{
+	if (!GetPlayer()) return;
+	BeginTentacleSummonPrep();
+}
+
+void CBossMonster::BeginTentacleSummonPrep()
+{
+	tentaclePreparing = true;
+	tentaclePrepTimer = tentaclePrepDuration;
+
+	PlanTentaclePositions();
+
+}
+
+void CBossMonster::PerformTentacleSummon()
+{
+	for (const Vec2& pos : plannedTentaclePos)
+	{
+		CTentacleMonster* t = new CTentacleMonster();
+		t->SetPos(pos);
+		EVENT->AddGameObject(GetScene(), t);
+	}
+
+	plannedTentaclePos.clear();
+
+}
+
+void CBossMonster::PlanTentaclePositions()
+{
+	plannedTentaclePos.clear();
+
+	CPlayer* p = GetPlayer();
+	if (!p) return;
+
+	const Vec2 center = p->GetWorldPos();
+	const int  count  = tentacleCount;
+	if (count <= 0) return;
+
+	const float minR = tentacleMinRadius;
+	const float maxR = tentacleMaxRadius;
+	const float minPlayerDist2 = tentacleMinPlayerDistance * tentacleMinPlayerDistance;
+	const float minSep2 = tentacleMinSeparation * tentacleMinSeparation;
+
+	auto frand = []() -> float { return (float)rand() / (float)RAND_MAX; };
+	auto sampleInAnnulus = [&](float rMin, float rMax) -> Vec2 {
+		// 면적 균등 분포
+		const float rMin2 = rMin * rMin;
+		const float rMax2 = rMax * rMax;
+		const float u = frand();
+		const float ang = frand() * 2.0f * 3.141592f;
+		const float r = sqrtf(u * (rMax2 - rMin2) + rMin2);
+		return Vec2(cosf(ang) * r, sinf(ang) * r);
+	};
+
+	const int maxAttemptsPerTentacle = 24;
+
+	for (int i = 0; i < count; ++i)
+	{
+		Vec2 chosen;
+		bool placed = false;
+
+		Vec2 bestCandidate;
+		float bestMinDist2 = -1.f;
+
+		for (int attempt = 0; attempt < maxAttemptsPerTentacle; ++attempt)
+		{
+			Vec2 offset = sampleInAnnulus(minR, maxR);
+			Vec2 candidate = center + offset;
+
+			// 플레이어와 최소 거리
+			if ((candidate - center).SqrMagnitude() < minPlayerDist2)
+				continue;
+
+			// 기존 배치들과 최소 간격 검사
+			float minDist2 = FLT_MAX;
+			for (const Vec2& prev : plannedTentaclePos)
+			{
+				float d2 = (candidate - prev).SqrMagnitude();
+				if (d2 < minDist2) minDist2 = d2;
+			}
+			if (plannedTentaclePos.empty())
+				minDist2 = FLT_MAX;
+
+			if (minDist2 >= minSep2)
+			{
+				chosen = candidate;
+				placed = true;
+				break;
+			}
+
+			if (minDist2 > bestMinDist2)
+			{
+				bestMinDist2 = minDist2;
+				bestCandidate = candidate;
+			}
+		}
+
+		if (!placed)
+			chosen = bestCandidate;
+
+		plannedTentaclePos.push_back(chosen);
+	}
+}
+
+void CBossMonster::RenderSummonIndicators()
+{
+	const float tPassed = tentaclePrepDuration - tentaclePrepTimer;
+	const float pulse = 1.0f + 0.15f * sinf(tPassed * 6.28318f * 2.0f);
+	RENDER->SetPen(PenType::Solid, RGB(255, 215, 0), 2);
+	RENDER->SetBrush(BrushType::Null, RGB(0, 0, 0));
+
+	const float baseRadius = 36.f; // 촉수 콜라이더 반경 근사(72/2)
+	for (const Vec2& wp : plannedTentaclePos)
+	{
+		// 월드 → 스크린 변환 적용
+		Vec2 sp = WorldToScreen(wp);
+		RENDER->Circle(sp.x, sp.y, baseRadius * pulse);
+	}
+}
+
+// 월드 좌표를 현재 카메라(플레이어 중심) 기준 화면 좌표로 변환
+Vec2 CBossMonster::WorldToScreen(const Vec2& w) const
+{
+	CPlayer* p = GetPlayer();
+	if (!p) return w; // 플레이어 없으면 보정 불가: 그대로 ㅈ용
+
+	// 플레이어의 worldPos - renderPos = 카메라 쉬프트(화면이 당겨진 양)
+	Vec2 camShift = p->GetWorldPos() - p->GetRenderPos();
+	return w - camShift;
+}
+
+#pragma endregion
+
+#pragma region 충돌 처리
+
 void CBossMonster::OnCollisionEnter(CCollider* other)
 {
-	// 몬스터-몬스터 충돌에서는 보스가 밀려나지 않도록 아무 것도 하지 않음
 	if (other && other->GetLayer() == Layer::Monster)
 		return;
 
-	// 그 외(플레이어/투사체 등)는 기본 동작 유지
 	CMonster::OnCollisionEnter(other);
 }
 
 void CBossMonster::OnCollisionStay(CCollider* other)
 {
-	// 몬스터-몬스터 충돌 유지 시에도 보스는 위치 보정(밀림)을 하지 않음
 	if (other && other->GetLayer() == Layer::Monster)
 		return;
 
@@ -272,6 +423,7 @@ void CBossMonster::OnCollisionStay(CCollider* other)
 
 void CBossMonster::OnCollisionExit(CCollider* other)
 {
-	// 기본 동작 유지 (상태 클리어 등)
 	CMonster::OnCollisionExit(other);
 }
+
+#pragma endregionㅈ

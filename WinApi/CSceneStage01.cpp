@@ -150,10 +150,10 @@ void CSceneStage01::SpawnMonster()
 
     Vec2 spawnPos = GetSpawnPosPlayerDistance();
 
-    // 5% 확률로 원거리 몬스터
+    // 7% 확률로 원거리 몬스터
     int r = rand() % 100;
     CMonster* monster = nullptr;
-    if (r < 5)
+    if (r < 7)
     {
         monster = new CRangedMonster();
     }

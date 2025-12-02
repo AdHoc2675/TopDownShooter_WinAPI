@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CMonster.h"
 class CPlayer;
 
@@ -24,25 +24,25 @@ public:
     void UnregisterMonster(CMonster* m);
     CMonster* GetNearestEnemy(const Vec2& from, float maxRange) const;
 
-	float playTime = 0.f;          // ÇÃ·¹ÀÌ ½Ã°£(ÃÊ)
+	float playTime = 0.f;          // í”Œë ˆì´ ì‹œê°„(ì´ˆ)
 
 private:
-    void SpawnMonster();                 // ¸ó½ºÅÍ 1¸¶¸® ½ºÆù
+    void SpawnMonster();                 // ëª¬ìŠ¤í„° 1ë§ˆë¦¬ ìŠ¤í°
     void SpawnEliteWingedMonster();
 	void SpawnBossMonster();
     Vec2 GetSpawnPosPlayerDistance() const;
 
 private:
     vector<CMonster*> enemies;
-    CPlayer* player = nullptr;           // ÇÃ·¹ÀÌ¾î ÂüÁ¶
-    float    spawnInterval = 3.f;        // ±âº» ½ºÆù ÁÖ±â(ÃÊ)
-    float    spawnTimer    = 0.f;        // Å¸ÀÌ¸Ó
-	int      currentMonsterCount = 0;    // ÇöÀç ¾À ¸ó½ºÅÍ ¼ö
-    int      maxMonsters   = 15;         // ¾À ÃÖ´ë ¸ó½ºÅÍ
-    float    offScreenMargin = 80.f;     // È­¸é ¹ÛÀ¸·Î ¾ó¸¶³ª ¶³¾î¶ß¸±Áö
-    int      eliteWingSpawned = 0;              // ¿¤¸®Æ® 1È¸ ¼ÒÈ¯ ¿©ºÎ
-    float    eliteWingSpawnTriggerTime = 60.f;      // ¼ÒÈ¯ Æ®¸®°Å ½Ã°£(ÃÊ)
-	int      bossSpawned = 0;                   // º¸½º ¼ÒÈ¯ ¿©ºÎ
-	float    bossSpawnTriggerTime = 3.f;    // º¸½º ¼ÒÈ¯ Æ®¸®°Å ½Ã°£(ÃÊ)
+    CPlayer* player = nullptr;           // í”Œë ˆì´ì–´ ì°¸ì¡°
+    float    spawnInterval = 3.f;        // ê¸°ë³¸ ìŠ¤í° ì£¼ê¸°(ì´ˆ)
+    float    spawnTimer    = 0.f;        // íƒ€ì´ë¨¸
+	int      currentMonsterCount = 0;    // í˜„ì¬ ì”¬ ëª¬ìŠ¤í„° ìˆ˜
+    int      maxMonsters   = 50;         // ì”¬ ìµœëŒ€ ëª¬ìŠ¤í„°
+    float    offScreenMargin = 80.f;     // í™”ë©´ ë°–ìœ¼ë¡œ ì–¼ë§ˆë‚˜ ë–¨ì–´ëœ¨ë¦´ì§€
+    int      eliteWingSpawned = 0;              // ì—˜ë¦¬íŠ¸ 1íšŒ ì†Œí™˜ ì—¬ë¶€
+    float    eliteWingSpawnTriggerTime = 60.f;      // ì†Œí™˜ íŠ¸ë¦¬ê±° ì‹œê°„(ì´ˆ)
+	int      bossSpawned = 0;                   // ë³´ìŠ¤ ì†Œí™˜ ì—¬ë¶€
+	float    bossSpawnTriggerTime = 3.f;    // ë³´ìŠ¤ ì†Œí™˜ íŠ¸ë¦¬ê±° ì‹œê°„(ì´ˆ)
 };
 
