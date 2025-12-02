@@ -42,6 +42,9 @@ private:
 	float chargeSpeed;             // 돌진 속도
 	float chargeTriggerRange;     // 돌진 트리거 거리
 
+	CSound* chargePrepSound = nullptr;
+	CSound* chargeSound = nullptr;
+
 	// 내부 상태
 	Vec2  lastMoveDir;             // 애니메이션 방향 선택에 쓰기 위한 마지막 이동 방향
 };

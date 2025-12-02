@@ -20,6 +20,9 @@
     <Filter Include="GameObject\MonsterObject">
       <UniqueIdentifier>{65d76e2c-0117-45b0-b39e-483d26d5cad1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\UpgradeObject">
+      <UniqueIdentifier>{c6448680-5e94-4ece-8c8b-4606e6e0fa03}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApi.h">
@@ -55,9 +58,6 @@
     <ClInclude Include="CMissile.h">
       <Filter>GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="CWeapon.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="CCameraController.h">
       <Filter>GameObject</Filter>
     </ClInclude>
@@ -73,9 +73,6 @@
     <ClInclude Include="..\Engine\CIconTextButton.h">
       <Filter>GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="CMissileTurret.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="CTiledBackground.h">
       <Filter>GameObject</Filter>
     </ClInclude>
@@ -88,9 +85,21 @@
     <ClInclude Include="CEliteWingedMonster.h">
       <Filter>GameObject\MonsterObject</Filter>
     </ClInclude>
-    <ClInclude Include="CScythe.h" />
-    <ClInclude Include="CBossMonster.h" />
-    <ClInclude Include="CDamageText.h" />
+    <ClInclude Include="CBossMonster.h">
+      <Filter>GameObject\MonsterObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CMissileTurret.h">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CScythe.h">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CDamageText.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CWeapon.h">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -114,9 +123,6 @@
     <ClCompile Include="CMissile.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="CWeapon.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="CCameraController.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
@@ -132,9 +138,6 @@
     <ClCompile Include="..\Engine\CIconTextButton.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="CMissileTurret.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="CTiledBackground.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
@@ -147,8 +150,18 @@
     <ClCompile Include="CEliteWingedMonster.cpp">
       <Filter>GameObject\MonsterObject</Filter>
     </ClCompile>
-    <ClCompile Include="CScythe.cpp" />
-    <ClCompile Include="CBossMonster.cpp" />
+    <ClCompile Include="CBossMonster.cpp">
+      <Filter>GameObject\MonsterObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CMissileTurret.cpp">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CScythe.cpp">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CWeapon.cpp">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

@@ -24,12 +24,12 @@ CEliteWingedMonster::CEliteWingedMonster()
 	distanceBand = 40.f;  // desired±band 사이에선 정지
 
 	// 발사 파라미터
-	fireInterval = 2.2f;
+	fireInterval = 3.0f;
 	fireCooldown = 0.f;
 	fireBulletCount = 3;
-	fireSpreadDeg = 80.f;
-	missileSpeed = 200.f;
-	missileLife = 3.5f;
+	fireSpreadDeg = 850.f;
+	missileSpeed = 150.f;
+	missileLife = 3.0f;
 
 	// 돌진 파라미터
 	chargeInterval = 8.0f;
@@ -56,6 +56,7 @@ void CEliteWingedMonster::Init()
 	collider->SetLayer(Layer::Monster);
 	AddChild(collider);
 
+#pragma region 애니메이션 설정
 	animator = new CAnimator();
 
 	// 오른쪽 이동: T_EliteWingedMonster0 (96x96 / 5프레임, 가로 배치 가정)
@@ -77,6 +78,11 @@ void CEliteWingedMonster::Init()
 	AddChild(animator);
 	animator->Play(TEXT("MoveRight"), true);
 	animator->SetRatio(1.5f); // 150% 확대
+#pragma endregion
+
+	chargePrepSound = LOADSOUND(TEXT("EliteWinged_ChargePrep"), TEXT("Sound\\EliteWinged_ChargePrep.wav"));
+	chargeSound = LOADSOUND(TEXT("EliteWinged_Charge"), TEXT("Sound\\EliteWinged_Charge.wav"));
+
 }
 
 void CEliteWingedMonster::Update()
@@ -221,13 +227,19 @@ void CEliteWingedMonster::BeginChargePrep()
 	if (!p) return;
 
 	// 회피 준비 시간 1초
-	chargePrepTimer = 1.0f;
+	chargePrepTimer = chargePrep;
 	chargePreparing = true;
 
 	// 현재 플레이어 위치 기억
 	//    돌진 시작 시 현재 몬스터 위치 M과 기억 위치 P로부터
 	//    목표점 = M + 2*(P - M) = 2P - M 으로 설정
 	chargeTargetPos = p->GetWorldPos(); // 여기서는 '기억한 플레이어 위치'를 임시로 저장
+
+	// 사운드 재생
+	if (chargePrepSound)
+	{
+		SOUND->PlayOnce(chargePrepSound);
+	}
 }
 
 void CEliteWingedMonster::ChargeAttack()
@@ -247,6 +259,12 @@ void CEliteWingedMonster::ChargeAttack()
 	chargeTargetPos = target; // 실제 돌진 목표점으로 재설정
 
 	charging = true;
+
+	// 사운드 재생
+	if (chargeSound)
+	{
+		SOUND->PlayOnce(chargeSound);
+	}
 }
 
 void CEliteWingedMonster::UpdateCharge(float dt)
