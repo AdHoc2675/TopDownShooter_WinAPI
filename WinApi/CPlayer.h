@@ -1,17 +1,23 @@
 #pragma once
-#include "CCombatSystem.h"
+#include "CGameObject.h"
+#include "CAnimator.h"
+#include "CSound.h"
+#include <CCombatSystem.h>
 
-struct CombatStats;
-class CAnimator;
-class CImage;
+// 전방 선언
+class CWeapon;
 
 class CPlayer : public CGameObject
 {
 public:
 	CPlayer();
 	virtual ~CPlayer();
+
 	CombatStats& GetCombatStats() { return stats; }
 	void	AddExp(int amount);
+
+	void	SetWeapon(CWeapon* w) { weapon = w; }
+	CWeapon* GetWeapon() const { return weapon; }
 
 private:
 	void	Init()			override;
@@ -39,10 +45,10 @@ private:
 	Vec2		lookDir;
 	bool		isMove;
 
-	// 발소리 관련 (추가)
 	CSound*		footstepSounds[3] = { nullptr, nullptr, nullptr };
-	float       footstepInterval; // 발소리 간격(초)
-	float       footstepTimer;   // 다음 발소리까지 남은 시간
+	float       footstepInterval;
+	float       footstepTimer;
 
+	CWeapon*	weapon = nullptr;
 };
 

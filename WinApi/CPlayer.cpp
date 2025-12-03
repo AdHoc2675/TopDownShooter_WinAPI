@@ -4,6 +4,7 @@
 #include "CCombatSystem.h"
 #include "CUpgradePanel.h"
 #include "CMonster.h"
+#include "CWeapon.h"
 
 CPlayer::CPlayer()
 {
@@ -17,7 +18,7 @@ CPlayer::CPlayer()
 	stats.hp = 5.f;
 	stats.maxHp = 5.f;
 	stats.defense = 0.f;
-	stats.attack = 15.f;
+	stats.attack = 20.f;
 	stats.critChance = 0.f;
 	stats.critMultiplier = 1.5f;
 	hitCooldown = 0.f;
@@ -253,6 +254,17 @@ void CPlayer::Render()
 	// 보기 좋게 반올림
 	auto round1 = [](float v) { return (int)(v + 0.5f); };
 
+	// ATK 표시는 플레이어 stats.attack 대신 현재 무기 damage를 우선 사용
+	int atkShown = round1(stats.attack);
+	int countShown = 1;
+	int spreadShown = 0;
+	if (weapon)
+	{
+		atkShown = (int)(weapon->GetDamage());
+		countShown = weapon->GetProjectileCount();
+		spreadShown = (int)(weapon->GetSpreadAngleDeg());
+	}
+
 	wstring s1 = L"ATK: " + to_wstring(round1(stats.attack)) +
 		L"  DEF: " + to_wstring(round1(stats.defense));
 	wstring s2 = L"CRIT: " + to_wstring((int)(stats.critChance * 100)) + L"%  x" +
@@ -263,6 +275,19 @@ void CPlayer::Render()
 	RENDER->Text(startX, y, s1); y += statSize + 4.f;
 	RENDER->Text(startX, y, s2); y += statSize + 4.f;
 	RENDER->Text(startX, y, s3);
+
+	// 무기 요약 표시 추가
+	const int weaponSize = 16;
+	RENDER->SetText(weaponSize, RGB(40, 40, 40), TextAlign::Left);
+	RENDER->SetTextBackMode(TextBackMode::Null);
+
+	wstring w1 = L"Weapon DMG: " + to_wstring(atkShown);
+	wstring w2 = L"COUNT: " + to_wstring(countShown);
+	wstring w3 = L"SPREAD: " + to_wstring(spreadShown);
+
+	RENDER->Text(startX, y, w1); y += weaponSize + 4.f;
+	RENDER->Text(startX, y, w2); y += weaponSize + 4.f;
+	RENDER->Text(startX, y, w3);
 
 #pragma endregion
 }

@@ -16,6 +16,10 @@ CWeapon::CWeapon()
 	curChamberSize = 6.f; // 현재 남은 탄창 크기
 	reloadTime = 1.f;          // 재장전 시간(초)
 	curReloadTime = 0.f;
+	projectileCount = 10;     // 투사체 수
+	spreadAngleDeg = 5.f;  // 산탄 각도
+	damage = 15.f;  // 무기 대미지 기본값
+
 }
 
 CWeapon::~CWeapon()
@@ -30,6 +34,10 @@ void CWeapon::Init()
 
 void CWeapon::OnEnable()
 {
+	// 플레이어가 연결되어 있다면 장착 무기로 설정하여 UI에 반영되도록 함
+	if (player) {
+		player->SetWeapon(this);
+	}
 }
 
 void CWeapon::Update()
@@ -61,14 +69,18 @@ void CWeapon::Update()
 		return;
 	}
 
-	// 좌클릭으로 단발 사격
+	// 좌클릭으로 사격
 	if (curCooldown <= 0.f && INPUT->ButtonStay(VK_LBUTTON))
 	{
 		if (curChamberSize >= 1.f)
 		{
+			// 탄 소모는 발사체 수와 무관
 			curChamberSize = curChamberSize - 1.f;
 
-			FireToCursor();
+			// 스프레드 발사
+			int count = (projectileCount <= 0) ? 1 : projectileCount;
+			float angle = (spreadAngleDeg < 0.f) ? 0.f : spreadAngleDeg;
+			FireSpreadToCursor(count, angle);
 
 			if (fireSound)
 				SOUND->PlayOnce(fireSound);
@@ -93,10 +105,11 @@ void CWeapon::Update()
 		}
 	}
 
+
 	// 스페이스: 스프레드 사격 (남은 탄 수만큼만 발사)
 	if (curCooldown <= 0.f && INPUT->ButtonStay(VK_SPACE))
 	{
-		const int desired = 5;
+		const int desired = 1;
 		int bullets = (int)curChamberSize;
 		if (bullets > desired) bullets = desired;
 
@@ -141,8 +154,6 @@ void CWeapon::Render()
 		renderPos.y - scale.y * 0.5f,
 		renderPos.x + scale.x * 0.5f,
 		renderPos.y + scale.y * 0.5f);
-
-	//=====//
 	
 	// 남은 탄 수 표시
 	int textSize = 24;
@@ -184,7 +195,6 @@ void CWeapon::Render()
 		RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
 		RENDER->SetBrush(BrushType::Solid, fillColor);
 		RENDER->Rect(barX + 1.f, barY + 1.f, barX + fillW - 1.f, barY + barHeight - 1.f);
-
 	}
 }
 
@@ -219,6 +229,7 @@ void CWeapon::FireSpreadToCursor(int count, float spreadAngleDeg)
 	if (count <= 0)
 		return;
 
+	// 1발이면 중앙으로 발사
 	if (count == 1)
 	{
 		FireToCursor();
@@ -232,19 +243,17 @@ void CWeapon::FireSpreadToCursor(int count, float spreadAngleDeg)
 		baseDir = Vec2(0, -1);
 	baseDir = baseDir.Normalized();
 
-	// 중앙 방향을 기준으로 좌우로 각도 분배
+	// 간격 모드: spreadAngleDeg를 '인접 투사체 간 각도'로 해석
+	float step = spreadAngleDeg; // 인접 간격(도)
 	float half = (count - 1) * 0.5f;
-	float step = (count > 1) ? spreadAngleDeg / (count - 1) : 0.f;
-
 	float spawnDistance = scale.y * 0.5f + 10.f;
 
 	for (int i = 0; i < count; ++i)
 	{
-		float offsetIndex = i - half; // -half ... +half
-		float angleDeg = offsetIndex * step;
+		float offsetIndex = i - half;             // -half ... +half
+		float angleDeg = offsetIndex * step;      // 고정 간격으로 분산
 		float angleRad = angleDeg * 3.141592f / 180.f;
 
-		// 회전 (x,y) -> (x*cos - y*sin, x*sin + y*cos)
 		Vec2 dir;
 		dir.x = baseDir.x * cosf(angleRad) - baseDir.y * sinf(angleRad);
 		dir.y = baseDir.x * sinf(angleRad) + baseDir.y * cosf(angleRad);
@@ -261,10 +270,12 @@ void CWeapon::CreateMissile(const Vec2& spawnPos, const Vec2& dir)
 	missile->SetPos(spawnPos);
 	missile->SetDir(dir);
 
+	// 플레이어의 전투 스탯을 참고하되, 공격력은 무기 damage로 덮어쓰기
 	if (player)
 	{
-		// 이동속도 등 플레이어 비전투 속성은 복사하지 않음
 		missile->InheritCombat(player->GetCombatStats());
+		CombatStats& mstats = missile->GetCombatStats();
+		mstats.attack = damage; // 핵심: 무기 대미지 적용
 	}
 
 	EVENT->AddGameObject(GetScene(), missile);
