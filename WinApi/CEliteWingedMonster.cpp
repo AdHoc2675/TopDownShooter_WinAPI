@@ -11,8 +11,8 @@ CEliteWingedMonster::CEliteWingedMonster()
 
 	// 기본 전투 수치 조정 (GetCombatStats() 통해 설정)
 	CombatStats& st = GetCombatStats();
-	st.hp             = 300.f;
-	st.maxHp          = 300.f;
+	st.hp             = 750.f;
+	st.maxHp          = 750.f;
 	st.attack         = 1.f;
 	st.defense        = 0.f;
 	st.critChance     = 0.0f;

@@ -11,8 +11,8 @@ CRangedMonster::CRangedMonster()
 
     // 기본 전투 수치 조정 (GetCombatStats() 통해 설정)
     CombatStats& st = GetCombatStats();
-    st.hp             = 40.f;
-    st.maxHp          = 40.f;
+    st.hp             = 80.f;
+    st.maxHp          = 80.f;
     st.attack         = 1.f;
     st.defense        = 0.f;
     st.critChance     = 0.00f;

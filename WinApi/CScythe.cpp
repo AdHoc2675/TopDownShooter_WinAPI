@@ -5,6 +5,8 @@
 #include "CCombatSystem.h"
 #include "CCollider.h"
 
+std::vector<CScythe*> CScythe::s_instances;
+
 CScythe::CScythe()
 {
     name        = TEXT("낫 소환수");
@@ -42,7 +44,23 @@ void CScythe::Init()
     scytheImage = LOADIMAGE(TEXT("Scythe"), TEXT("Image\\T_Scythe.bmp"));
 }
 
-void CScythe::OnEnable() {}
+void CScythe::OnEnable() {
+    s_instances.push_back(this);
+}
+
+void CScythe::OnDisable()
+{
+    // 제거
+    auto it = std::find(s_instances.begin(), s_instances.end(), this);
+    if (it != s_instances.end()) s_instances.erase(it);
+}
+
+void CScythe::Release()
+{
+    // 안전 제거(중복 제거 방지)
+    auto it = std::find(s_instances.begin(), s_instances.end(), this);
+    if (it != s_instances.end()) s_instances.erase(it);
+}
 
 void CScythe::Update()
 {
@@ -88,9 +106,6 @@ void CScythe::Render()
             renderPos.y + scale.y * 0.5f);
     }
 }
-
-void CScythe::OnDisable() {}
-void CScythe::Release() {}
 
 void CScythe::OnCollisionEnter(CCollider* other)
 {

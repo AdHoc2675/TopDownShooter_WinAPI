@@ -14,8 +14,8 @@ CMonster::CMonster()
 {
     name  = TEXT("몬스터");
     scale = Vec2(40, 40);
-    stats.hp       = 60.f;
-    stats.maxHp    = 60.f;
+    stats.hp       = 100.f;
+    stats.maxHp    = 100.f;
     stats.defense  = 0.f;
     stats.attack = 1.f;
     stats.critChance = 0.f;

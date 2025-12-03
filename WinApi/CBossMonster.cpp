@@ -13,8 +13,8 @@ CBossMonster::CBossMonster()
 
 	// 기본 전투 수치
 	CombatStats& st = GetCombatStats();
-	st.hp             = 2000.f;
-	st.maxHp          = 2000.f;
+	st.hp             = 5000.f;
+	st.maxHp          = 5000.f;
 	st.attack         = 1.f;
 	st.defense        = 0.f;
 	st.critChance     = 0.f;

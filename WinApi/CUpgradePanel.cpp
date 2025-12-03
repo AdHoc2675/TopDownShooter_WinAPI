@@ -118,6 +118,8 @@ void CUpgradePanel::Configure(CPlayer* p)
 
     };
 
+
+
     // 반복 가능한 옵션
     vector<pair<wstring, UpgradeType>> repeatablePool = {
         { L"공격력 +5",                      UpgradeType::AtkUp },
@@ -126,6 +128,12 @@ void CUpgradePanel::Configure(CPlayer* p)
         { L"이동 속도 +10%",                 UpgradeType::SpdUp },
         { L"치명타 배수 +0.25",              UpgradeType::CritDmgUp },
     };
+
+    // 조건부 옵션: SummonScythe를 이미 보유한 경우에만 추가
+    if (gTakenOneTimeUpgrades.find(UpgradeType::SummonScythe) != gTakenOneTimeUpgrades.end())
+    {
+        oneTimePool.push_back({ L"낫 강화: 회전 속도 2배", UpgradeType::ScytheSpeedUp });
+    }
 
     // 아직 획득하지 않은 반복 불가능 옵션만 추림
     vector<pair<wstring, UpgradeType>> oneTimeCandidates;
@@ -266,6 +274,17 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
             w->ApplyUpgrade_RapidFire_T1();
         break;
 	}
+    case UpgradeType::ScytheSpeedUp:
+    {
+        // 모든 활성 낫에 일괄 적용
+        for (CScythe* scythe : CScythe::GetAll())
+        {
+            if (scythe) scythe->SetAngularSpeed(scythe->GetAngularSpeed() * 2.0f);
+        }
+        // 필요 시 한 번만 선택 가능한 항목으로 처리
+        // gTakenOneTimeUpgrades.insert(UpgradeType::ScytheSpinUp_T1);
+        break;
+    }
     default:
         break;
     }
