@@ -110,12 +110,12 @@ void CUpgradePanel::Configure(CPlayer* p)
 #pragma region 업그레이드 옵션 풀 정의
     // 반복 불가능 옵션
     vector<pair<wstring, UpgradeType>> oneTimePool = {
-        { L"소환수: 원거리 지원",            UpgradeType::SummonRanged },
-		{ L"소환수: 회전 낫",                UpgradeType::SummonScythe },
-        { L"더블샷: 투사체 수 +1, 산탄각 +5, 피해량 -10%",                UpgradeType::WeaponDoubleShot_T1 },
-        { L"빠른 손: 재장전 속도 -20%, 공격 속도 +5%",                UpgradeType::WeaponQuickHands_T1 },
+        { L"꼬마 혼령: 공격력 10의 투사체 발사", UpgradeType::SummonRanged },
+		{ L"회전 낫: 플레이어 주위에서 피해 12를 주는 낫 2체 소환", UpgradeType::SummonScythe },
+        { L"더블샷: 투사체 수 +1, 산탄각 +5, 피해량 -10%", UpgradeType::WeaponDoubleShot_T1 },
+        { L"빠른 손: 재장전 속도 -20%, 공격 속도 +5%", UpgradeType::WeaponQuickHands_T1 },
         { L"속사: 공격 속도 +25%",                UpgradeType::WeaponRapidFire_T1 },
-
+        { L"관통탄: 관통 횟수 +1, 탄환 속도 +15%", UpgradeType::WeaponPenetration}
     };
 
 
@@ -272,6 +272,14 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         CWeapon* w = player->GetWeapon();
         if (w)
             w->ApplyUpgrade_RapidFire_T1();
+        break;
+	}
+    case UpgradeType::WeaponPenetration:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponPenetration);
+        CWeapon* w = player->GetWeapon();
+        if (w)
+            w->ApplyUpgrade_Penetration();
         break;
 	}
     case UpgradeType::ScytheSpeedUp:

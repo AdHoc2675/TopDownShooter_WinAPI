@@ -31,6 +31,12 @@ public:
         if (fireCooldown < 0.01f) fireCooldown = 0.01f;
     }
 
+    void ApplyUpgrade_Penetration()
+    {
+		pierceCount += 1; // 관통 +1
+		missileSpeedMultiplier *= 1.15f; // 탄환 속도 +15%
+    }
+
 #pragma region Set/Get
 	void    SetPlayer(CPlayer* player) { this->player = player; }
 	void    SetFireCooldown(float cooldown) { fireCooldown = (cooldown < 0.f) ? 0.01f : cooldown; }
@@ -71,6 +77,9 @@ protected:
     int     projectileCount;   // 한 번 발사 시 생성할 발사체 수
     float   spreadAngleDeg;    // 부채꼴 총 각도(도)
     float   damage;            // 무기 공격력
+
+    int     pierceCount;           // 미사일 관통 횟수
+    float   missileSpeedMultiplier; // 미사일 이동속도 배율
 
 	CSound* fireSound = nullptr;
 	CSound* reloadSound = nullptr;

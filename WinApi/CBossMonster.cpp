@@ -13,8 +13,8 @@ CBossMonster::CBossMonster()
 
 	// 기본 전투 수치
 	CombatStats& st = GetCombatStats();
-	st.hp             = 5000.f;
-	st.maxHp          = 5000.f;
+	st.hp             = 7000.f;
+	st.maxHp          = 7000.f;
 	st.attack         = 1.f;
 	st.defense        = 0.f;
 	st.critChance     = 0.f;
@@ -44,13 +44,13 @@ CBossMonster::CBossMonster()
 
 	// 촉수 소환 파라미터
 	tentaclePreparing = false;
-	tentaclePrepDuration = 1.5f;  // 유예 1.5초
+	tentaclePrepDuration = 0.75f;  // 유예 시간
 	tentaclePrepTimer = 0.f;
 	tentacleCount = 5;     // 소환 개수
 
-	tentacleMinRadius = 140.f; // 플레이어 너무 근접 방지
-	tentacleMaxRadius = 320.f; // 너무 멀리 퍼지지 않도록
-	tentacleMinPlayerDistance = 120.f; // 안전 여유
+	tentacleMinRadius = 100.f; // 플레이어 너무 근접 방지
+	tentacleMaxRadius = 275.f; // 너무 멀리 퍼지지 않도록
+	tentacleMinPlayerDistance = 100.f; // 안전 여유
 	tentacleMinSeparation = 96.f;  // 촉수 간 최소 간격(콜라이더 직경 수준)
 
 	ExpValue = 1000;
@@ -205,6 +205,14 @@ void CBossMonster::Render()
 	{
 		RenderSummonIndicators();
 	}
+
+	const int statSize = 24;
+
+	// 보스 이름
+	RENDER->SetText(statSize, RGB(255, 100, 100), TextAlign::Center);
+	RENDER->SetTextBackMode(TextBackMode::Null);
+	wstring s = L"Hastur, the Lord of Tentacles";
+	RENDER->Text(CGame::WINSIZE.x * 0.5, barY - statSize, s);
 }
 
 #pragma region 발사 패턴

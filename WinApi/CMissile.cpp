@@ -11,6 +11,7 @@ CMissile::CMissile()
     lifeTime  = 0.75f;
     moveSpeed = 500.f;
     friendly  = true;
+	pierceCount = 0;
 
     stats.attack         = 10.f;
     stats.hp             = 1.f;
@@ -18,6 +19,7 @@ CMissile::CMissile()
     stats.defense        = 0.f;
     stats.critChance     = 0.0f;
     stats.critMultiplier = 1.5f;
+
 }
 
 CMissile::~CMissile() {}
@@ -25,7 +27,7 @@ CMissile::~CMissile() {}
 void CMissile::Init()
 {
     CCollider* collider = new CCollider();
-    collider->SetScale(Vec2(20, 20));
+    collider->SetScale(scale);
     collider->SetLayer(Layer::Missile);
     AddChild(collider);
 }
@@ -61,7 +63,14 @@ void CMissile::OnCollisionEnter(CCollider* other)
     if (friendly)
     {
         if (other->GetLayer() == Layer::Monster) {
-            EVENT->Delete(GetScene(), this);
+            if (pierceCount > 0)
+            {
+                pierceCount--;
+                return;
+            }
+            else {
+                EVENT->Delete(GetScene(), this);
+            }
             return;
         }
     }

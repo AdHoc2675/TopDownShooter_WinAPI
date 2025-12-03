@@ -15,7 +15,9 @@ enum class UpgradeType
 	WeaponDoubleShot_T1,
 	WeaponQuickHands_T1,
 	WeaponRapidFire_T1,
+	WeaponPenetration,
     ScytheSpeedUp,
+
 };
 
 class CUpgradePanel : public CPanel

@@ -19,7 +19,8 @@ CWeapon::CWeapon()
 	projectileCount = 1;     // 투사체 수
 	spreadAngleDeg = 0.f;  // 산탄 각도
 	damage = 15.f;  // 무기 대미지 기본값
-
+	pierceCount = 0; 		 // 미사일 관통 횟수
+	missileSpeedMultiplier = 1.f; // 미사일 이동속도 배율
 }
 
 CWeapon::~CWeapon()
@@ -277,6 +278,9 @@ void CWeapon::CreateMissile(const Vec2& spawnPos, const Vec2& dir)
 		CombatStats& mstats = missile->GetCombatStats();
 		mstats.attack = damage; // 핵심: 무기 대미지 적용
 	}
+
+	missile->SetPierceCount(pierceCount);
+	missile->SetMoveSpeed(500.f * missileSpeedMultiplier);
 
 	EVENT->AddGameObject(GetScene(), missile);
 }
