@@ -12,6 +12,7 @@
 #include "CResourceManager.h"
 #include "CMissileTurret.h"
 #include "CScythe.h"
+#include "CWeapon.h"
 
 using namespace std;
 
@@ -111,12 +112,16 @@ void CUpgradePanel::Configure(CPlayer* p)
     vector<pair<wstring, UpgradeType>> oneTimePool = {
         { L"소환수: 원거리 지원",            UpgradeType::SummonRanged },
 		{ L"소환수: 회전 낫",                UpgradeType::SummonScythe },
+        { L"더블샷: 투사체 수 +1, 산탄각 +5, 피해량 -10%",                UpgradeType::WeaponDoubleShot_T1 },
+        { L"빠른 손: 재장전 속도 -20%, 공격 속도 +5%",                UpgradeType::WeaponQuickHands_T1 },
+        { L"속사: 공격 속도 +25%",                UpgradeType::WeaponRapidFire_T1 },
+
     };
 
     // 반복 가능한 옵션
     vector<pair<wstring, UpgradeType>> repeatablePool = {
         { L"공격력 +5",                      UpgradeType::AtkUp },
-        { L"최대 체력 +2 및 즉시 +2 회복",   UpgradeType::MaxHpUpHeal },
+        { L"최대 체력 +2 및 즉시 +2 회복",    UpgradeType::MaxHpUpHeal },
         { L"치명타 확률 +10%",               UpgradeType::CritChanceUp },
         { L"이동 속도 +10%",                 UpgradeType::SpdUp },
         { L"치명타 배수 +0.25",              UpgradeType::CritDmgUp },
@@ -235,6 +240,30 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         s2->SetInitialAngle(3.141592f); // 반대편
         EVENT->AddGameObject(GetScene(), s1);
         EVENT->AddGameObject(GetScene(), s2);
+        break;
+	}
+    case UpgradeType::WeaponDoubleShot_T1:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponDoubleShot_T1);
+        CWeapon* w = player->GetWeapon();
+        if (w)
+            w->ApplyUpgrade_DoubleShot_T1();
+        break;
+	}
+    case UpgradeType::WeaponQuickHands_T1:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponQuickHands_T1);
+        CWeapon* w = player->GetWeapon();
+        if (w)
+            w->ApplyUpgrade_QuickHands_T1();
+        break;
+    }
+    case UpgradeType::WeaponRapidFire_T1:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponRapidFire_T1);
+        CWeapon* w = player->GetWeapon();
+        if (w)
+            w->ApplyUpgrade_RapidFire_T1();
         break;
 	}
     default:

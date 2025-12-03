@@ -27,7 +27,7 @@ public:
 	float playTime = 0.f;          // 플레이 시간(초)
 
 private:
-    void SpawnMonster();                 // 몬스터 1마리 스폰
+    void SpawnMonster();
     void SpawnEliteWingedMonster();
 	void SpawnBossMonster();
     Vec2 GetSpawnPosPlayerDistance() const;
@@ -42,8 +42,8 @@ private:
     int      maxMonsters   = 50;         // 씬 최대 몬스터
     float    offScreenMargin = 80.f;     // 화면 밖으로 얼마나 떨어뜨릴지
     int      eliteWingSpawned = 0;              // 엘리트 1회 소환 여부
-    float    eliteWingSpawnTriggerTime = 60.f;      // 소환 트리거 시간(초)
+    float    eliteWingSpawnTriggerTime = 60.f;  // 소환 트리거 시간(초)
 	int      bossSpawned = 0;                   // 보스 소환 여부
-	float    bossSpawnTriggerTime = 3.f;    // 보스 소환 트리거 시간(초)
+	float    bossSpawnTriggerTime = 3.f;        // 보스 소환 트리거 시간(초)
 };
 

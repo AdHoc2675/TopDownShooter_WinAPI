@@ -27,9 +27,9 @@ CBossMonster::CBossMonster()
 	missileSpeed = 200.f;  // 탄 속도
 	missileLife = 4.0f; // 탄 생존 시간
 
-	radialBulletCount = 15; // 링에서 균등 분할할 탄 수(360도)
+	radialBulletCount = 12; // 링에서 균등 분할할 탄 수(360도)
 	phase = 0.0f;  // 현재 시작 각도(라디안)
-	rotationSpeed = 0.8f;  // 회전 속도(라디안/초) - 매 발사마다 누적
+	rotationSpeed = 1.5f;  // 회전 속도(라디안/초) - 매 발사마다 누적
 
 	multiRingCount = 3; // 동시에 생성할 링 개수
 	multiRingSpacing = 30.f; // 링 간 스폰 반경 차이(픽셀)
@@ -54,7 +54,7 @@ CBossMonster::CBossMonster()
 	tentacleMinSeparation = 96.f;  // 촉수 간 최소 간격(콜라이더 직경 수준)
 
 	ExpValue = 1000;
-	ExpCount = 5;
+	ExpCount = 1;
 }
 
 CBossMonster::~CBossMonster() {}

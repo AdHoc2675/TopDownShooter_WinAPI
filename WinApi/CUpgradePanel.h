@@ -11,7 +11,10 @@ enum class UpgradeType
     SpdUp,
     CritDmgUp,
     SummonRanged,
-    SummonScythe
+    SummonScythe,
+	WeaponDoubleShot_T1,
+	WeaponQuickHands_T1,
+	WeaponRapidFire_T1,
 };
 
 class CUpgradePanel : public CPanel

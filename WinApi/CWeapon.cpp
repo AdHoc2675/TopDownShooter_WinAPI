@@ -16,8 +16,8 @@ CWeapon::CWeapon()
 	curChamberSize = 6.f; // 현재 남은 탄창 크기
 	reloadTime = 1.f;          // 재장전 시간(초)
 	curReloadTime = 0.f;
-	projectileCount = 10;     // 투사체 수
-	spreadAngleDeg = 5.f;  // 산탄 각도
+	projectileCount = 1;     // 투사체 수
+	spreadAngleDeg = 0.f;  // 산탄 각도
 	damage = 15.f;  // 무기 대미지 기본값
 
 }
@@ -248,7 +248,7 @@ void CWeapon::FireSpreadToCursor(int count, float spreadAngleDeg)
 	float half = (count - 1) * 0.5f;
 	float spawnDistance = scale.y * 0.5f + 10.f;
 
-	for (int i = 0; i < count; ++i)
+	for (int i = 0; i < count; i++)
 	{
 		float offsetIndex = i - half;             // -half ... +half
 		float angleDeg = offsetIndex * step;      // 고정 간격으로 분산
