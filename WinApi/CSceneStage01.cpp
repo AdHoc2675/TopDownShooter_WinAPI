@@ -15,6 +15,7 @@
 #include "CExpOrb.h"
 #include "CTiledBackground.h"
 #include "CBossMonster.h"
+#include "CShotgunWeapon.h"
 
 CSceneStage01::CSceneStage01()
 {
@@ -47,7 +48,7 @@ void CSceneStage01::Init()
     addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
     addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
 
-    CWeapon* weapon = new CWeapon();
+    CShotgunWeapon* weapon = new CShotgunWeapon();
     player->AddChild(weapon);
     weapon->SetPlayer(player);
 

@@ -172,6 +172,7 @@
     <ClInclude Include="CSceneStage01.h" />
     <ClInclude Include="CSceneTitle.h" />
     <ClInclude Include="CScythe.h" />
+    <ClInclude Include="CShotgunWeapon.h" />
     <ClInclude Include="CSoundController.h" />
     <ClInclude Include="CMissileTurret.h" />
     <ClInclude Include="CTentacleMonster.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="CSceneStage01.cpp" />
     <ClCompile Include="CSceneTitle.cpp" />
     <ClCompile Include="CScythe.cpp" />
+    <ClCompile Include="CShotgunWeapon.cpp" />
     <ClCompile Include="CSoundController.cpp" />
     <ClCompile Include="CMissileTurret.cpp" />
     <ClCompile Include="CTentacleMonster.cpp" />
