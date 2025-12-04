@@ -26,6 +26,8 @@ CRangedMonster::CRangedMonster()
 
     ExpValue = 20;
     ExpCount = 1;
+
+    
 }
 
 

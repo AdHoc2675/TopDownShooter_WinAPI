@@ -105,7 +105,7 @@ void CTiledBackground::Render()
 {
     // 기본 단색 배경
     RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
-    RENDER->SetBrush(BrushType::Solid, RGB(39, 32, 48));
+    RENDER->SetBrush(BrushType::Solid, RGB(7, 4, 9));
     RENDER->Rect(0, 0, CGame::WINSIZE.x, CGame::WINSIZE.y);
 
     // 고정 월드 요소 렌더 (뷰포트 컬링 + 카메라 변환)
@@ -118,15 +118,15 @@ void CTiledBackground::Render()
     if (player)
     {
         Vec2 center = CAMERA->WorldToScreenPoint(player->GetWorldPos());
-        const float screenW = screenSize.x;
-        const float screenH = screenSize.y;
+        const float screenW = screenSize.x * 0.5;
+        const float screenH = screenSize.y * 0.5;
         const float maxRadius = sqrtf(screenW * screenW + screenH * screenH) * 0.65f;
 
         const COLORREF centerLight = RGB(45, 42, 52);  // 더 밝게
         const COLORREF edgeDark    = RGB(7, 4, 9);  // 더 어둡게 (가장자리)
 
         // 밴드 수에 따라 부드러운 정도 조절, 이징 적용으로 부드러운 전환
-        const int bands = 50;
+        const int bands = 35;
 
         auto smoothstep = [](float x) {
             // 3차 스무스스텝: 3x^2 - 2x^3

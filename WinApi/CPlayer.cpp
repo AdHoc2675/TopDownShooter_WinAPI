@@ -9,7 +9,7 @@
 CPlayer::CPlayer()
 {
 	name		= TEXT("플레이어");
-	scale		= Vec2(50, 50);
+	scale		= Vec2(30, 50);
 	animator	= nullptr;
 	heartFullImage = nullptr;
 	heartEmptyImage = nullptr;
@@ -25,7 +25,7 @@ CPlayer::CPlayer()
 
 	level		= 1;
 	exp			= 0;
-	maxExp		= 100;
+	maxExp		= 50;
 	moveDir		= Vec2(0, 0);
 	lookDir		= Vec2(0, -1);
 	isMove		= false;
@@ -46,30 +46,38 @@ void CPlayer::Init()
 	heartEmptyImage = LOADIMAGE(TEXT("HeartEmpty"), TEXT("Image\\CPlayer_hpEmpty.bmp"));
 	heartFullImage = LOADIMAGE(TEXT("HeartFull"), TEXT("Image\\CPlayer_hpFull.bmp"));
 
-
-	CImage* idleImage = LOADIMAGE(TEXT("PlayerIdle"), TEXT("Image\\PlayerIdle.bmp"));
-	CImage* moveImage = LOADIMAGE(TEXT("PlayerMove"), TEXT("Image\\PlayerMove.bmp"));
+	CImage* rightImage = LOADIMAGE(TEXT("PlayerMoveRight"), TEXT("Image\\T_Shana0.bmp"));
+	CImage* leftImage  = LOADIMAGE(TEXT("PlayerMoveLeft"),  TEXT("Image\\T_Shana1.bmp"));
 
 	animator = new CAnimator();
 
-	animator->CreateAnimation(TEXT("IdleUp"),			idleImage, 0.1f, 7, true, Vec2(0.f,   0.f), Vec2(80.f, 70.f), Vec2(80.f, 0.f));
-	animator->CreateAnimation(TEXT("IdleRightUp"),		idleImage, 0.1f, 7, true, Vec2(0.f,  70.f), Vec2(80.f, 70.f), Vec2(80.f, 0.f));
-	animator->CreateAnimation(TEXT("IdleRight"),		idleImage, 0.1f, 7, true, Vec2(0.f, 140.f), Vec2(80.f, 70.f), Vec2(80.f, 0.f));
-	animator->CreateAnimation(TEXT("IdleRightDown"),	idleImage, 0.1f, 7, true, Vec2(0.f, 210.f), Vec2(80.f, 70.f), Vec2(80.f, 0.f));
-	animator->CreateAnimation(TEXT("IdleDown"),			idleImage, 0.1f, 7, true, Vec2(0.f, 280.f), Vec2(80.f, 70.f), Vec2(80.f, 0.f));
-	animator->CreateAnimation(TEXT("IdleLeftDown"),		idleImage, 0.1f, 7, true, Vec2(0.f, 350.f), Vec2(80.f, 70.f), Vec2(80.f, 0.f));
-	animator->CreateAnimation(TEXT("IdleLeft"),			idleImage, 0.1f, 7, true, Vec2(0.f, 420.f), Vec2(80.f, 70.f), Vec2(80.f, 0.f));
-	animator->CreateAnimation(TEXT("IdleLeftUp"),		idleImage, 0.1f, 7, true, Vec2(0.f, 490.f), Vec2(80.f, 70.f), Vec2(80.f, 0.f));
+	// IdleRight / IdleLeft (7프레임, 가로 배치 가정)
+	animator->CreateAnimation(TEXT("IdleRight"), rightImage,
+		0.1f, 6, true,
+		Vec2(0.f, 0.f),       // 첫 프레임 시작 위치
+		Vec2(32.f, 32.f),     // 프레임 크기
+		Vec2(32.f, 0.f));     // 프레임 간 이동(가로)
 
-	animator->CreateAnimation(TEXT("MoveUp"),			moveImage, 0.05f, 16, true, Vec2(0.f,   0.f), Vec2(80.f, 75.f), Vec2(84.f, 0.f));
-	animator->CreateAnimation(TEXT("MoveRightUp"),		moveImage, 0.05f, 16, true, Vec2(0.f,  79.f), Vec2(80.f, 75.f), Vec2(84.f, 0.f));
-	animator->CreateAnimation(TEXT("MoveRight"),		moveImage, 0.05f, 16, true, Vec2(0.f, 158.f), Vec2(80.f, 75.f), Vec2(84.f, 0.f));
-	animator->CreateAnimation(TEXT("MoveRightDown"),	moveImage, 0.05f, 16, true, Vec2(0.f, 237.f), Vec2(80.f, 75.f), Vec2(84.f, 0.f));
-	animator->CreateAnimation(TEXT("MoveDown"),			moveImage, 0.05f, 16, true, Vec2(0.f, 316.f), Vec2(80.f, 75.f), Vec2(84.f, 0.f));
-	animator->CreateAnimation(TEXT("MoveLeftDown"),		moveImage, 0.05f, 16, true, Vec2(0.f, 395.f), Vec2(80.f, 75.f), Vec2(84.f, 0.f));
-	animator->CreateAnimation(TEXT("MoveLeft"),			moveImage, 0.05f, 16, true, Vec2(0.f, 474.f), Vec2(80.f, 75.f), Vec2(84.f, 0.f));
-	animator->CreateAnimation(TEXT("MoveLeftUp"),		moveImage, 0.05f, 16, true, Vec2(0.f, 553.f), Vec2(80.f, 75.f), Vec2(84.f, 0.f));
+	animator->CreateAnimation(TEXT("IdleLeft"), leftImage,
+		0.1f, 6, true,
+		Vec2(128.f, 0.f),
+		Vec2(32.f, 32.f),
+		Vec2(32.f, 0.f));
 
+	// MoveRight / MoveLeft (16프레임, 가로 배치 가정)
+	animator->CreateAnimation(TEXT("MoveRight"), rightImage,
+		0.1f, 4, true,
+		Vec2(0.f, 32.f),
+		Vec2(32.f, 32.f),
+		Vec2(32.f, 0.f));
+
+	animator->CreateAnimation(TEXT("MoveLeft"), leftImage,
+		0.1f, 4, true,
+		Vec2(192.f, 32.f),
+		Vec2(32.f, 32.f),
+		Vec2(32.f, 0.f));
+
+	animator->SetRatio(2.0f);
 	AddChild(animator);
 
 	// 충돌 컴포넌트 추가
@@ -318,21 +326,22 @@ void CPlayer::AddExp(int amount)
 
 void CPlayer::AnimatorUpdate()
 {
+	// 이동 중이면 현재 이동 방향을 기준으로 바라보는 방향 업데이트
 	if (moveDir.Length() > 0)
 		lookDir = moveDir;
 
-	wstring str = TEXT("");
+	// 애니메이션 베이스(Idle/Move)
+	wstring base = isMove ? TEXT("Move") : TEXT("Idle");
 
-	if (isMove)	str += TEXT("Move");
-	else			str += TEXT("Idle");
+	// 좌우 판단: x가 0이면 직전 바라보기를 유지
+	wstring dir = TEXT("");
+	if (lookDir.x > 0)      dir = TEXT("Right");
+	else if (lookDir.x < 0) dir = TEXT("Left");
+	else                    dir = TEXT("Right"); // 기본값: Right
 
-	if (lookDir.x > 0) str += TEXT("Right");
-	else if (lookDir.x < 0) str += TEXT("Left");
-
-	if (lookDir.y > 0) str += TEXT("Up");
-	else if (lookDir.y < 0) str += TEXT("Down");
-
-	animator->Play(str, false);
+	// 최종 애니메이션 키
+	wstring key = base + dir;
+	animator->Play(key, false);
 }
 
 void CPlayer::OnCollisionEnter(CCollider* other)
