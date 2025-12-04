@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 
 class CAnimation;
 class CImage;
 
-class CAnimator : public Component<CGameObject>
+class CAnimator : public Component<CGameObject>, public IRender
 {
 public:
 	CAnimator();
@@ -21,6 +21,9 @@ public:
 
 	float			GetRatio()				{ return ratio; }
 	void			SetRatio(float ratio)	{ this->ratio = ratio; }
+
+	// IRender 인터페이스 구현
+	void			Render() override;
 
 private:
 	void			ComponentInit()			override;

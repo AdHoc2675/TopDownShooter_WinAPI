@@ -24,16 +24,16 @@ CBossMonster::CBossMonster()
 	// 공통 발사/패턴 파라미터
 	fireInterval = 4.0f; // 기본 발사 간격(초)
 	fireCooldown = 0.f;  // 남은 발사 쿨다운
-	missileSpeed = 200.f;  // 탄 속도
-	missileLife = 4.0f; // 탄 생존 시간
+	missileSpeed = 170.f;  // 탄 속도
+	missileLife = 6.0f; // 탄 생존 시간
 
 	radialBulletCount = 12; // 링에서 균등 분할할 탄 수(360도)
 	phase = 0.0f;  // 현재 시작 각도(라디안)
 	rotationSpeed = 1.5f;  // 회전 속도(라디안/초) - 매 발사마다 누적
 
 	multiRingCount = 4; // 동시에 생성할 링 개수
-	multiRingSpacing = 5.f; // 링 간 스폰 반경 차이(픽셀)
-	multiRingSpeedScale = 0.125f;  // 각 링마다 속도 가중치
+	multiRingSpacing = 3.f; // 링 간 스폰 반경 차이(픽셀)
+	multiRingSpeedScale = 0.1f;  // 각 링마다 속도 가중치
 
 	// 패턴/페이즈
 	currentPattern = FirePattern::RotatingRing;

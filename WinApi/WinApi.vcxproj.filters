@@ -100,7 +100,9 @@
     <ClInclude Include="CWeapon.h">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClInclude>
-    <ClInclude Include="CTentacleMonster.h" />
+    <ClInclude Include="CTentacleMonster.h">
+      <Filter>GameObject\MonsterObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -163,7 +165,9 @@
     <ClCompile Include="CWeapon.cpp">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClCompile>
-    <ClCompile Include="CTentacleMonster.cpp" />
+    <ClCompile Include="CTentacleMonster.cpp">
+      <Filter>GameObject\MonsterObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

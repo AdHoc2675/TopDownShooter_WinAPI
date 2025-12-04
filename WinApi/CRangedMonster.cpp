@@ -21,7 +21,7 @@ CRangedMonster::CRangedMonster()
 
     fireInterval  = 1.8f;
     fireCooldown  = 0.f;
-    missileSpeed  = 220.f;       // 느린 투사체
+    missileSpeed  = 100.f;       // 느린 투사체
     attackRange   = 650.f;       // 사거리
 
     ExpValue = 20;
