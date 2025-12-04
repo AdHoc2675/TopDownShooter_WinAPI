@@ -1,7 +1,13 @@
 #pragma once
 #include "CGameObject.h"
 
-class CPlayer;
+struct BgElem
+{
+    enum Type { Rock, Bush, Pebble } type;
+    Vec2 worldPos;
+    float size;
+    COLORREF color;
+};
 
 class CTiledBackground : public CGameObject
 {
@@ -16,12 +22,8 @@ private:
     void Render() override;
     void OnDisable() override {}
     void Release() override {}
-    CPlayer* GetPlayer() const { return player; }
 
 private:
-    // 배경 타일 이미지
-    CImage* tileImg;
-
-private:
-    CPlayer* player = nullptr;
+    CImage* tileImg = nullptr;
+    std::vector<BgElem> elems; // 고정 월드 좌표 요소
 };
