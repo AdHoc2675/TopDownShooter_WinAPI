@@ -31,9 +31,9 @@ CBossMonster::CBossMonster()
 	phase = 0.0f;  // 현재 시작 각도(라디안)
 	rotationSpeed = 1.5f;  // 회전 속도(라디안/초) - 매 발사마다 누적
 
-	multiRingCount = 3; // 동시에 생성할 링 개수
-	multiRingSpacing = 30.f; // 링 간 스폰 반경 차이(픽셀)
-	multiRingSpeedScale = 0.25f;  // 각 링마다 속도 가중치
+	multiRingCount = 4; // 동시에 생성할 링 개수
+	multiRingSpacing = 5.f; // 링 간 스폰 반경 차이(픽셀)
+	multiRingSpeedScale = 0.125f;  // 각 링마다 속도 가중치
 
 	// 패턴/페이즈
 	currentPattern = FirePattern::RotatingRing;

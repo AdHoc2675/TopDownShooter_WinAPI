@@ -112,21 +112,21 @@ void CUpgradePanel::Configure(CPlayer* p)
     vector<pair<wstring, UpgradeType>> oneTimePool = {
         { L"꼬마 혼령: 공격력 10의 투사체 발사", UpgradeType::SummonRanged },
 		{ L"회전 낫: 플레이어 주위에서 피해 12를 주는 낫 2체 소환", UpgradeType::SummonScythe },
-        { L"더블샷: 투사체 수 +1, 산탄각 +5, 피해량 -10%", UpgradeType::WeaponDoubleShot_T1 },
+        { L"더블샷: 투사체 수 +1, 산탄각 +30%, 피해량 -10%", UpgradeType::WeaponDoubleShot_T1 },
         { L"빠른 손: 재장전 속도 -20%, 공격 속도 +5%", UpgradeType::WeaponQuickHands_T1 },
         { L"속사: 공격 속도 +25%",                UpgradeType::WeaponRapidFire_T1 },
-        { L"관통탄: 관통 횟수 +1, 탄환 속도 +15%", UpgradeType::WeaponPenetration}
+        { L"관통탄: 관통 횟수 +1, 탄환 속도 +15%", UpgradeType::WeaponPenetration},
+        
+        
     };
-
-
 
     // 반복 가능한 옵션
     vector<pair<wstring, UpgradeType>> repeatablePool = {
-        { L"공격력 +5",                      UpgradeType::AtkUp },
+        { L"공격력 +10%",                      UpgradeType::AtkUp },
         { L"최대 체력 +2 및 즉시 +2 회복",    UpgradeType::MaxHpUpHeal },
-        { L"치명타 확률 +10%",               UpgradeType::CritChanceUp },
-        { L"이동 속도 +10%",                 UpgradeType::SpdUp },
-        { L"치명타 배수 +0.25",              UpgradeType::CritDmgUp },
+        { L"치명타 확률 +5%",               UpgradeType::CritChanceUp },
+        { L"이동 속도 +5%",                 UpgradeType::SpdUp },
+        { L"치명타 피해 배율 +0.1",              UpgradeType::CritDmgUp },
     };
 
     // 조건부 옵션: SummonScythe를 이미 보유한 경우에만 추가
@@ -134,6 +134,11 @@ void CUpgradePanel::Configure(CPlayer* p)
     {
         oneTimePool.push_back({ L"낫 강화: 회전 속도 2배", UpgradeType::ScytheSpeedUp });
     }
+
+    if (gTakenOneTimeUpgrades.find(UpgradeType::WeaponPenetration) != gTakenOneTimeUpgrades.end())
+    {
+        oneTimePool.push_back({ L"대전차탄: 피해량 + 25%, 관통 횟수 +2, 탄환 속도 -15%, 탄창 크기 -25%", UpgradeType::WeaponArmourPiercing });
+	}
 
     // 아직 획득하지 않은 반복 불가능 옵션만 추림
     vector<pair<wstring, UpgradeType>> oneTimeCandidates;
@@ -203,20 +208,20 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
     switch (type)
     {
     case UpgradeType::AtkUp:
-        s.attack += 5.f;
+        s.attack *= 1.1f;
         break;
     case UpgradeType::MaxHpUpHeal:
         s.maxHp += 2.f;
         s.hp = min(s.hp + 2.f, s.maxHp);
         break;
     case UpgradeType::CritChanceUp:
-        s.critChance = min(1.f, s.critChance + 0.10f);
+        s.critChance = min(1.f, s.critChance + 0.05f);
         break;
     case UpgradeType::SpdUp:
-        s.speed = s.speed * 1.1f;
+        s.speed = s.speed * 1.05f;
         break;
     case UpgradeType::CritDmgUp:
-        s.critMultiplier += 0.25f;
+        s.critMultiplier += 0.1f;
         break;
     case UpgradeType::SummonRanged:
     {
@@ -282,6 +287,14 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
             w->ApplyUpgrade_Penetration();
         break;
 	}
+    case UpgradeType::WeaponArmourPiercing:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponPenetration);
+        CWeapon* w = player->GetWeapon();
+        if (w)
+            w->ApplyUpgrade_ArmourPiercing();
+        break;
+	}
     case UpgradeType::ScytheSpeedUp:
     {
         // 모든 활성 낫에 일괄 적용
@@ -289,8 +302,7 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         {
             if (scythe) scythe->SetAngularSpeed(scythe->GetAngularSpeed() * 2.0f);
         }
-        // 필요 시 한 번만 선택 가능한 항목으로 처리
-        // gTakenOneTimeUpgrades.insert(UpgradeType::ScytheSpinUp_T1);
+        gTakenOneTimeUpgrades.insert(UpgradeType::ScytheSpeedUp);
         break;
     }
     default:

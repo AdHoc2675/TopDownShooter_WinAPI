@@ -12,7 +12,7 @@ public:
     void ApplyUpgrade_DoubleShot_T1()
     {
         projectileCount = projectileCount + 1;
-		spreadAngleDeg = spreadAngleDeg + 5.f;   // + 5도
+		spreadAngleDeg = spreadAngleDeg * 1.3f;   // + 30%도
         damage = damage * 0.90f;                   // -10%
         if (damage < 0.f) damage = 0.f;
     }
@@ -35,6 +35,13 @@ public:
     {
 		pierceCount += 1; // 관통 +1
 		missileSpeedMultiplier *= 1.15f; // 탄환 속도 +15%
+    }
+
+    void ApplyUpgrade_ArmourPiercing() {
+		damage *= 1.25f; // 피해량 +25%
+		pierceCount += 2; // 관통 +2
+		missileSpeedMultiplier *= 0.85f; // 탄환 속도 -25%
+		maxChamberSize = maxChamberSize * 0.75f; // 탄창 크기 -25%
     }
 
 #pragma region Set/Get

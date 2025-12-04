@@ -17,7 +17,7 @@ CWeapon::CWeapon()
 	reloadTime = 1.f;          // 재장전 시간(초)
 	curReloadTime = 0.f;
 	projectileCount = 1;     // 투사체 수
-	spreadAngleDeg = 0.f;  // 산탄 각도
+	spreadAngleDeg = 10.f;  // 산탄 각도
 	damage = 15.f;  // 무기 대미지 기본값
 	pierceCount = 0; 		 // 미사일 관통 횟수
 	missileSpeedMultiplier = 1.f; // 미사일 이동속도 배율
