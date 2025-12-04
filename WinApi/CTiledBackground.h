@@ -1,12 +1,14 @@
-#pragma once
+ï»¿#pragma once
 #include "CGameObject.h"
+#include "CPlayer.h"
 
 struct BgElem
 {
-    enum Type { Rock, Bush, Pebble } type;
-    Vec2 worldPos;
-    float size;
+    enum Type { Rock, Bush, Pebble, GrassPatch, Mushroom} type;
+    Vec2   worldPos;
+    float  size;
     COLORREF color;
+    int    variant; // ê°™ì€ íƒ€ìž… ë‚´ ë³€ì£¼ ì„ íƒ
 };
 
 class CTiledBackground : public CGameObject
@@ -14,6 +16,7 @@ class CTiledBackground : public CGameObject
 public:
     CTiledBackground();
     ~CTiledBackground() override {}
+    void SetPlayer(CPlayer* player) { this->player = player; }
 
 private:
     void Init() override;
@@ -25,5 +28,6 @@ private:
 
 private:
     CImage* tileImg = nullptr;
-    std::vector<BgElem> elems; // °íÁ¤ ¿ùµå ÁÂÇ¥ ¿ä¼Ò
+    CPlayer* player = nullptr;
+    std::vector<BgElem> elems; // ê³ ì • ì›”ë“œ ì¢Œí‘œ ìš”ì†Œ
 };

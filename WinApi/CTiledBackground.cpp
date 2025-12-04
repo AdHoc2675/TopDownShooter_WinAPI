@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CTiledBackground.h"
 #include "CGame.h"
 #include "CPlayer.h"
@@ -6,90 +6,322 @@
 CTiledBackground::CTiledBackground()
 {
     name = TEXT("TiledBackground");
-	SetZOrder(100000.f); // ¸Å¿ì µÚ¿¡ ·»´õ¸µ
+    SetZOrder(100000.f); // ë§¤ìš° ë’¤ì— ë Œë”ë§
+}
+
+static inline COLORREF lerpColor(COLORREF a, COLORREF b, float t)
+{
+    BYTE ar = GetRValue(a), ag = GetGValue(a), ab = GetBValue(a);
+    BYTE br = GetRValue(b), bg = GetGValue(b), bb = GetBValue(b);
+    BYTE r = (BYTE)(ar + (br - ar) * t);
+    BYTE g = (BYTE)(ag + (bg - ag) * t);
+    BYTE bch = (BYTE)(ab + (bb - ab) * t);
+    return RGB(r, g, bch);
 }
 
 void CTiledBackground::Init()
 {
-    // ¹è°æ Å¸ÀÏ ÀÌ¹ÌÁö ·Îµå (ÇÁ·ÎÁ§Æ® ¸®¼Ò½º¿¡ ¸Â°Ô ±³Ã¼)
-    // ÀÌ¹ÌÁö°¡ ¾øÀ¸¸é ´Ü»ö¸¸ ·»´õµÊ
+    // ë°°ê²½ íƒ€ì¼ ì´ë¯¸ì§€ ë¡œë“œ (ì˜µì…˜)
     tileImg = LOADIMAGE(TEXT("T_BackTile"), TEXT("Image\\map.bmp"));
 
-    // °íÁ¤ ½Ãµå·Î ÀıÂ÷Àû ¿ä¼Ò 1È¸ »ı¼º (¿ùµå ÁÂÇ¥ ±âÁØ)
+    // ê³ ì • ì‹œë“œë¡œ ì ˆì°¨ì  ìš”ì†Œ 1íšŒ ìƒì„± (ì›”ë“œ ì¢Œí‘œ ê¸°ì¤€)
     srand(12345);
-    elems.reserve(200);
-    // ¸ÊÀ» °¡Á¤: È­¸é Å©±âÀÇ ¸î ¹è ¿µ¿ªÀ» ¹è°æÀ¸·Î ¹èÄ¡
-    const Vec2 mapHalf = CGame::WINSIZE * 3.f; // È­¸éÀÇ 6¹è ¿µ¿ª
-    for (int i = 0; i < 200; ++i)
-    {
-        BgElem e;
-        int t = rand() % 3;
-        e.type = static_cast<BgElem::Type>(t);
-        e.worldPos.x = (float)((rand() % (int)(mapHalf.x * 2)) - (int)mapHalf.x);
-        e.worldPos.y = (float)((rand() % (int)(mapHalf.y * 2)) - (int)mapHalf.y);
+    elems.clear();
+    elems.reserve(400);
 
-        switch (e.type)
-        {
-        case BgElem::Rock:
-            e.size = 18.f + (rand() % 22);  // 18~40
-            e.color = RGB(70, 62, 52);
-            break;
-        case BgElem::Bush:
-            e.size = 14.f + (rand() % 18);  // 14~32
-            e.color = RGB(56, 84, 60);
-            break;
-        case BgElem::Pebble:
-        default:
-            e.size = 6.f + (rand() % 8);    // 6~14
-            e.color = RGB(90, 82, 72);
-            break;
-        }
+    // ë§µ ì˜ì—­: í™”ë©´ì˜ 6ë°° ë²”ìœ„ì— ë¶„í¬
+    const Vec2 mapHalf = CGame::WINSIZE * 3.f;
+
+    auto rndf = [](float minv, float maxv) -> float {
+        return minv + (float)(rand()) / (float)RAND_MAX * (maxv - minv);
+    };
+
+    // ìš”ì†Œ ìƒì„± í•¨ìˆ˜
+    auto pushElem = [&](BgElem::Type t, const Vec2& wp, float size, COLORREF base, int variant = 0) {
+        BgElem e;
+        e.type = t;
+        e.worldPos = wp;
+        e.size = size;
+        e.color = base;
+        e.variant = variant;
         elems.push_back(e);
+    };
+
+    // ë°°ê²½ ìš”ì†Œ ê¸°ë³¸ ë¶„í¬
+    for (int i = 0; i < 220; ++i)
+    {
+        Vec2 wp(
+            (float)((rand() % (int)(mapHalf.x * 2)) - (int)mapHalf.x),
+            (float)((rand() % (int)(mapHalf.y * 2)) - (int)mapHalf.y));
+
+        int pick = rand() % 4;
+        if (pick == 0) // Rock
+        {
+            float sz = rndf(18.f, 46.f);
+            COLORREF base = RGB(70 + rand() % 10, 62 + rand() % 10, 52 + rand() % 10);
+            pushElem(BgElem::Rock, wp, sz, base, rand() % 3);
+        }
+        else if (pick == 1) // Bush
+        {
+            float sz = rndf(14.f, 34.f);
+            COLORREF base = RGB(48 + rand() % 16, 78 + rand() % 14, 54 + rand() % 16);
+            pushElem(BgElem::Bush, wp, sz, base, rand() % 2);
+        }
+        else if (pick == 2)// Pebble
+        {
+            float sz = rndf(6.f, 14.f);
+            COLORREF base = RGB(86 + rand() % 10, 80 + rand() % 10, 72 + rand() % 10);
+            pushElem(BgElem::Pebble, wp, sz, base, rand() % 4);
+        }
+        else if (pick == 3) // ë²„ì„¯
+        {
+            float sz = rndf(20.f, 40.f);
+            COLORREF base = RGB(230 + rand() % 15, 180 + rand() % 20, 80 + rand() % 10);
+            pushElem(BgElem::Mushroom, wp, sz, base, rand() % 4);
+        }
+
+    }
+
+    // í’€ ë©ì–´ë¦¬(GrassPatch): ì§ˆê°ìš© ì‘ì€ íƒ€ì¼ ëŠë‚Œ
+    for (int i = 0; i < 100; ++i)
+    {
+        Vec2 wp(
+            (float)((rand() % (int)(mapHalf.x * 2)) - (int)mapHalf.x),
+            (float)((rand() % (int)(mapHalf.y * 2)) - (int)mapHalf.y));
+
+        float sz = rndf(16.f, 36.f);
+        COLORREF base = RGB(50 + rand() % 10, 90 + rand() % 20, 50 + rand() % 10);
+        pushElem(BgElem::GrassPatch, wp, sz, base, rand() % 3);
     }
 
 }
 
 void CTiledBackground::Update()
 {
-    // ¹è°æÀº »óÅÂ º¯È­°¡ ¾øÀ¸¹Ç·Î ·ÎÁ÷ ¾øÀ½
+    // ë°°ê²½ì€ ìƒíƒœ ë³€í™”ê°€ ì—†ìœ¼ë¯€ë¡œ ë¡œì§ ì—†ìŒ
 }
 
 void CTiledBackground::Render()
 {
-    // ±âº» ´Ü»ö ¹è°æ
+    // ê¸°ë³¸ ë‹¨ìƒ‰ ë°°ê²½
     RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
     RENDER->SetBrush(BrushType::Solid, RGB(39, 32, 48));
     RENDER->Rect(0, 0, CGame::WINSIZE.x, CGame::WINSIZE.y);
 
-    // °íÁ¤ ¿ùµå ¿ä¼Ò ·»´õ (ºäÆ÷Æ® ÄÃ¸µ + Ä«¸Ş¶ó º¯È¯)
+    // ê³ ì • ì›”ë“œ ìš”ì†Œ ë Œë” (ë·°í¬íŠ¸ ì»¬ë§ + ì¹´ë©”ë¼ ë³€í™˜)
     const Vec2 screenSize = CGame::WINSIZE;
+    const float margin = 32.f;
+
+    
+    
+    // í”Œë ˆì´ì–´ ì¤‘ì‹¬ ë¹„ë„¤íŠ¸: playerê°€ ì„¤ì •ë˜ì–´ ìˆìœ¼ë©´ ì¤‘ì‹¬ ë°ê²Œ
+    if (player)
+    {
+        Vec2 center = CAMERA->WorldToScreenPoint(player->GetWorldPos());
+        const float screenW = screenSize.x;
+        const float screenH = screenSize.y;
+        const float maxRadius = sqrtf(screenW * screenW + screenH * screenH) * 0.65f;
+
+        const COLORREF centerLight = RGB(45, 42, 52);  // ë” ë°ê²Œ
+        const COLORREF edgeDark    = RGB(7, 4, 9);  // ë” ì–´ë‘¡ê²Œ (ê°€ì¥ìë¦¬)
+
+        // ë°´ë“œ ìˆ˜ì— ë”°ë¼ ë¶€ë“œëŸ¬ìš´ ì •ë„ ì¡°ì ˆ, ì´ì§• ì ìš©ìœ¼ë¡œ ë¶€ë“œëŸ¬ìš´ ì „í™˜
+        const int bands = 50;
+
+        auto smoothstep = [](float x) {
+            // 3ì°¨ ìŠ¤ë¬´ìŠ¤ìŠ¤í…: 3x^2 - 2x^3
+            return x * x * (3.f - 2.f * x);
+        };
+
+        // ì•½ê°„ì˜ ë°˜ì§€ë¦„ ì§€í„°ë¡œ ë°´ë”© ì™„í™”(ì‹œê°ì  ì¡ìŒ)
+        unsigned seed = 98765;
+        auto jitter = [&]() {
+            seed = seed * 1664525u + 1013904223u;
+            return ((seed >> 16) & 0xFFFF) / 65535.f; // 0..1
+        };
+
+        RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
+
+        for (int i = bands; i >= 1; --i)
+        {
+            float t = (float)i / (float)bands;     // 1..0 (ì¤‘ì‹¬â†’ê°€ì¥ìë¦¬)
+            float eased = smoothstep(t);           // ë¶€ë“œëŸ¬ìš´ ê³¡ì„ ìœ¼ë¡œ
+            float r = maxRadius * eased;
+
+            // 1~2% ë°˜ì§€ë¦„ ì§€í„°
+            float j = (jitter() - 0.5f) * 0.02f;   // -1%..+1%
+            r *= (1.f + j);
+
+            // ìƒ‰ìƒ ë³´ê°„: ì¤‘ì‹¬ ë°ì€ìƒ‰ â†’ ê°€ì¥ìë¦¬ ì–´ë‘ìš´ìƒ‰ (ë³´ê°„ ë°©í–¥ ë°˜ì „)
+            COLORREF col = lerpColor(centerLight, edgeDark, eased);
+
+            RENDER->SetBrush(BrushType::Solid, col);
+            
+            // í™”ë©´ ë¹„ìœ¨ì— ë§ì¶° ì•½ê°„ ë‚©ì‘í•œ íƒ€ì›ìœ¼ë¡œ ê¹”ê¸°
+            float rw = r;
+            float rh = r;
+
+            RENDER->Ellipse(center.x - rw, center.y - rh, center.x + rw, center.y + rh);
+        }
+    }
+    
     for (const BgElem& e : elems)
     {
         Vec2 p = CAMERA->WorldToScreenPoint(e.worldPos);
-
-        // È­¸é ¹ÛÀÌ¸é ½ºÅµ (¾à°£ÀÇ ¸¶ÁøÀ¸·Î °¡ÀåÀÚ¸® º¸Á¤)
-        const float m = 24.f;
-        if (p.x < -m || p.y < -m || p.x > screenSize.x + m || p.y > screenSize.y + m)
+        if (p.x < -margin || p.y < -margin || p.x > screenSize.x + margin || p.y > screenSize.y + margin)
             continue;
 
-        RENDER->SetBrush(BrushType::Solid, e.color);
         switch (e.type)
         {
         case BgElem::Rock:
-            // ¹ÙÀ§: Å¸¿øÀ¸·Î º¯Çü
-            RENDER->Ellipse(p.x - e.size * 0.6f, p.y - e.size * 0.5f,
-                            p.x + e.size * 0.6f, p.y + e.size * 0.5f);
+        {
+            // ì•”ì„: ë³¸ì²´ + í•˜ì´ë¼ì´íŠ¸ + ê·¸ë¦¼ì íƒ€ì›
+            float w = e.size * (0.6f + 0.05f * (e.variant));
+            float h = e.size * 0.5f;
+            COLORREF shade = lerpColor(e.color, RGB(20, 20, 20), 0.25f);
+            COLORREF highlight = lerpColor(e.color, RGB(220, 220, 220), 0.15f);
+
+            // ê·¸ë¦¼ì
+            RENDER->SetBrush(BrushType::Solid, RGB(30, 26, 22));
+            RENDER->Ellipse(p.x - w * 0.65f, p.y - h * 0.35f, p.x + w * 0.65f, p.y + h * 0.35f);
+
+            // ë³¸ì²´
+            RENDER->SetBrush(BrushType::Solid, e.color);
+            RENDER->Ellipse(p.x - w, p.y - h, p.x + w, p.y + h);
+
+            // í•˜ì´ë¼ì´íŠ¸ ë©ì–´ë¦¬
+            RENDER->SetBrush(BrushType::Solid, highlight);
+            RENDER->Ellipse(p.x - w * 0.45f, p.y - h * 0.6f, p.x - w * 0.05f, p.y - h * 0.2f);
+
+            // í‘œë©´ ìš”ì²  ëŠë‚Œì˜ ì‘ì€ ì› 2ê°œ
+            RENDER->SetBrush(BrushType::Solid, shade);
+            RENDER->Circle(p.x + w * 0.2f, p.y + h * 0.1f, e.size * 0.12f);
+            RENDER->Circle(p.x - w * 0.1f, p.y + h * 0.2f, e.size * 0.09f);
             break;
+        }
         case BgElem::Bush:
-            // ´ıºÒ: ¿ø 2~3°³ °ãÄ¡±â
-            RENDER->Circle(p.x, p.y, e.size * 0.6f);
-            RENDER->Circle(p.x - e.size * 0.35f, p.y + e.size * 0.2f, e.size * 0.45f);
-            RENDER->Circle(p.x + e.size * 0.35f, p.y + e.size * 0.1f, e.size * 0.5f);
+        {
+            // ë¤ë¶ˆ: ì—¬ëŸ¬ ê²¹ ì› + ìƒ‰ì¡° ë³€ì£¼
+            COLORREF dark = lerpColor(e.color, RGB(20, 40, 20), 0.3f);
+            COLORREF light = lerpColor(e.color, RGB(160, 200, 160), 0.2f);
+
+            float r = e.size * 0.6f;
+            RENDER->SetBrush(BrushType::Solid, e.color);
+            RENDER->Circle(p.x, p.y, r);
+
+            RENDER->SetBrush(BrushType::Solid, dark);
+            RENDER->Circle(p.x - r * 0.6f, p.y + r * 0.25f, r * 0.75f);
+            RENDER->Circle(p.x + r * 0.5f, p.y + r * 0.2f, r * 0.7f);
+
+            // ìƒë‹¨ ë°ì€ ì ë©ì–´ë¦¬
+            RENDER->SetBrush(BrushType::Solid, light);
+            RENDER->Circle(p.x - r * 0.2f, p.y - r * 0.4f, r * 0.4f);
             break;
+        }
         case BgElem::Pebble:
+        {
+            // ìê°ˆ: ì‘ì€ ì› + ë°˜ëŒ€í¸ ì‘ì€ ê·¸ë¦¼ì ì 
+            float r = e.size * 0.5f;
+            COLORREF shade = lerpColor(e.color, RGB(30, 30, 30), 0.25f);
+
+            RENDER->SetBrush(BrushType::Solid, e.color);
+            RENDER->Circle(p.x, p.y, r);
+
+            RENDER->SetBrush(BrushType::Solid, shade);
+            RENDER->Circle(p.x + r * 0.4f, p.y + r * 0.2f, r * 0.25f);
+            break;
+        }
+        case BgElem::GrassPatch:
+        {
+            // í’€ íŒ¨ì¹˜: ì‘ì€ ì› ì—¬ëŸ¬ ê°œë¡œ ì§ˆê°
+            float s = e.size;
+            COLORREF c1 = e.color;
+            COLORREF c2 = lerpColor(e.color, RGB(30, 80, 30), 0.3f);
+            COLORREF c3 = lerpColor(e.color, RGB(170, 220, 170), 0.15f);
+
+            RENDER->SetBrush(BrushType::Solid, c1);
+            RENDER->Circle(p.x, p.y, s * 0.40f);
+            RENDER->SetBrush(BrushType::Solid, c2);
+            RENDER->Circle(p.x - s * 0.25f, p.y + s * 0.10f, s * 0.30f);
+            RENDER->Circle(p.x + s * 0.20f, p.y - s * 0.05f, s * 0.28f);
+            RENDER->SetBrush(BrushType::Solid, c3);
+            RENDER->Circle(p.x - s * 0.10f, p.y - s * 0.22f, s * 0.22f);
+            break;
+        }
+        case BgElem::Mushroom:
+        {
+            // ë²„ì„¯ í¬ê¸°
+            float r = e.size * 0.4f;             // ê°“ì˜ ë°˜ì§€ë¦„
+            float stemW = r * 0.45f;             // ê¸°ë‘¥ ë„ˆë¹„
+            float stemH = r * 0.60f;             // ê¸°ë‘¥ ë†’ì´
+
+            // ë²„ì„¯ ìƒ‰ìƒ (ê°“)
+            COLORREF capBase = e.color;
+            COLORREF capLight = lerpColor(capBase, RGB(255, 255, 220), 0.25f);
+            COLORREF capDark = lerpColor(capBase, RGB(160, 120, 55), 0.35f);
+
+            // ê¸°ë‘¥ ìƒ‰ìƒ
+            COLORREF stemCol = RGB(230, 220, 180);
+            COLORREF stemShade = RGB(190, 180, 140);
+
+            // 1) ë²„ì„¯ ê·¸ë¦¼ì
+            float shW = r * 1.2f;
+            float shH = r * 0.45f;
+            RENDER->SetBrush(BrushType::Solid, RGB(60, 50, 45));
+            RENDER->Ellipse(p.x - shW, p.y + stemH * 0.4f, p.x + shW, p.y + shH + stemH * 0.4f);
+
+            // 2) ê¸°ë‘¥
+            RENDER->SetBrush(BrushType::Solid, stemCol);
+            RENDER->Rect(
+                p.x - stemW * 0.5f,
+                p.y,
+                p.x + stemW * 0.5f,
+                p.y + stemH
+            );
+
+            // 3) ê¸°ë‘¥ ê·¸ë¦¼ì
+            RENDER->SetBrush(BrushType::Solid, stemShade);
+            RENDER->Rect(
+                p.x,
+                p.y,
+                p.x + stemW * 0.5f,
+                p.y + stemH
+            );
+
+            // 4) ë²„ì„¯ ê°“ (í° íƒ€ì›)
+            RENDER->SetBrush(BrushType::Solid, capBase);
+            RENDER->Ellipse(
+                p.x - r,
+                p.y - r * 0.8f,
+                p.x + r,
+                p.y + r * 0.4f
+            );
+
+            // 5) ê°“ì˜ ë°ì€ ë¶€ë¶„ (í•˜ì´ë¼ì´íŠ¸)
+            RENDER->SetBrush(BrushType::Solid, capLight);
+            RENDER->Ellipse(
+                p.x - r * 0.6f,
+                p.y - r * 0.7f,
+                p.x - r * 0.1f,
+                p.y - r * 0.2f
+            );
+
+            // 6) ê°“ì˜ ì  (variantë¡œ ë³€ì£¼)
+            int dotCount = 3 + (e.variant % 3);
+            for (int i = 0; i < dotCount; ++i)
+            {
+                float dx = ((rand() % 100) / 100.f - 0.5f) * r;
+                float dy = ((rand() % 100) / 100.f - 0.4f) * r * 0.6f;
+
+                RENDER->SetBrush(BrushType::Solid, capDark);
+                RENDER->Circle(p.x + dx, p.y + dy, r * 0.15f);
+            }
+
+            break;
+        }
+
+
         default:
-            // ÀÚ°¥: ÀÛÀº ¿ø
-            RENDER->Circle(p.x, p.y, e.size * 0.5f);
             break;
         }
     }
