@@ -27,14 +27,14 @@ CSceneStage01::~CSceneStage01()
 void CSceneStage01::Init()
 {
 
-    //CTiledBackground* bg = new CTiledBackground();
+    CTiledBackground* bg = new CTiledBackground();
 
-    //AddGameObject(bg);
+    AddGameObject(bg);
 
     player = new CPlayer();
     player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
     AddGameObject(player);
-
+    
     auto addMonster = [&](const Vec2& pos) {
         CMonster* m = new CMonster();
         m->SetPos(pos);
