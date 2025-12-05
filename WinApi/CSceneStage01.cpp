@@ -17,6 +17,7 @@
 #include "CBossMonster.h"
 #include "CShotgunWeapon.h"
 #include "CSMGWeapon.h"
+#include "CSuicideBomberMonster.h"
 
 WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
 
@@ -68,7 +69,7 @@ void CSceneStage01::Init()
     CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Player);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::Monster);
     CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster);
-
+    
     spawnTimer = spawnInterval;
 }
 
@@ -179,9 +180,12 @@ void CSceneStage01::SpawnMonster()
     // 7% 확률로 원거리 몬스터
     int r = rand() % 100;
     CMonster* monster = nullptr;
-    if (r < 7)
+    if (r < 1)
     {
         monster = new CRangedMonster();
+    }
+    else if (r < 99) {
+		monster = new CSuicideBomberMonster();
     }
     else
     {

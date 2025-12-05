@@ -109,6 +109,15 @@
     <ClInclude Include="CSMGWeapon.h">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClInclude>
+    <ClInclude Include="CSuicideBomberMonster.h">
+      <Filter>GameObject\MonsterObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CExplosiveMissile.h">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CExplosionEffect.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -179,6 +188,15 @@
     </ClCompile>
     <ClCompile Include="CSMGWeapon.cpp">
       <Filter>GameObject\UpgradeObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CSuicideBomberMonster.cpp">
+      <Filter>GameObject\MonsterObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CExplosiveMissile.cpp">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CExplosionEffect.cpp">
+      <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ public:
     virtual ~CMonster();
     void SetPlayer(CPlayer* p) { player = p; }
     CPlayer* GetPlayer() const { return player; }
-    CombatStats& GetCombatStats() { return stats; }
+    CombatStats& GetCombatStats() { return st; }
 	CAnimator* GetAnimator() const { return animator; }
 
 protected:
@@ -40,6 +40,6 @@ private:
 
 private:
     CPlayer*    player = nullptr;
-    CombatStats stats;
+    CombatStats st;
 };
 

@@ -7,6 +7,8 @@ public:
 	CMissile();
 	virtual ~CMissile();
 
+	void OnCollisionEnter(CCollider* other) override;
+
 	void SetDir(const Vec2 dir) { this->dir = dir.Normalized(); }
 	void SetFriendly(bool friendly) { this->friendly = friendly; }
 	void SetLifeTime(float time) { this->lifeTime = time; }
@@ -26,6 +28,7 @@ public:
 	bool GetFriendly() const { return friendly; }
 	int GetPierceCount() const { return pierceCount; }
 
+
 private:
 	void Init() override;
 	void OnEnable() override;
@@ -34,7 +37,6 @@ private:
 	void OnDisable() override;
 	void Release() override;
 
-	void OnCollisionEnter(CCollider* other) override;
 
 private:
 	Vec2        dir;

@@ -14,13 +14,13 @@ CMonster::CMonster()
 {
     name  = TEXT("몬스터");
     scale = Vec2(40, 40);
-    stats.hp       = 100.f;
-    stats.maxHp    = 100.f;
-    stats.defense  = 0.f;
-    stats.attack = 1.f;
-    stats.critChance = 0.f;
-    stats.critMultiplier = 1.0f;
-    stats.speed = 100.f;
+    st.hp       = 100.f;
+    st.maxHp    = 100.f;
+    st.defense  = 0.f;
+    st.attack = 1.f;
+    st.critChance = 0.f;
+    st.critMultiplier = 1.0f;
+    st.speed = 100.f;
 
 	droppedExpOrb = false;
     ExpValue = 15;
@@ -75,7 +75,7 @@ void CMonster::Update()
     {
         dir = player->GetWorldPos() - worldPos;
         dir.Normalize();
-        pos = pos + (dir * stats.speed * DT);
+        pos = pos + (dir * st.speed * DT);
 	}
 
     if (animator)
@@ -154,14 +154,14 @@ void CMonster::OnCollisionEnter(CCollider* other)
 
             float dealt = 0.f;
             bool  crit  = false;
-            COMBAT->ApplyDamage(missile, this, attackerStats, stats, &dealt, &crit);
+            COMBAT->ApplyDamage(missile, this, attackerStats, st, &dealt, &crit);
 
             // 피격 이펙트 텍스트
             CDamageText* dt = new CDamageText();
             dt->Configure(worldPos, (int)dealt, crit);
             EVENT->AddGameObject(GetScene(), dt);
 
-            if (!stats.alive() && !droppedExpOrb)
+            if (!st.alive() && !droppedExpOrb)
             {
                 DropExpOrb(ExpValue, ExpCount);
                 droppedExpOrb = true;
@@ -177,14 +177,14 @@ void CMonster::OnCollisionEnter(CCollider* other)
 
             float dealt = 0.f;
             bool  crit  = false;
-            COMBAT->ApplyDamage(scythe, this, attackerStats, stats, &dealt, &crit);
+            COMBAT->ApplyDamage(scythe, this, attackerStats, st, &dealt, &crit);
 
             // 피격 이펙트 텍스트
             CDamageText* dt = new CDamageText();
             dt->Configure(worldPos, (int)dealt, crit);
             EVENT->AddGameObject(GetScene(), dt);
 
-            if (!stats.alive() && !droppedExpOrb)
+            if (!st.alive() && !droppedExpOrb)
             {
                 DropExpOrb(ExpValue, ExpCount);
                 droppedExpOrb = true;
