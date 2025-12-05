@@ -4,6 +4,11 @@ class CPlayer;
 
 using namespace std;
 
+enum class WeaponChoice {
+    Pistol = 0,
+    Shotgun = 1
+};
+
 class CSceneStage01 : public CScene
 {
 public:
@@ -24,6 +29,10 @@ public:
     void UnregisterMonster(CMonster* m);
     CMonster* GetNearestEnemy(const Vec2& from, float maxRange) const;
 
+    static void SetChosenWeapon(WeaponChoice c) { sChosenWeapon = c; };
+    static WeaponChoice GetChosenWeapon() { return sChosenWeapon; };
+
+
 	float playTime = 0.f;          // 플레이 시간(초)
 
 private:
@@ -33,6 +42,8 @@ private:
     Vec2 GetSpawnPosPlayerDistance() const;
 
 private:
+    static WeaponChoice sChosenWeapon;
+
     vector<CMonster*> enemies;
     CPlayer* player = nullptr;           // 플레이어 참조
 

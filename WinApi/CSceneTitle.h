@@ -1,16 +1,20 @@
 #pragma once
+#include "CScene.h"
+
 class CSceneTitle : public CScene
 {
 public:
-	CSceneTitle();
-	virtual ~CSceneTitle();
+    CSceneTitle();
+    virtual ~CSceneTitle();
 
-public:
-	void Init()		override;
-	void Enter()	override;
-	void Update()	override;
-	void Render()	override;
-	void Exit()		override;
-	void Release()	override;
+    void Init()   override;
+    void Enter()  override;
+    void Update() override;
+    void Render() override;
+    void Exit()   override;
+    void Release() override;
+
+private:
+    int selected = 0; // 0=Pistol, 1=Shotgun
 };
 

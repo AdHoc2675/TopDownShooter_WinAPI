@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CEventManager.h"
 
 CEventManager::CEventManager()
@@ -69,7 +69,7 @@ void CEventManager::ShowUI(CUI* ui, bool show)
 
 void CEventManager::ChangeScene(int sceneType, float delay)
 {
-	// ¾À ÀüÈ¯ ÀÌº¥Æ®¸¦ ÀÚ·á±¸Á¶¿¡ º¸°ü
+	// ì”¬ ì „í™˜ ì´ë²¤íŠ¸ë¥¼ ìë£Œêµ¬ì¡°ì— ë³´ê´€
 	if (nullptr == changeSceneEvent)
 	{
 		changeSceneEvent = new pair<int, float>(sceneType, delay);
@@ -81,8 +81,8 @@ void CEventManager::ChangeScene(int sceneType, float delay)
 	}
 	else
 	{
-		// µô·¹ÀÌ°¡ ´õ¿í Å« ¾ÀÀüÈ¯ ÀÌº¥Æ®´Â ¹«½Ã
-	}
+		// ë”œë ˆì´ê°€ ë”ìš± í° ì”¬ì „í™˜ ì´ë²¤íŠ¸ëŠ” ë¬´ì‹œ
+	} 
 }
 
 void CEventManager::ProgressAddGameObject()
@@ -109,7 +109,7 @@ void CEventManager::ProgressAddComponent()
 
 void CEventManager::ProgressDeleteObject()
 {
-	// »èÁ¦ ¿¹Á¤ Ç¥½ÃµÈ °ÔÀÓ¿ÀºêÁ§Æ®¸¦ »èÁ¦ ÁøÇà
+	// ì‚­ì œ ì˜ˆì • í‘œì‹œëœ ê²Œì„ì˜¤ë¸Œì íŠ¸ë¥¼ ì‚­ì œ ì§„í–‰
 	CScene* curScene = SINGLE(CSceneManager)->GetCurScene();
 	list<CGameObject*>& objList = curScene->objList;
 
@@ -129,7 +129,7 @@ void CEventManager::ProgressDeleteObject()
 		}
 		});
 
-	// »èÁ¦ ¿¹Á¤ÀÎ °ÔÀÓ¿ÀºêÁ§Æ®¿¡ »èÁ¦¿¹Á¤ Ç¥½Ã¸¦ ÁøÇà
+	// ì‚­ì œ ì˜ˆì •ì¸ ê²Œì„ì˜¤ë¸Œì íŠ¸ì— ì‚­ì œì˜ˆì • í‘œì‹œë¥¼ ì§„í–‰
 	while (!deleteObjectQueue.empty())
 	{
 		Component<CGameObject>* component = deleteObjectQueue.front().second;
@@ -162,7 +162,7 @@ void CEventManager::ProgressAddChildUI()
 
 void CEventManager::ProgressDeleteUI()
 {
-	// »èÁ¦ ¿¹Á¤ Ç¥½ÃµÈ UI¸¦ »èÁ¦ ÁøÇà
+	// ì‚­ì œ ì˜ˆì • í‘œì‹œëœ UIë¥¼ ì‚­ì œ ì§„í–‰
 	CScene* curScene = SINGLE(CSceneManager)->GetCurScene();
 	list<CUI*>& uiList = curScene->uiList;
 
@@ -182,7 +182,7 @@ void CEventManager::ProgressDeleteUI()
 		}
 		});
 
-	// »èÁ¦ ¿¹Á¤ÀÎ °ÔÀÓ¿ÀºêÁ§Æ®¿¡ »èÁ¦¿¹Á¤ Ç¥½Ã¸¦ ÁøÇà
+	// ì‚­ì œ ì˜ˆì •ì¸ ê²Œì„ì˜¤ë¸Œì íŠ¸ì— ì‚­ì œì˜ˆì • í‘œì‹œë¥¼ ì§„í–‰
 	while (!deleteUIQueue.empty())
 	{
 		CUI* child = deleteUIQueue.front().second;
@@ -207,7 +207,7 @@ void CEventManager::ProgressChangeScene()
 	if (nullptr == changeSceneEvent)
 		return;
 
-	// Áö¿¬½ÇÇà ÀÌº¥Æ®°¡ ÀÜ¿©½Ã°£ÀÌ ¸ğµÎ ¼ÒÁøµÇ¾úÀ» °æ¿ì ÀÌº¥Æ® ÁøÇà
+	// ì§€ì—°ì‹¤í–‰ ì´ë²¤íŠ¸ê°€ ì”ì—¬ì‹œê°„ì´ ëª¨ë‘ ì†Œì§„ë˜ì—ˆì„ ê²½ìš° ì´ë²¤íŠ¸ ì§„í–‰
 	changeSceneEvent->second -= DT;
 	if (changeSceneEvent->second <= 0)
 	{

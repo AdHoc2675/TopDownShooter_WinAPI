@@ -17,8 +17,14 @@
 #include "CBossMonster.h"
 #include "CShotgunWeapon.h"
 
+WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
+
 CSceneStage01::CSceneStage01()
 {
+    Logger::Debug(L"[CSceneStage01::Constructor] Creating Stage01 scene");
+    Logger::Debug(L"[CSceneStage01::Constructor] Static sChosenWeapon = " +
+        to_wstring(static_cast<int>(sChosenWeapon)));
+
 }
 
 CSceneStage01::~CSceneStage01()
@@ -27,6 +33,7 @@ CSceneStage01::~CSceneStage01()
 
 void CSceneStage01::Init()
 {
+    Logger::Debug(L"[CSceneStage01::Init] Initializing Stage01 scene");
 
     player = new CPlayer();
     player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
@@ -47,10 +54,6 @@ void CSceneStage01::Init()
     addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
     addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
     addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
-
-    CShotgunWeapon* weapon = new CShotgunWeapon();
-    player->AddChild(weapon);
-    weapon->SetPlayer(player);
 
     CCameraController* controller = new CCameraController();
     controller->SetPlayer(player);
@@ -74,6 +77,23 @@ void CSceneStage01::Enter()
 
     CSound* bgm = LOADSOUND(TEXT("Wasteland Combat Loop"), TEXT("Sound\\Wasteland Combat Loop.wav"));
     SOUND->PlayLoop(TEXT("Stage01_BGM"), bgm);
+
+    WeaponChoice chosenWeapon = GetChosenWeapon();
+    Logger::Debug(L"[CSceneStage01::Init] GetChosenWeapon() returns: " +
+        to_wstring(static_cast<int>(chosenWeapon)));
+
+    if (CSceneStage01::GetChosenWeapon() == WeaponChoice::Shotgun)
+    {
+        CShotgunWeapon* weapon = new CShotgunWeapon();
+        player->AddChild(weapon);
+        weapon->SetPlayer(player);
+    }
+    else
+    {
+        CWeapon* weapon = new CWeapon();
+        player->AddChild(weapon);
+        weapon->SetPlayer(player);
+    }
 }
 
 void CSceneStage01::Update()
