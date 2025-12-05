@@ -221,7 +221,7 @@ void CBossMonster::TryFireRotatingRing()
 	const int count = radialBulletCount;
 	if (count <= 0) return;
 
-	const float spawnDistance = scale.y * 0.5f + 6.f;
+	const float spawnDistance = scale.y * 0.25f;
 
 	for (int i = 0; i < count; ++i)
 	{
@@ -240,7 +240,7 @@ void CBossMonster::TryFireMultiRing()
 	const int count = radialBulletCount;
 	if (count <= 0 || multiRingCount <= 0) return;
 
-	const float baseRadius = scale.y * 0.5f;
+	const float baseRadius = scale.y * 0.25f;
 
 	for (int r = 0; r < multiRingCount; ++r)
 	{

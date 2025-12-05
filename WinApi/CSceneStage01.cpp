@@ -16,6 +16,7 @@
 #include "CTiledBackground.h"
 #include "CBossMonster.h"
 #include "CShotgunWeapon.h"
+#include "CSMGWeapon.h"
 
 WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
 
@@ -82,13 +83,19 @@ void CSceneStage01::Enter()
     Logger::Debug(L"[CSceneStage01::Init] GetChosenWeapon() returns: " +
         to_wstring(static_cast<int>(chosenWeapon)));
 
-    if (CSceneStage01::GetChosenWeapon() == WeaponChoice::Shotgun)
+    if (chosenWeapon == WeaponChoice::Shotgun)
     {
         CShotgunWeapon* weapon = new CShotgunWeapon();
         player->AddChild(weapon);
         weapon->SetPlayer(player);
     }
-    else
+    else if (chosenWeapon == WeaponChoice::SMG)
+    {
+        CSMGWeapon* weapon = new CSMGWeapon();
+        player->AddChild(weapon);
+        weapon->SetPlayer(player);
+    }
+    else // Pistol
     {
         CWeapon* weapon = new CWeapon();
         player->AddChild(weapon);

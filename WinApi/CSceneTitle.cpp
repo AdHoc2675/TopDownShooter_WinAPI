@@ -14,8 +14,7 @@ CSceneTitle::~CSceneTitle()
 
 void CSceneTitle::Init()
 {
-    // 기본 선택 무기
-    selected = 0; // 0=Pistol, 1=Shotgun
+    selected = 0; // 0=Pistol, 1=Shotgun, 2=SMG
 }
 
 void CSceneTitle::Enter()
@@ -25,38 +24,40 @@ void CSceneTitle::Enter()
 
 void CSceneTitle::Update()
 {
-    // 좌/우로 선택 변경
+    // 좌/우로 선택 순환
     if (INPUT->ButtonDown(VK_LEFT, true))
-        selected = 0;
+    {
+        selected--;
+        if (selected < 0) selected = 2; // 순환
+        Logger::Debug(L"[CSceneTitle] Selected: " + to_wstring(selected));
+    }
     else if (INPUT->ButtonDown(VK_RIGHT, true))
-        selected = 1;
+    {
+        selected++;
+        if (selected > 2) selected = 0; // 순환
+        Logger::Debug(L"[CSceneTitle] Selected: " + to_wstring(selected));
+    }
 
-    // 위/아래도 허용(편의)
-    if (INPUT->ButtonDown(VK_UP, true))
-        selected = 0;
-    else if (INPUT->ButtonDown(VK_DOWN, true))
-        selected = 1;
-
-    // 스페이스로 시작: 선택 결과 전달 후 씬 전환
+    // 스페이스로 시작
     if (INPUT->ButtonDown(VK_SPACE, true))
     {
-        Logger::Debug(L"[CSceneTitle::Update] SPACE pressed, current selected = " + to_wstring(selected));
+        Logger::Debug(L"[CSceneTitle] SPACE pressed, selected = " + to_wstring(selected));
 
         if (selected == 0)
         {
-            Logger::Debug(L"[CSceneTitle::Update] Setting weapon to Pistol");
             CSceneStage01::SetChosenWeapon(WeaponChoice::Pistol);
         }
-        else
+        else if (selected == 1)
         {
-            Logger::Debug(L"[CSceneTitle::Update] Setting weapon to Shotgun");
             CSceneStage01::SetChosenWeapon(WeaponChoice::Shotgun);
         }
+        else // selected == 2
+        {
+            CSceneStage01::SetChosenWeapon(WeaponChoice::SMG);
+        }
 
-        // 설정 직후 값 확인
         WeaponChoice current = CSceneStage01::GetChosenWeapon();
-        Logger::Debug(L"[CSceneTitle::Update] After SetChosenWeapon, GetChosenWeapon returns: " +
-            to_wstring(static_cast<int>(current)));
+        Logger::Debug(L"[CSceneTitle] Set weapon to: " + to_wstring(static_cast<int>(current)));
 
         CAMERA->FadeOut(0.5f);
         EVENT->ChangeScene(SceneType::Stage01, 0.5f);
@@ -65,7 +66,7 @@ void CSceneTitle::Update()
 
 void CSceneTitle::Render()
 {
-    // 기본 단색 배경
+    // 배경
     RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
     RENDER->SetBrush(BrushType::Solid, RGB(27, 24, 29));
     RENDER->Rect(0, 0, CGame::WINSIZE.x, CGame::WINSIZE.y);
@@ -76,49 +77,89 @@ void CSceneTitle::Render()
     // 안내 텍스트
     RENDER->SetText(28, RGB(0, 0, 0), TextAlign::Center);
     RENDER->SetTextBackMode(TextBackMode::Null);
-    RENDER->Text(cx, cy - 160.f, TEXT("무기 선택: 좌/우 화살표"));
-    RENDER->Text(cx, cy + 160.f, TEXT("스페이스로 시작"));
+    RENDER->Text(cx, cy - 220.f, TEXT("무기 선택: 좌/우 화살표"));
+    RENDER->Text(cx, cy + 240.f, TEXT("스페이스로 시작"));
 
-    // 항목 박스
-    const float boxW = 320.f;
-    const float boxH = 120.f;
-    const float gap = 60.f;
+    // 3개 무기 박스 배치
+    const float boxW = 300.f;
+    const float boxH = 250.f;
+    const float gap = 40.f;
+    const float totalWidth = boxW * 3 + gap * 2;
+    const float startX = cx - totalWidth * 0.5f;
+    const float boxY = cy - boxH * 0.5f;
 
-    // Pistol 박스 (왼쪽)
-    float px0 = cx - boxW - gap;
-    float py0 = cy - boxH * 0.5f;
-    float px1 = px0 + boxW;
-    float py1 = py0 + boxH;
-
-    // Shotgun 박스 (오른쪽)
-    float sx0 = cx + gap;
-    float sy0 = cy - boxH * 0.5f;
-    float sx1 = sx0 + boxW;
-    float sy1 = sy0 + boxH;
-
-    // 배경 상자
-    auto drawBox = [&](float x0, float y0, float x1, float y1, bool highlight) {
+    // 박스 그리기 헬퍼
+    auto drawWeaponBox = [&](float x, float y, bool highlight, 
+                             const wstring& name, 
+                             float damage, float rof, int count, int mag, float reload, 
+                             int pierce = -1) {
         COLORREF bg = highlight ? RGB(80, 90, 120) : RGB(50, 50, 70);
         COLORREF border = highlight ? RGB(220, 220, 255) : RGB(140, 140, 180);
-        RENDER->SetPen(PenType::Solid, border, 2);
+        
+        RENDER->SetPen(PenType::Solid, border, highlight ? 3 : 2);
         RENDER->SetBrush(BrushType::Solid, bg);
-        RENDER->Rect(x0, y0, x1, y1);
+        RENDER->Rect(x, y, x + boxW, y + boxH);
+
+        float textY = y + 25.f;
+        const float lineHeight = 22.f;
+
+        // 무기 이름 (큰 글씨)
+        RENDER->SetText(28, RGB(0, 0, 0), TextAlign::Center);
+        RENDER->SetTextBackMode(TextBackMode::Null);
+        RENDER->Text(x + boxW * 0.5f, textY, name);
+        textY += 38.f;
+
+        // 스탯 (작은 글씨, 검은색)
+        RENDER->SetText(16, RGB(0, 0, 0), TextAlign::Center);
+        
+        // 피해량
+        wstring stat1 = L"피해량: " + to_wstring((int)damage);
+        RENDER->Text(x + boxW * 0.5f, textY, stat1);
+        textY += lineHeight;
+
+        // 공격 속도 (ROF의 역수)
+        float attackSpeed = (rof > 0.001f) ? (1.0f / rof) : 0.f;
+        wstring stat2 = L"공격 속도: " + to_wstring((int)(attackSpeed * 10) / 10.f);
+        RENDER->Text(x + boxW * 0.5f, textY, stat2);
+        textY += lineHeight;
+
+        // 투사체 수
+        wstring stat3 = L"투사체 수: " + to_wstring(count);
+        RENDER->Text(x + boxW * 0.5f, textY, stat3);
+        textY += lineHeight;
+
+        // 탄창 크기
+        wstring stat4 = L"탄창 크기: " + to_wstring(mag);
+        RENDER->Text(x + boxW * 0.5f, textY, stat4);
+        textY += lineHeight;
+
+        // 재장전 시간
+        wstring stat5 = L"재장전: " + to_wstring((int)(reload * 10) / 10.f) + L"초";
+        RENDER->Text(x + boxW * 0.5f, textY, stat5);
+        textY += lineHeight;
+
+        // 관통 (있을 경우만)
+        if (pierce >= 0)
+        {
+            wstring stat6 = L"관통: " + to_wstring(pierce);
+            RENDER->Text(x + boxW * 0.5f, textY, stat6);
+        }
     };
 
-    drawBox(px0, py0, px1, py1, selected == 0);
-    drawBox(sx0, sy0, sx1, sy1, selected == 1);
+    // Pistol (왼쪽)
+    drawWeaponBox(startX, boxY, selected == 0, 
+                  TEXT("권총"), 
+                  15.f, 0.25f, 1, 6, 1.0f);
 
-    // 텍스트
-    RENDER->SetText(24, RGB(0, 0, 0), TextAlign::Center);
-    RENDER->SetTextBackMode(TextBackMode::Null);
-    RENDER->Text((px0 + px1) * 0.5f, cy - 20.f, TEXT("Pistol"));
-    RENDER->Text((sx0 + sx1) * 0.5f, cy - 20.f, TEXT("Shotgun"));
+    // Shotgun (중앙)
+    drawWeaponBox(startX + boxW + gap, boxY, selected == 1,
+                  TEXT("샷건"),
+                  10.f, 0.2f, 4, 2, 1.0f, 1);
 
-    // 간단 설명
-    RENDER->SetText(16, RGB(0, 0, 0), TextAlign::Center);
-    RENDER->SetTextBackMode(TextBackMode::Null);
-    RENDER->Text((px0 + px1) * 0.5f, cy + 20.f, TEXT("DMG 15 | ROF 0.25 | COUNT 1 | MAG 6 | RELOAD 1.0"));
-    RENDER->Text((sx0 + sx1) * 0.5f, cy + 20.f, TEXT("DMG 10 | ROF 0.2  | COUNT 4 | MAG 2 | RELOAD 1.0 | PIERCE 1"));
+    // SMG (오른쪽)
+    drawWeaponBox(startX + (boxW + gap) * 2, boxY, selected == 2,
+                  TEXT("기관단총"),
+                  8.f, 0.125f, 1, 20, 2.0f);
 }
 
 void CSceneTitle::Exit()
