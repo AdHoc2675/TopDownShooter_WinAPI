@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "CWeapon.h"
 
 class CSMGWeapon : public CWeapon

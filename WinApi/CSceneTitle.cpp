@@ -25,13 +25,13 @@ void CSceneTitle::Enter()
 void CSceneTitle::Update()
 {
     // 좌/우로 선택 순환
-    if (INPUT->ButtonDown(VK_LEFT, true))
+    if (INPUT->ButtonDown(VK_LEFT, true) || INPUT->ButtonDown('A', true))
     {
         selected--;
         if (selected < 0) selected = 2; // 순환
         Logger::Debug(L"[CSceneTitle] Selected: " + to_wstring(selected));
     }
-    else if (INPUT->ButtonDown(VK_RIGHT, true))
+    else if (INPUT->ButtonDown(VK_RIGHT, true) || INPUT->ButtonDown('D', true))
     {
         selected++;
         if (selected > 2) selected = 0; // 순환
@@ -77,7 +77,7 @@ void CSceneTitle::Render()
     // 안내 텍스트
     RENDER->SetText(28, RGB(0, 0, 0), TextAlign::Center);
     RENDER->SetTextBackMode(TextBackMode::Null);
-    RENDER->Text(cx, cy - 220.f, TEXT("무기 선택: 좌/우 화살표"));
+    RENDER->Text(cx, cy - 220.f, TEXT("무기 선택: 좌/우 화살표 or A/D"));
     RENDER->Text(cx, cy + 240.f, TEXT("스페이스로 시작"));
 
     // 3개 무기 박스 배치

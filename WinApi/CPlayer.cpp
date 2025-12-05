@@ -9,7 +9,7 @@
 CPlayer::CPlayer()
 {
 	name		= TEXT("플레이어");
-	scale		= Vec2(30, 50);
+	scale		= Vec2(25, 40);
 	animator	= nullptr;
 	heartFullImage = nullptr;
 	heartEmptyImage = nullptr;

@@ -250,7 +250,7 @@ void CBossMonster::TryFireMultiRing()
 		for (int i = 0; i < count; ++i)
 		{
 			const float t = (float)i / (float)count;
-			const float ang = phase + t * 2.0f * 3.141592f + (float)r * 0.12f;
+			const float ang = phase + t * 2.0f * 3.141592f + (float)r * 0.08f;
 
 			Vec2 dir(cosf(ang), sinf(ang));
 			Vec2 spawnPos = worldPos + dir * radius;

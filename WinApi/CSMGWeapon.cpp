@@ -1,25 +1,25 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CSMGWeapon.h"
 
 CSMGWeapon::CSMGWeapon()
 {
-    // Ç¥½Ã ÀÌ¸§
+    // í‘œì‹œ ì´ë¦„
     name = TEXT("SMG");
-    // ¿ÜÇü(»ç°¢Çü ·»´õ ±âÁØ) ±âº» Å©±â
+    // ì™¸í˜•(ì‚¬ê°í˜• ë Œë” ê¸°ì¤€) ê¸°ë³¸ í¬ê¸°
     scale = Vec2(12.f, 28.f);
 
-    // ±âº» ¼º´É
-    damage = 8.f;               // ÇÇÇØ
-    fireCooldown = 0.125f;         // ¿¬»ç ¼Óµµ(ÃÊ)
-    projectileCount = 1;         // ¹ß»çÃ¼ ¼ö
-    maxChamberSize = 20.f;        // ÃÖ´ë ÅºÃ¢
+    // ê¸°ë³¸ ì„±ëŠ¥
+    damage = 10.f;               // í”¼í•´
+    fireCooldown = 0.125f;         // ì—°ì‚¬ ì†ë„(ì´ˆ)
+    projectileCount = 1;         // ë°œì‚¬ì²´ ìˆ˜
+    maxChamberSize = 20.f;        // ìµœëŒ€ íƒ„ì°½
     curChamberSize = maxChamberSize;
-    reloadTime = 2.0f;           // ÀçÀåÀü ½Ã°£(ÃÊ)
-    pierceCount = 0;             // ±âº» °üÅë 1È¸
+    reloadTime = 2.0f;           // ì¬ì¥ì „ ì‹œê°„(ì´ˆ)
+    pierceCount = 0;             // ê¸°ë³¸ ê´€í†µ 1íšŒ
     spreadAngleDeg = 10.f;
     missileSpeedMultiplier = 1.f;
 
-    // ³»ºÎ Äğ´Ù¿î/ÀçÀåÀü Å¸ÀÌ¸Ó ÃÊ±âÈ­
+    // ë‚´ë¶€ ì¿¨ë‹¤ìš´/ì¬ì¥ì „ íƒ€ì´ë¨¸ ì´ˆê¸°í™”
     curCooldown = 0.f;
     curReloadTime = 0.f;
 }
