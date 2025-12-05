@@ -20,6 +20,9 @@ void CSceneTitle::Init()
 void CSceneTitle::Enter()
 {
     CAMERA->FadeIn(0.5f);
+
+    CSound* bgm = LOADSOUND(TEXT("Pretty Dungeon LOOP"), TEXT("Sound\\Pretty Dungeon LOOP.wav"));
+    SOUND->PlayLoop(TEXT("Title_BGM"), bgm);
 }
 
 void CSceneTitle::Update()
@@ -164,6 +167,7 @@ void CSceneTitle::Render()
 
 void CSceneTitle::Exit()
 {
+    SOUND->Stop(TEXT("Title_BGM"));
 }
 
 void CSceneTitle::Release()

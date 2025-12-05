@@ -7,4 +7,3 @@ public:
 	CSMGWeapon();
 	virtual ~CSMGWeapon() {}
 };
-
