@@ -7,7 +7,8 @@ using namespace std;
 enum class WeaponChoice {
     Pistol = 0,
     Shotgun = 1,
-    SMG = 2
+    SMG = 2,
+    RocketLauncher = 3 
 };
 
 class CSceneStage01 : public CScene

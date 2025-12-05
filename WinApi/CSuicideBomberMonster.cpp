@@ -13,8 +13,11 @@ CSuicideBomberMonster::CSuicideBomberMonster()
     st.attack = 1.f;
     st.speed = 100.f;
     
-    ExpValue = 30;   // 경험치 보상
+    ExpValue = 30;
     ExpCount = 1;
+    
+    isCountingDown = false;
+    countdownTimer = 0.f;
 }
 
 CSuicideBomberMonster::~CSuicideBomberMonster()
@@ -57,17 +60,34 @@ void CSuicideBomberMonster::Update()
     if (!p)
         return;
     
+    // 카운트다운 중이면
+    if (isCountingDown)
+    {
+        countdownTimer -= DT;
+        
+        // 카운트다운 종료 시 폭발
+        if (countdownTimer <= 0.f)
+        {
+            SelfDestruct();
+            return;
+        }
+        
+        // 카운트다운 중에는 이동하지 않음 (여기서 리턴)
+        return;
+    }
+    
+    // 일반 이동 로직
     CombatStats& st = GetCombatStats();
     
     // 플레이어 방향 계산
     Vec2 toPlayer = p->GetWorldPos() - worldPos;
     float distance = toPlayer.Length();
     
-    // 자폭 범위 체크 (이동 전에)
+    // 폭발 범위 진입 시 카운트다운 시작
     if (distance <= detonationRange)
     {
-        SelfDestruct();
-        return;  // 자폭 후 더 이상 진행하지 않음
+        StartDetonationCountdown();
+        return;
     }
     
     // 플레이어쪽으로 이동
@@ -87,22 +107,66 @@ void CSuicideBomberMonster::Update()
     }
 }
 
+void CSuicideBomberMonster::Render()
+{
+    // 카운트다운 중이면 경고 표시
+    if (isCountingDown)
+    {
+        // 깜빡이는 붉은 원 (경고 표시)
+        float pulseFreq = 8.0f; // 초당 8회 깜빡임
+        float pulseValue = sinf((countdownTime - countdownTimer) * pulseFreq * 3.14159f * 2.0f);
+        pulseValue = (pulseValue + 1.0f) * 0.5f; // 0~1 범위로 변환
+        
+        // 경고 원 그리기
+        COLORREF warningColor = RGB(255, (int)(100 * pulseValue), 0);
+        RENDER->SetPen(PenType::Solid, warningColor, 3);
+        RENDER->SetBrush(BrushType::Null);
+        
+        float warningRadius = 40.f + pulseValue * 10.f; // 40~50 범위로 맥동
+        RENDER->Circle(renderPos.x, renderPos.y, warningRadius);
+        
+        // 카운트다운 시간 표시 (선택사항)
+        int timeLeft = (int)(countdownTimer * 10); // 0.1초 단위
+        wstring countText = L"!";
+        
+        RENDER->SetText(20, RGB(255, 0, 0), TextAlign::Center);
+        RENDER->SetTextBackMode(TextBackMode::Null);
+        RENDER->Text(renderPos.x, renderPos.y - 60.f, countText);
+    }
+}
+
 void CSuicideBomberMonster::OnCollisionEnter(CCollider* other)
 {
-    // 플레이어와 충돌 시 즉시 자폭
+    // 플레이어와 충돌 시 즉시 카운트다운 시작 (즉시 폭발 대신)
     if (other->GetLayer() == Layer::Player)
     {
-        SelfDestruct();
+        if (!isCountingDown)
+        {
+            StartDetonationCountdown();
+        }
         return;
     }
     
     CMonster::OnCollisionEnter(other);
 }
 
+void CSuicideBomberMonster::StartDetonationCountdown()
+{
+    if (isCountingDown)
+        return; // 이미 카운트다운 중
+    
+    isCountingDown = true;
+    countdownTimer = countdownTime;
+    
+    Logger::Debug(L"[CSuicideBomberMonster] Detonation countdown started!");
+}
+
 void CSuicideBomberMonster::SelfDestruct()
 {
     if (!GetScene())
         return;
+    
+    Logger::Debug(L"[CSuicideBomberMonster] Self-destruct!");
     
     // 폭발 이펙트 생성
     CExplosionEffect* effect = new CExplosionEffect();

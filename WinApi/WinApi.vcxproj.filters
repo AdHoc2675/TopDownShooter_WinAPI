@@ -118,6 +118,7 @@
     <ClInclude Include="CExplosionEffect.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="CRocketLauncherWeapon.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -198,6 +199,7 @@
     <ClCompile Include="CExplosionEffect.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="CRocketLauncherWeapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

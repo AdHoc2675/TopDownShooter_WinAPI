@@ -18,6 +18,7 @@
 #include "CShotgunWeapon.h"
 #include "CSMGWeapon.h"
 #include "CSuicideBomberMonster.h"
+#include "CRocketLauncherWeapon.h"  // 헤더 추가
 
 WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
 
@@ -81,8 +82,8 @@ void CSceneStage01::Enter()
     SOUND->PlayLoop(TEXT("Stage01_BGM"), bgm);
 
     WeaponChoice chosenWeapon = GetChosenWeapon();
-    Logger::Debug(L"[CSceneStage01::Init] GetChosenWeapon() returns: " +
-        to_wstring(static_cast<int>(chosenWeapon)));
+    Logger::Debug(L"[CSceneStage01::Enter] Creating weapon: " + 
+                 to_wstring(static_cast<int>(chosenWeapon)));
 
     if (chosenWeapon == WeaponChoice::Shotgun)
     {
@@ -93,6 +94,12 @@ void CSceneStage01::Enter()
     else if (chosenWeapon == WeaponChoice::SMG)
     {
         CSMGWeapon* weapon = new CSMGWeapon();
+        player->AddChild(weapon);
+        weapon->SetPlayer(player);
+    }
+    else if (chosenWeapon == WeaponChoice::RocketLauncher)
+    {
+        CRocketLauncherWeapon* weapon = new CRocketLauncherWeapon();
         player->AddChild(weapon);
         weapon->SetPlayer(player);
     }
@@ -180,11 +187,11 @@ void CSceneStage01::SpawnMonster()
     // 7% 확률로 원거리 몬스터
     int r = rand() % 100;
     CMonster* monster = nullptr;
-    if (r < 1)
+    if (r < 7)
     {
         monster = new CRangedMonster();
     }
-    else if (r < 99) {
+    else if (r < 12) {
 		monster = new CSuicideBomberMonster();
     }
     else

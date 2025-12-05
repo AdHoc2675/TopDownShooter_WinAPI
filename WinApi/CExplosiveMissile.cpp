@@ -3,6 +3,10 @@
 #include "CExplosiveMissile.h"
 #include "CExplosionEffect.h"
 
+CExplosiveMissile::CExplosiveMissile()
+{
+}
+
 void CExplosiveMissile::OnCollisionEnter(CCollider* other)
 {
     if (friendly && other->GetLayer() == Layer::Monster)
@@ -12,14 +16,17 @@ void CExplosiveMissile::OnCollisionEnter(CCollider* other)
         return;
     }
     
-    // 수명 종료 시에도 폭발
-    CMissile::OnCollisionEnter(other);
+    // 적 미사일이 플레이어와 충돌
+    if (!friendly && other->GetLayer() == Layer::Player)
+    {
+        Explode();
+        EVENT->Delete(GetScene(), this);
+        return;
+    }   
 }
 
 void CExplosiveMissile::Explode()
 {
-    if (!GetScene())
-        return;
     
     // 폭발 이펙트 생성 (콜라이더가 자동으로 피해 처리)
     CExplosionEffect* effect = new CExplosionEffect();
@@ -27,7 +34,7 @@ void CExplosiveMissile::Explode()
         worldPos,                      // 폭발 중심
         explosionRadius,               // 반경
         stats.attack * explosionDamageRatio, // 피해량
-        true,                          // 아군 폭발
+        true,                          // 아군 폭발dd
         0.4f                           // 지속 시간
     );
     

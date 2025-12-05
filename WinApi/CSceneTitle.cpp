@@ -14,7 +14,7 @@ CSceneTitle::~CSceneTitle()
 
 void CSceneTitle::Init()
 {
-    selected = 0; // 0=Pistol, 1=Shotgun, 2=SMG
+    selected = 0; // 0=Pistol, 1=Shotgun, 2=SMG, 3=RocketLauncher
 }
 
 void CSceneTitle::Enter()
@@ -47,17 +47,13 @@ void CSceneTitle::Update()
         Logger::Debug(L"[CSceneTitle] SPACE pressed, selected = " + to_wstring(selected));
 
         if (selected == 0)
-        {
             CSceneStage01::SetChosenWeapon(WeaponChoice::Pistol);
-        }
         else if (selected == 1)
-        {
             CSceneStage01::SetChosenWeapon(WeaponChoice::Shotgun);
-        }
-        else // selected == 2
-        {
+        else if (selected == 2)
             CSceneStage01::SetChosenWeapon(WeaponChoice::SMG);
-        }
+        else // selected == 3
+            CSceneStage01::SetChosenWeapon(WeaponChoice::RocketLauncher);
 
         WeaponChoice current = CSceneStage01::GetChosenWeapon();
         Logger::Debug(L"[CSceneTitle] Set weapon to: " + to_wstring(static_cast<int>(current)));
@@ -95,7 +91,7 @@ void CSceneTitle::Render()
     auto drawWeaponBox = [&](float x, float y, bool highlight, 
                              const wstring& name, 
                              float damage, float rof, int count, int mag, float reload, 
-                             int pierce = -1) {
+                             int pierce = -1, float explosionRadius = -1.f) {
         COLORREF bg = highlight ? RGB(80, 90, 120) : RGB(50, 50, 70);
         COLORREF border = highlight ? RGB(220, 220, 255) : RGB(140, 140, 180);
         
@@ -103,66 +99,71 @@ void CSceneTitle::Render()
         RENDER->SetBrush(BrushType::Solid, bg);
         RENDER->Rect(x, y, x + boxW, y + boxH);
 
-        float textY = y + 25.f;
-        const float lineHeight = 22.f;
+        float textY = y + 20.f;
+        const float lineHeight = 20.f;
 
-        // 무기 이름 (큰 글씨)
-        RENDER->SetText(28, RGB(0, 0, 0), TextAlign::Center);
+        // 무기 이름
+        RENDER->SetText(24, RGB(0, 0, 0), TextAlign::Center);
         RENDER->SetTextBackMode(TextBackMode::Null);
         RENDER->Text(x + boxW * 0.5f, textY, name);
-        textY += 38.f;
+        textY += 35.f;
 
-        // 스탯 (작은 글씨, 검은색)
-        RENDER->SetText(16, RGB(0, 0, 0), TextAlign::Center);
+        // 스탯
+        RENDER->SetText(15, RGB(0, 0, 0), TextAlign::Center);
         
-        // 피해량
         wstring stat1 = L"피해량: " + to_wstring((int)damage);
         RENDER->Text(x + boxW * 0.5f, textY, stat1);
         textY += lineHeight;
 
-        // 공격 속도 (ROF의 역수)
         float attackSpeed = (rof > 0.001f) ? (1.0f / rof) : 0.f;
-        wstring stat2 = L"공격 속도: " + to_wstring((int)(attackSpeed * 10) / 10.f);
+        wstring stat2 = L"공격속도: " + to_wstring((int)(attackSpeed * 10) / 10.f);
         RENDER->Text(x + boxW * 0.5f, textY, stat2);
         textY += lineHeight;
 
-        // 투사체 수
-        wstring stat3 = L"투사체 수: " + to_wstring(count);
+        wstring stat3 = L"투사체: " + to_wstring(count);
         RENDER->Text(x + boxW * 0.5f, textY, stat3);
         textY += lineHeight;
 
-        // 탄창 크기
-        wstring stat4 = L"탄창 크기: " + to_wstring(mag);
+        wstring stat4 = L"탄창: " + to_wstring(mag);
         RENDER->Text(x + boxW * 0.5f, textY, stat4);
         textY += lineHeight;
 
-        // 재장전 시간
         wstring stat5 = L"재장전: " + to_wstring((int)(reload * 10) / 10.f) + L"초";
         RENDER->Text(x + boxW * 0.5f, textY, stat5);
         textY += lineHeight;
 
-        // 관통 (있을 경우만)
         if (pierce >= 0)
         {
             wstring stat6 = L"관통: " + to_wstring(pierce);
             RENDER->Text(x + boxW * 0.5f, textY, stat6);
         }
+        
+        if (explosionRadius > 0.f)
+        {
+            wstring stat7 = L"폭발반경: " + to_wstring((int)explosionRadius);
+            RENDER->Text(x + boxW * 0.5f, textY, stat7);
+        }
     };
 
-    // Pistol (왼쪽)
+    // Pistol
     drawWeaponBox(startX, boxY, selected == 0, 
                   TEXT("권총"), 
                   15.f, 0.25f, 1, 6, 1.0f);
 
-    // Shotgun (중앙)
+    // Shotgun
     drawWeaponBox(startX + boxW + gap, boxY, selected == 1,
                   TEXT("샷건"),
                   10.f, 0.2f, 4, 2, 1.0f, 1);
 
-    // SMG (오른쪽)
+    // SMG
     drawWeaponBox(startX + (boxW + gap) * 2, boxY, selected == 2,
                   TEXT("기관단총"),
-                  8.f, 0.125f, 1, 20, 2.0f);
+                  10.f, 0.125f, 1, 20, 2.0f);
+    
+    // Rocket Launcher
+    //drawWeaponBox(startX + (boxW + gap) * 3, boxY, selected == 3,
+    //              TEXT("로켓런처"),
+    //              40.f, 1.2f, 1, 3, 2.5f, -1, 120.f);
 }
 
 void CSceneTitle::Exit()

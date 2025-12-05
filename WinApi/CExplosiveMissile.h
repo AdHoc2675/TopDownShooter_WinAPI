@@ -4,9 +4,19 @@
 class CExplosiveMissile : public CMissile
 {
 public:
+	CExplosiveMissile();
+	~CExplosiveMissile() {}
+
     void OnCollisionEnter(CCollider* other) override;
     void Explode();
-    // 필요한 멤버 변수 선언 (예시)
+
+	void SetExplosionRadius(float radius) { explosionRadius = radius; }
+	void SetExplosionDamageRatio(float ratio) { explosionDamageRatio = ratio; }
+
+	float GetExplosionRadius() const { return explosionRadius; }
+	float GetExplosionDamageRatio() const { return explosionDamageRatio; }
+
+private:
     float explosionRadius;
     float explosionDamageRatio;
     CombatStats stats;
