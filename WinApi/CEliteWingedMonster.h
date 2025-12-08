@@ -11,6 +11,7 @@ public:
 private:
 	void Init() override;
 	void Update() override;
+	void Render() override;
 
 	void TryFire();                // 다방향 발사
 	void BeginChargePrep();        // 돌진 준비(유예 시작, 위치 기억)

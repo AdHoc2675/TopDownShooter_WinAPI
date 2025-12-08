@@ -176,6 +176,8 @@ void CBossMonster::Update()
 	}
 	break;
 	}
+
+	UpdateStatusEffects();
 }
 
 void CBossMonster::Render()
@@ -213,6 +215,8 @@ void CBossMonster::Render()
 	RENDER->SetTextBackMode(TextBackMode::Null);
 	wstring s = L"Hastur, the Lord of Tentacles";
 	RENDER->Text(CGame::WINSIZE.x * 0.5, barY - statSize, s);
+
+	RenderStatusEffects();
 }
 
 #pragma region 발사 패턴

@@ -10,6 +10,8 @@ public:
 private:
 	void Init() override;
 	void Update() override;
+	void Render() override;
+
 	void OnCollisionEnter(CCollider* other) override;
 	void OnCollisionStay(CCollider* other) override; // 가만히 있도록 위치 보정 무시
 	void OnCollisionExit(CCollider* other) override;

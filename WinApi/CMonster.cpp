@@ -87,11 +87,13 @@ void CMonster::Update()
             animator->Play(TEXT("MoveRight"), false);
     }
 
+    UpdateStatusEffects();
+
 }
 
 void CMonster::Render()
 {
-
+    RenderStatusEffects();
 }
 
 void CMonster::OnDisable()
@@ -139,6 +141,7 @@ void CMonster::DropExpOrb(int value, int count)
 	}
 }
 
+// OnCollisionEnter 함수 - 미사일 처리 부분에 발화 적용 추가
 void CMonster::OnCollisionEnter(CCollider* other)
 {
     if (other->GetLayer() == Layer::Missile)
@@ -148,16 +151,27 @@ void CMonster::OnCollisionEnter(CCollider* other)
         // 1) 투사체 처리
         if (CMissile* missile = dynamic_cast<CMissile*>(attackerObj))
         {
-            // 아군(플레이어/터렛) 미사일만 몬스터에 피해 적용
             if (!missile->GetFriendly())
                 return;
 
             CombatStats& attackerStats = missile->GetCombatStats();
 
             float dealt = 0.f;
-            bool  crit  = false;
+            bool  crit = false;
             COMBAT->ApplyDamage(missile, this, attackerStats, st, &dealt, &crit);
 
+            // 발화 적용 (확률 체크 추가)
+            if (missile->GetAppliesBurn())
+            {
+                float roll = (float)(rand() % 100) / 100.f;  // 0.0 ~ 0.99
+                if (roll < missile->GetBurnChance())
+                {
+                    ApplyStatusEffect(StatusEffectType::Burn,
+                        missile->GetBurnStacks(),
+                        missile->GetBurnDuration());
+                }
+            }
+
             // 피격 이펙트 텍스트
             CDamageText* dt = new CDamageText();
             dt->Configure(worldPos, (int)dealt, crit);
@@ -171,17 +185,15 @@ void CMonster::OnCollisionEnter(CCollider* other)
             return;
         }
 
-        // 2) 소환수(CScythe) 처리
+        // 2) 소환수(CScythe) 처리 - 기존 코드 그대로 유지
         if (CScythe* scythe = dynamic_cast<CScythe*>(attackerObj))
         {
-            // 플레이어 소유 소환수는 항상 적 몬스터에 피해 적용
-            CombatStats attackerStats = scythe->GetCombatStats(); // 복사 또는 참조 제공 함수가 있으면 교체
+            CombatStats attackerStats = scythe->GetCombatStats();
 
             float dealt = 0.f;
-            bool  crit  = false;
+            bool  crit = false;
             COMBAT->ApplyDamage(scythe, this, attackerStats, st, &dealt, &crit);
 
-            // 피격 이펙트 텍스트
             CDamageText* dt = new CDamageText();
             dt->Configure(worldPos, (int)dealt, crit);
             EVENT->AddGameObject(GetScene(), dt);
@@ -193,7 +205,6 @@ void CMonster::OnCollisionEnter(CCollider* other)
             }
             return;
         }
-
     }
 }
 
@@ -249,8 +260,8 @@ void CMonster::OnCollisionExit(CCollider* other)
 void CMonster::Reset()
 {
     // 전투 스탯 초기화
-    st.hp       = 100.f;
-    st.maxHp    = 100.f;
+    st.hp       = 80.f;
+    st.maxHp    = 80.f;
     st.defense  = 0.f;
     st.attack   = 1.f;
     st.critChance = 0.f;
@@ -267,6 +278,8 @@ void CMonster::Reset()
     pos = Vec2(0, 0);
     worldPos = Vec2(0, 0);
     player = nullptr;
+
+    ClearAllStatusEffects();
     
     if (animator)
     {
@@ -304,5 +317,164 @@ void CMonster::ReturnToPool()
     {
         // 풀링되지 않은 객체는 기존 방식으로 삭제
         EVENT->Delete(s, this);
+    }
+}
+
+void CMonster::ApplyStatusEffect(StatusEffectType type, int stacks, float duration)
+{
+    // 이미 같은 타입의 상태이상이 있는지 확인
+    for (auto& effect : statusEffects)
+    {
+        if (effect.type == type)
+        {
+            // 중첩 추가 및 지속시간 갱신
+            effect.stacks += stacks;
+            if (effect.duration < duration)
+                effect.duration = duration;
+            return;
+        }
+    }
+
+    // 새로운 상태이상 추가
+    StatusEffect newEffect;
+    newEffect.type = type;
+    newEffect.stacks = stacks;
+    newEffect.duration = duration;
+
+    switch (type)
+    {
+    case StatusEffectType::Burn:
+        newEffect.tickInterval = 1.0f;  // 1초마다 틱
+        newEffect.tickTimer = 1.0f;
+        newEffect.damagePerStack = 3.0f; // 중첩당 3 피해
+        newEffect.maxStacks = BURN_MAX_STACKS;
+        break;
+    }
+
+    if (newEffect.stacks > newEffect.maxStacks)
+        newEffect.stacks = newEffect.maxStacks;
+
+    statusEffects.push_back(newEffect);
+}
+
+void CMonster::RemoveStatusEffect(StatusEffectType type)
+{
+    statusEffects.erase(
+        std::remove_if(statusEffects.begin(), statusEffects.end(),
+            [type](const StatusEffect& e) { return e.type == type; }),
+        statusEffects.end());
+}
+
+bool CMonster::HasStatusEffect(StatusEffectType type) const
+{
+    for (const auto& effect : statusEffects)
+    {
+        if (effect.type == type)
+            return true;
+    }
+    return false;
+}
+
+int CMonster::GetStatusEffectStacks(StatusEffectType type) const
+{
+    for (const auto& effect : statusEffects)
+    {
+        if (effect.type == type)
+            return effect.stacks;
+    }
+    return 0;
+}
+
+void CMonster::ClearAllStatusEffects()
+{
+    statusEffects.clear();
+}
+
+void CMonster::UpdateStatusEffects()
+{
+    // 몬스터가 죽었으면 모든 상태이상 제거 후 리턴
+    if (!st.alive())
+    {
+        ClearAllStatusEffects();
+        return;
+    }
+
+    // 역순으로 순회하여 안전하게 삭제
+    for (int i = (int)statusEffects.size() - 1; i >= 0; --i)
+    {
+        StatusEffect& effect = statusEffects[i];
+
+        // 지속시간 감소
+        effect.duration -= DT;
+        effect.tickTimer -= DT;
+
+        // 틱 발생
+        if (effect.tickTimer <= 0.f)
+        {
+            effect.tickTimer += effect.tickInterval;
+
+            // 피해 계산 및 적용
+            float damage = effect.damagePerStack * effect.stacks;
+            st.hp -= damage;
+
+            // 피해 텍스트 표시
+            CDamageText* dt = new CDamageText();
+            dt->Configure(worldPos + Vec2(0, -20.f), (int)damage, false);
+            EVENT->AddGameObject(GetScene(), dt);
+
+            // 사망 체크
+            if (!st.alive() && !droppedExpOrb)
+            {
+                DropExpOrb(ExpValue, ExpCount);
+                droppedExpOrb = true;
+
+                ClearAllStatusEffects();
+
+                // 풀링 객체도 EVENT->Delete()로 삭제 예약
+                // CEventManager::ProgressDeleteObject()에서 처리되도록 함
+                EVENT->Delete(GetScene(), this);
+                return;
+            }
+        }
+
+        // 지속시간 종료 시 제거 (틱 체크 후에 수행)
+        if (effect.duration <= 0.f)
+        {
+            statusEffects.erase(statusEffects.begin() + i);
+            continue;
+        }
+    }
+}
+
+void CMonster::RenderStatusEffects()
+{
+    if (statusEffects.empty())
+        return;
+
+    // 죽은 몬스터는 상태이상 아이콘 표시 안 함
+    if (!st.alive())
+        return;
+
+    float iconY = renderPos.y - scale.y * 0.5f - 15.f;
+    float iconX = renderPos.x;
+
+    for (const auto& effect : statusEffects)
+    {
+        // 지속시간이 남아있을 때만 렌더링
+        if (effect.duration <= 0.f)
+            continue;
+
+        if (effect.type == StatusEffectType::Burn)
+        {
+            // 발화 아이콘 (불꽃 모양 원)
+            float pulseValue = sinf(effect.duration * 5.f) * 0.2f + 0.8f;
+            float iconSize = 8.f * pulseValue;
+
+            RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
+            RENDER->SetBrush(BrushType::Solid, RGB(255, 100, 0));
+            RENDER->Circle(iconX, iconY, iconSize);
+
+            iconX += 18.f; // 다음 아이콘 위치
+        }
     }
 }

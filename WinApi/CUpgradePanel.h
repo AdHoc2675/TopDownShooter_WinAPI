@@ -18,6 +18,7 @@ enum class UpgradeType
 	WeaponPenetration,
     WeaponArmourPiercing,
     WeaponAimingDownSight,
+    WeaponBurn,
     ScytheSpeedUp,
     AimingDownSight
 };

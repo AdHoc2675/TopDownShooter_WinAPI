@@ -33,9 +33,11 @@ void CScene::DeleteAllObject()
 	{
 		if (active) obj->ComponentOnDisable();
 		obj->ComponentRelease();
-		objList.remove(obj);
+		//objList.remove(obj);
 		delete obj;
 	}
+
+	objList.clear();
 }
 
 void CScene::AddRenderer(IRender* renderer)
@@ -67,9 +69,10 @@ void CScene::DeleteAllUI()
 		if (active) ui->ComponentOnDisable();
 		ui->ComponentRelease();
 		ui->SetScene(nullptr);
-		uiList.remove(ui);
+		//uiList.remove(ui);
 		delete ui;
 	}
+	uiList.clear();
 }
 
 bool CScene::isPaused()

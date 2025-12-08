@@ -160,6 +160,13 @@ void CEliteWingedMonster::Update()
 		if (ax < -0.01f) animator->Play(TEXT("MoveLeft"), false);
 		else             animator->Play(TEXT("MoveRight"), false);
 	}
+
+	UpdateStatusEffects();
+}
+
+void CEliteWingedMonster::Render()
+{
+	RenderStatusEffects();
 }
 
 void CEliteWingedMonster::TryFire()

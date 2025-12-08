@@ -105,6 +105,8 @@ void CSuicideBomberMonster::Update()
                 animator->Play(TEXT("MoveRight"), false);
         }
     }
+
+	UpdateStatusEffects();
 }
 
 void CSuicideBomberMonster::Render()
@@ -133,6 +135,8 @@ void CSuicideBomberMonster::Render()
         RENDER->SetTextBackMode(TextBackMode::Null);
         RENDER->Text(renderPos.x, renderPos.y - 60.f, countText);
     }
+
+	RenderStatusEffects();
 }
 
 void CSuicideBomberMonster::OnCollisionEnter(CCollider* other)

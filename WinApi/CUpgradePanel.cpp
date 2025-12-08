@@ -117,6 +117,8 @@ void CUpgradePanel::Configure(CPlayer* p)
         { L"속사: 공격 속도 +25%",                UpgradeType::WeaponRapidFire_T1 },
         { L"관통탄: 관통 횟수 +1, 탄환 속도 +15%", UpgradeType::WeaponPenetration},
         { L"정조준: 치명타 확률 +20%", UpgradeType::AimingDownSight},
+        { L"발화탄: 30초 확률로 적에게 발화 부여 (초당 3 피해, 5초, 최대 20중첩)", UpgradeType::WeaponBurn },
+
     };
 
     // 반복 가능한 옵션
@@ -302,6 +304,14 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
             w->ApplyUpgrade_ArmourPiercing();
         break;
 	}
+    case UpgradeType::WeaponBurn:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponBurn);
+        CWeapon* w = player->GetWeapon();
+        if (w)
+            w->ApplyUpgrade_Burn();
+        break;
+    }
     case UpgradeType::ScytheSpeedUp:
     {
         // 모든 활성 낫에 일괄 적용

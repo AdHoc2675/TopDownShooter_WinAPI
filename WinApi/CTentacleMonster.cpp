@@ -82,6 +82,13 @@ void CTentacleMonster::Update()
 				animator->Play(TEXT("Idle"), true);
 		}
 	}
+
+	UpdateStatusEffects();
+}
+
+void CTentacleMonster::Render()
+{
+	RenderStatusEffects();
 }
 
 void CTentacleMonster::OnCollisionEnter(CCollider* other)

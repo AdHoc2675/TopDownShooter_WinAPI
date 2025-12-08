@@ -44,6 +44,13 @@ public:
 		maxChamberSize = maxChamberSize * 0.75f; // 탄창 크기 -25%
     }
 
+    void ApplyUpgrade_Burn()
+    {
+        appliesBurn = true;
+        burnStacks = 1;
+        burnDuration = 5.0f;
+    }
+
 #pragma region Set/Get
     void    SetPlayer(CPlayer* player) { this->player = player; }
     void    SetFireCooldown(float cooldown) { fireCooldown = (cooldown < 0.f) ? 0.01f : cooldown; }
@@ -62,6 +69,8 @@ public:
     float   GetSpreadAngleDeg() const { return spreadAngleDeg; }
     int     GetPierceCount() const { return pierceCount; }  // 추가
     float   GetMissileSpeedMultiplier() const { return missileSpeedMultiplier; }  // 추가
+    bool    GetAppliesBurn() const { return appliesBurn; }
+
 #pragma endregion
 
 protected:
@@ -89,6 +98,11 @@ protected:
 
     int     pierceCount;           // 미사일 관통 횟수
     float   missileSpeedMultiplier; // 미사일 이동속도 배율
+
+    bool appliesBurn = false;
+    int burnStacks = 1;
+    float burnDuration = 5.0f;
+    float burnChance = 0.3f;  // 30% 확률
 
 	CSound* fireSound = nullptr;
 	CSound* reloadSound = nullptr;

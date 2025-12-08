@@ -106,7 +106,6 @@ void CWeapon::Update()
 		}
 	}
 
-
 	// 스페이스: 스프레드 사격 (남은 탄 수만큼만 발사)
 	if (curCooldown <= 0.f && INPUT->ButtonStay(VK_SPACE))
 	{
@@ -271,16 +270,21 @@ void CWeapon::CreateMissile(const Vec2& spawnPos, const Vec2& dir)
 	missile->SetPos(spawnPos);
 	missile->SetDir(dir);
 
-	// 플레이어의 전투 스탯을 참고하되, 공격력은 무기 damage로 덮어쓰기
 	if (player)
 	{
 		missile->InheritCombat(player->GetCombatStats());
 		CombatStats& mstats = missile->GetCombatStats();
-		mstats.attack = damage; // 핵심: 무기 대미지 적용
+		mstats.attack = damage;
 	}
 
 	missile->SetPierceCount(pierceCount);
 	missile->SetMoveSpeed(500.f * missileSpeedMultiplier);
+
+	// 발화 설정 전달 (확률 포함)
+	if (appliesBurn)
+	{
+		missile->SetAppliesBurn(true, burnStacks, burnDuration, burnChance);
+	}
 
 	EVENT->AddGameObject(GetScene(), missile);
 }

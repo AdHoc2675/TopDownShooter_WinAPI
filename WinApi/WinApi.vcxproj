@@ -180,6 +180,7 @@
     <ClInclude Include="CSMGWeapon.h" />
     <ClInclude Include="CSoundController.h" />
     <ClInclude Include="CMissileTurret.h" />
+    <ClInclude Include="CStatusEffect.h" />
     <ClInclude Include="CSuicideBomberMonster.h" />
     <ClInclude Include="CTentacleMonster.h" />
     <ClInclude Include="CTiledBackground.h" />

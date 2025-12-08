@@ -61,4 +61,3 @@ private:
 	float    bossSpawnTriggerTime = 300.f;        // 보스 소환 트리거 시간(초)
     CBossMonster* currentBoss = nullptr;  // 현재 활성 보스 참조
 };
-

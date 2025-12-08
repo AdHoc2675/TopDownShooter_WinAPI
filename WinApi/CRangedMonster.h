@@ -11,6 +11,7 @@ public:
 private:
     void Init() override;
     void Update() override;
+	void Render() override;
 
     void TryFire();
     void SpawnMissile(const Vec2& dir);

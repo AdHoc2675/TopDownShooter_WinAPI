@@ -120,6 +120,7 @@
     <ClInclude Include="..\Engine\CIconTextButton.h">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClInclude>
+    <ClInclude Include="CStatusEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">

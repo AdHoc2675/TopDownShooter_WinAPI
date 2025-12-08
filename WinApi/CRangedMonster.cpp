@@ -30,7 +30,6 @@ CRangedMonster::CRangedMonster()
     
 }
 
-
 CRangedMonster::~CRangedMonster() {}
 
 void CRangedMonster::Init()
@@ -97,6 +96,13 @@ void CRangedMonster::Update()
         if (diff.SqrMagnitude() <= attackRange * attackRange)
             TryFire();
     }
+
+	UpdateStatusEffects();
+}
+
+void CRangedMonster::Render()
+{
+	RenderStatusEffects();
 }
 
 void CRangedMonster::TryFire()
