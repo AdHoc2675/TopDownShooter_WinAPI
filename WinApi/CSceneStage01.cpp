@@ -29,7 +29,7 @@ CSceneStage01::CSceneStage01()
     Logger::Debug(L"[CSceneStage01::Constructor] Static sChosenWeapon = " +
         to_wstring(static_cast<int>(sChosenWeapon)));
 
-    MONSTERPOOL->Init(30, 10, 10);
+    MONSTERPOOL->Init(75, 25, 25);
 
 }
 
@@ -125,6 +125,9 @@ void CSceneStage01::Update()
         return;
     }
     
+    // 보스 생존 여부 체크
+    bool bossAlive = (currentBoss != nullptr && currentBoss->GetCombatStats().alive());
+    
     // 엘리트 날개 몬스터 5회 소환
     if (eliteWingSpawned < 5 && playTime >= eliteWingSpawnTriggerTime)
     {
@@ -151,22 +154,26 @@ void CSceneStage01::Update()
             SpawnMonster();
         }
 
-        // 난이도 증가(선택): 간격 서서히 감소
-        spawnInterval = spawnInterval - 0.02f;
-        if (spawnInterval < 1.2f) {
-            spawnInterval = 1.2f;
+        // 보스가 살아있으면 스폰 간격 고정, 아니면 점점 감소
+        if (bossAlive)
+        {
+            spawnInterval = 1.5f;  // 보스전 중에는 느린 스폰
         }
+        else
+        {
+            // 난이도 증가: 간격 서서히 감소
+            spawnInterval = spawnInterval - 0.01f;
+            if (spawnInterval < 0.6f) {
+                spawnInterval = 0.6f;
+            }
+        }
+        
         spawnTimer = spawnInterval;
     }
 }
 
 void CSceneStage01::Render()
 {
-	//// 배경 그리기
-    //RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
-    //RENDER->SetBrush(BrushType::Solid, RGB(39, 32, 48));
-    //RENDER->Rect(0, 0, CGame::WINSIZE.x, CGame::WINSIZE.y);
-
     Vec2 startPos = CAMERA->WorldToScreenPoint(Vec2(0, 0));
     Vec2 endPos = CAMERA->WorldToScreenPoint(Vec2(CGame::WINSIZE.x, CGame::WINSIZE.y));
 }
@@ -175,7 +182,8 @@ void CSceneStage01::Exit()
 {
     SOUND->Stop(TEXT("Wasteland Combat Loop"));
 
-    MONSTERPOOL->ReleaseAll();  // 모든 몬스터 풀로 반환
+    MONSTERPOOL->ReleaseAll();
+    currentBoss = nullptr;  // 보스 참조 초기화
 }
 
 void CSceneStage01::Release()
@@ -192,7 +200,6 @@ void CSceneStage01::SpawnMonster()
     int r = rand() % 100;
     CMonster* monster = nullptr;
     
-    // 풀에서 획득 (new 대신)
     if (r < 7)
     {
         monster = MONSTERPOOL->AcquireRanged();
@@ -223,6 +230,10 @@ void CSceneStage01::UnregisterMonster(CMonster* m)
     auto it = std::find(enemies.begin(), enemies.end(), m);
     if (it != enemies.end())
         enemies.erase(it);
+    
+    // 보스가 삭제되면 참조 해제
+    if (m == currentBoss)
+        currentBoss = nullptr;
 }
 
 CMonster* CSceneStage01::GetNearestEnemy(const Vec2& from, float maxRange) const
@@ -233,7 +244,7 @@ CMonster* CSceneStage01::GetNearestEnemy(const Vec2& from, float maxRange) const
     {
         if (!m) continue;
         const CombatStats& st = m->GetCombatStats();
-        if (!st.alive()) continue; // 사망 처리된 몬스터 제외
+        if (!st.alive()) continue;
         Vec2 diff = m->GetWorldPos() - from;
         float sqr = diff.SqrMagnitude();
         if (sqr < bestSqr)
@@ -300,4 +311,6 @@ void CSceneStage01::SpawnBossMonster()
     boss->SetPlayer(player);
     EVENT->AddGameObject(this, boss);
 	RegisterMonster(boss);
+    
+    currentBoss = boss;  // 보스 참조 저장
 }

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CMonster.h"
+#include "CBossMonster.h"
 class CPlayer;
 
 using namespace std;
@@ -49,7 +50,7 @@ private:
     vector<CMonster*> enemies;
     CPlayer* player = nullptr;           // 플레이어 참조
 
-    float    spawnInterval = 3.f;        // 기본 스폰 주기(초)
+    float    spawnInterval = 1.5f;        // 기본 스폰 주기(초)
     float    spawnTimer    = 0.f;        // 타이머
 	int      currentMonsterCount = 0;    // 현재 씬 몬스터 수
     int      maxMonsters   = 50;         // 씬 최대 몬스터
@@ -57,6 +58,7 @@ private:
     int      eliteWingSpawned = 0;              // 엘리트 1회 소환 여부
     float    eliteWingSpawnTriggerTime = 60.f;  // 소환 트리거 시간(초)
 	int      bossSpawned = 0;                   // 보스 소환 여부
-	float    bossSpawnTriggerTime = 5.f;        // 보스 소환 트리거 시간(초)
+	float    bossSpawnTriggerTime = 300.f;        // 보스 소환 트리거 시간(초)
+    CBossMonster* currentBoss = nullptr;  // 현재 활성 보스 참조
 };
 

@@ -102,12 +102,10 @@ void CMissileTurret::SpawnMissile(const Vec2& spawnPos, const Vec2& dir)
     m->GetCombatStats().defense        = stats.defense;
     m->GetCombatStats().critChance     = stats.critChance;
     m->GetCombatStats().critMultiplier = stats.critMultiplier;
-
-    // 이동/수명 설정
-    // 미사일이 CombatStats.speed를 쓰지 않도록 했다면 moveSpeed로 관리
-    // 현재 구현이 stats.speed를 사용 중이라면 아래처럼 설정:
     m->GetCombatStats().speed = missileSpeed;
-    // lifeTime 직접 설정 필요 시 CMissile에 setter 추가하거나 생성 후 필드 접근하도록 변경
+
+    // 관통 횟수 3으로 설정
+    m->SetPierceCount(3);
 
     EVENT->AddGameObject(GetScene(), m);
 }

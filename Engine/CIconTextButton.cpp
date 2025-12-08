@@ -6,7 +6,7 @@ CIconTextButton::CIconTextButton()
 {
     label.clear();
     labelColor    = RGB(20, 20, 20);
-    labelSize     = 18;
+    labelSize     = 12;
     labelAlign    = TextAlign::Left;
 
     icon          = nullptr;

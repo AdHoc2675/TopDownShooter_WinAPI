@@ -55,7 +55,7 @@ void CUpgradePanel::OnEnable()
                               (DWORD_PTR)this, (DWORD_PTR)o.type);
 
         btn->SetLabel(o.label);
-        btn->SetLabelSize(18);
+        btn->SetLabelSize(12);
         btn->SetLabelColor(RGB(20, 20, 20));
 
         CImage* icon = nullptr;
@@ -110,23 +110,22 @@ void CUpgradePanel::Configure(CPlayer* p)
 #pragma region 업그레이드 옵션 풀 정의
     // 반복 불가능 옵션
     vector<pair<wstring, UpgradeType>> oneTimePool = {
-        { L"꼬마 혼령: 공격력 10의 투사체 발사", UpgradeType::SummonRanged },
+        { L"꼬마 혼령: 관통 3과 공격력 10의 투사체 발사", UpgradeType::SummonRanged },
 		{ L"회전 낫: 플레이어 주위에서 피해 12를 주는 낫 2체 소환", UpgradeType::SummonScythe },
         { L"더블샷: 투사체 수 +1, 산탄각 +30%, 피해량 -10%", UpgradeType::WeaponDoubleShot_T1 },
         { L"빠른 손: 재장전 속도 -20%, 공격 속도 +5%", UpgradeType::WeaponQuickHands_T1 },
         { L"속사: 공격 속도 +25%",                UpgradeType::WeaponRapidFire_T1 },
         { L"관통탄: 관통 횟수 +1, 탄환 속도 +15%", UpgradeType::WeaponPenetration},
-        
-        
+        { L"정조준: 치명타 확률 +20%", UpgradeType::AimingDownSight},
     };
 
     // 반복 가능한 옵션
     vector<pair<wstring, UpgradeType>> repeatablePool = {
-        { L"공격력 +10%",                      UpgradeType::AtkUp },
-        { L"최대 체력 +2 및 즉시 +2 회복",    UpgradeType::MaxHpUpHeal },
-        { L"치명타 확률 +5%",               UpgradeType::CritChanceUp },
-        { L"이동 속도 +5%",                 UpgradeType::SpdUp },
-        { L"치명타 피해 배율 +0.1",              UpgradeType::CritDmgUp },
+        { L"(반복) 공격력 +10% (최소 1)",                      UpgradeType::AtkUp },
+        { L"(반복) 최대 체력 +2 및 즉시 +2 회복",    UpgradeType::MaxHpUpHeal },
+        { L"(반복) 치명타 확률 +5%",               UpgradeType::CritChanceUp },
+        { L"(반복) 이동 속도 +5%",                 UpgradeType::SpdUp },
+        { L"(반복) 치명타 피해 배율 +0.1",              UpgradeType::CritDmgUp },
     };
 
     // 조건부 옵션: SummonScythe를 이미 보유한 경우에만 추가
@@ -205,10 +204,18 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
     if (!player) return;
 
     CombatStats& s = player->GetCombatStats();
+	float increase = 0.f;
     switch (type)
     {
     case UpgradeType::AtkUp:
-        s.attack *= 1.1f;
+        // 10% 증가량 계산
+        increase = s.attack * 0.1f;
+
+        // 최소 1 보장
+        if (increase < 1.f)
+            increase = 1.f;
+
+        s.attack += increase;
         break;
     case UpgradeType::MaxHpUpHeal:
         s.maxHp += 2.f;
@@ -289,7 +296,7 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
 	}
     case UpgradeType::WeaponArmourPiercing:
     {
-        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponPenetration);
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponArmourPiercing);
         CWeapon* w = player->GetWeapon();
         if (w)
             w->ApplyUpgrade_ArmourPiercing();
@@ -305,6 +312,10 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         gTakenOneTimeUpgrades.insert(UpgradeType::ScytheSpeedUp);
         break;
     }
+    case UpgradeType::AimingDownSight:
+        s.critChance = min(1.f, s.critChance + 0.20f);
+        gTakenOneTimeUpgrades.insert(UpgradeType::AimingDownSight);
+		break;
     default:
         break;
     }

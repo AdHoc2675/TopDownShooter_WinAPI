@@ -19,6 +19,7 @@ enum class UpgradeType
     WeaponArmourPiercing,
     WeaponAimingDownSight,
     ScytheSpeedUp,
+    AimingDownSight
 };
 
 class CUpgradePanel : public CPanel

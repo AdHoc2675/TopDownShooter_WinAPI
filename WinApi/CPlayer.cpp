@@ -172,7 +172,7 @@ void CPlayer::Update()
 
 	// 경험치 테스트용
 	if (INPUT->ButtonDown('T', true)) {
-		AddExp(100);
+		AddExp(maxExp / 2);
 	}
 
 	AnimatorUpdate();
@@ -258,52 +258,87 @@ void CPlayer::Render()
 
 #pragma region 상세 스탯 정보 렌더링
 	// 상세 스탯 정보 렌더링
-	const int statSize = 16;
+	const int statSize = 14;
 	const float startX = 10.f;
-	const float startY = 40.f + 56.f; // 체력 하트 아래쪽(아이콘 높이+여백 고려)
+	const float startY = 40.f + 56.f; // 체력 하트 아래쪽
 	float y = startY;
 
 	RENDER->SetText(statSize, RGB(20, 20, 20), TextAlign::Left);
 	RENDER->SetTextBackMode(TextBackMode::Null);
 
-	// 보기 좋게 반올림
-	auto round1 = [](float v) { return (int)(v + 0.5f); };
-
-	// ATK 표시는 플레이어 stats.attack 대신 현재 무기 damage를 우선 사용
-	int atkShown = round1(stats.attack);
-	int countShown = 1;
-	int spreadShown = 0;
-	if (weapon)
-	{
-		atkShown = (int)(weapon->GetDamage());
-		countShown = weapon->GetProjectileCount();
-		spreadShown = (int)(weapon->GetSpreadAngleDeg());
-	}
-
-	wstring s1 = L"ATK: " + to_wstring(round1(stats.attack)) +
-		L"  DEF: " + to_wstring(round1(stats.defense));
-	wstring s2 = L"CRIT: " + to_wstring((int)(stats.critChance * 100)) + L"%  x" +
-		to_wstring(stats.critMultiplier);
-	// 이동 속도 표시가 필요하면
-	wstring s3 = L"SPD: " + to_wstring(round1(stats.speed));
+	// 플레이어 기본 스탯
+	wstring s1 = L"CRIT: " + to_wstring((int)(stats.critChance * 100)) + L"% x" +
+		to_wstring((int)(stats.critMultiplier * 10) / 10.f);
+	wstring s2 = L"SPD: " + to_wstring((int)(stats.speed + 0.5f));
 
 	RENDER->Text(startX, y, s1); y += statSize + 4.f;
-	RENDER->Text(startX, y, s2); y += statSize + 4.f;
-	RENDER->Text(startX, y, s3);
+	RENDER->Text(startX, y, s2); y += statSize + 8.f;
 
-	// 무기 요약 표시 추가
-	const int weaponSize = 16;
-	RENDER->SetText(weaponSize, RGB(40, 40, 40), TextAlign::Left);
-	RENDER->SetTextBackMode(TextBackMode::Null);
+	// 무기 상세 정보
+	if (weapon)
+	{
+		RENDER->SetText(statSize, RGB(60, 60, 100), TextAlign::Left);
+		
+		// 무기 이름
+		wstring weaponName = weapon->GetName();
+		RENDER->Text(startX, y, L"[" + weaponName + L"]"); 
+		y += statSize + 4.f;
 
-	wstring w1 = L"Weapon DMG: " + to_wstring(atkShown);
-	wstring w2 = L"COUNT: " + to_wstring(countShown);
-	wstring w3 = L"SPREAD: " + to_wstring(spreadShown);
+		RENDER->SetText(statSize, RGB(40, 40, 40), TextAlign::Left);
 
-	RENDER->Text(startX, y, w1); y += weaponSize + 4.f;
-	RENDER->Text(startX, y, w2); y += weaponSize + 4.f;
-	RENDER->Text(startX, y, w3);
+		// 피해량
+		int dmg = (int)(weapon->GetDamage() + 0.5f);
+		wstring w1 = L"피해량: " + to_wstring(dmg);
+		RENDER->Text(startX, y, w1); y += statSize + 2.f;
 
+		// 공격 속도 (fireCooldown의 역수)
+		float rof = weapon->GetFireCooldown();
+		float atkSpeed = (rof > 0.001f) ? (1.0f / rof) : 0.f;
+		wstring w2 = L"공격속도: " + to_wstring((int)(atkSpeed * 10) / 10.f);
+		RENDER->Text(startX, y, w2); y += statSize + 2.f;
+
+		// 투사체 수
+		int count = weapon->GetProjectileCount();
+		wstring w3 = L"투사체: " + to_wstring(count);
+		RENDER->Text(startX, y, w3); y += statSize + 2.f;
+
+		// 관통
+		int pierce = weapon->GetPierceCount();
+		wstring w4 = L"관통: " + to_wstring(pierce);
+		RENDER->Text(startX, y, w4); y += statSize + 2.f;
+
+		// 탄창 (현재/최대)
+		int curMag = (int)(weapon->GetCurChamberSize() + 0.5f);
+		int maxMag = (int)(weapon->GetMaxChamberSize() + 0.5f);
+		wstring w5 = L"탄창: " + to_wstring(curMag) + L" / " + to_wstring(maxMag);
+		RENDER->Text(startX, y, w5); y += statSize + 2.f;
+
+		// 재장전 시간
+		float reloadTime = weapon->GetReloadTime();
+		wstring w6 = L"재장전: " + to_wstring((int)(reloadTime * 10) / 10.f) + L"초";
+		RENDER->Text(startX, y, w6); y += statSize + 2.f;
+
+		// 산탄각 (0이 아닐 때만 표시)
+		float spread = weapon->GetSpreadAngleDeg();
+		if (spread > 0.01f)
+		{
+			wstring w7 = L"산탄각: " + to_wstring((int)(spread + 0.5f)) + L"°";
+			RENDER->Text(startX, y, w7); y += statSize + 2.f;
+		}
+
+		// 탄속 배율 (1.0이 아닐 때만 표시)
+		float speedMult = weapon->GetMissileSpeedMultiplier();
+		if (fabsf(speedMult - 1.0f) > 0.01f)
+		{
+			int speedPercent = (int)(speedMult * 100 + 0.5f);
+			wstring w8 = L"탄속: " + to_wstring(speedPercent) + L"%";
+			RENDER->Text(startX, y, w8);
+		}
+	}
+	else
+	{
+		RENDER->Text(startX, y, L"무기 없음");
+	}
 #pragma endregion
 }
 

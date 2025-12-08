@@ -67,12 +67,6 @@
     <ClInclude Include="CExpOrb.h">
       <Filter>GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="CUpgradePanel.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Engine\CIconTextButton.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="CTiledBackground.h">
       <Filter>GameObject</Filter>
     </ClInclude>
@@ -120,6 +114,12 @@
     </ClInclude>
     <ClInclude Include="CRocketLauncherWeapon.h" />
     <ClInclude Include="CMonsterPoolManager.h" />
+    <ClInclude Include="CUpgradePanel.h">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Engine\CIconTextButton.h">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -150,12 +150,6 @@
       <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CExpOrb.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="CUpgradePanel.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Engine\CIconTextButton.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CTiledBackground.cpp">
@@ -201,6 +195,12 @@
       <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CRocketLauncherWeapon.cpp" />
+    <ClCompile Include="CUpgradePanel.cpp">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Engine\CIconTextButton.cpp">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

@@ -45,21 +45,23 @@ public:
     }
 
 #pragma region Set/Get
-	void    SetPlayer(CPlayer* player) { this->player = player; }
-	void    SetFireCooldown(float cooldown) { fireCooldown = (cooldown < 0.f) ? 0.01f : cooldown; }
-	void    SetMaxChamberSize(float size) { maxChamberSize = (size <= 0.f) ? 1.f : size; }
-	void    SetReloadTime(float time) { reloadTime = (time < 0.f) ? 0.01f : time; }
+    void    SetPlayer(CPlayer* player) { this->player = player; }
+    void    SetFireCooldown(float cooldown) { fireCooldown = (cooldown < 0.f) ? 0.01f : cooldown; }
+    void    SetMaxChamberSize(float size) { maxChamberSize = (size <= 0.f) ? 1.f : size; }
+    void    SetReloadTime(float time) { reloadTime = (time < 0.f) ? 0.01f : time; }
     void    SetProjectileCount(int count) { projectileCount = (count <= 0) ? 1 : count; }
     void    SetSpreadAngleDeg(float angle) { spreadAngleDeg = (angle < 0.f) ? 0.f : angle; }
     void    SetDamage(float dmg) { damage = (dmg < 0.f) ? 0.f : dmg; }
 
-	float   GetFireCooldown() const { return fireCooldown; }
+    float   GetFireCooldown() const { return fireCooldown; }
     float   GetMaxChamberSize() const { return maxChamberSize; }
     float   GetCurChamberSize() const { return curChamberSize; }
-	float   GetReloadTime() const { return reloadTime; }
-	float   GetDamage() {return damage; }
+    float   GetReloadTime() const { return reloadTime; }
+    float   GetDamage() const { return damage; }  // const 추가
     int     GetProjectileCount() const { return projectileCount; }
     float   GetSpreadAngleDeg() const { return spreadAngleDeg; }
+    int     GetPierceCount() const { return pierceCount; }  // 추가
+    float   GetMissileSpeedMultiplier() const { return missileSpeedMultiplier; }  // 추가
 #pragma endregion
 
 protected:

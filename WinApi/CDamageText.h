@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "pch.h"
 
 class CDamageText : public CGameObject
@@ -11,10 +11,10 @@ public:
     {
         pos = worldPos;
         text = L"-" + to_wstring(amount);
-        if (crit) { text = L"CRIT " + text; textColor = RGB(255,200,0); }
+        if (crit) { text = L"CRIT " + text; textColor = RGB(255, 100, 0); textSize = 18; }
         else      { textColor = color; }
         lifetime = life;
-        vel = Vec2(0.f, -60.f); // À§·Î »ìÂ¦ ¶°¿À¸£±â
+        vel = Vec2(0.f, -60.f); // ìœ„ë¡œ ì‚´ì§ ë– ì˜¤ë¥´ê¸°
     }
 
 private:
@@ -28,7 +28,7 @@ private:
     }
     void Render() override
     {
-        RENDER->SetText(14, textColor, TextAlign::Center);
+        RENDER->SetText(textSize, textColor, TextAlign::Center);
         RENDER->SetTextBackMode(TextBackMode::Null);
         RENDER->Text(renderPos.x, renderPos.y, text);
     }
@@ -40,4 +40,5 @@ private:
     float    lifetime = 0.6f;
     Vec2     vel;
     COLORREF textColor = RGB(255,0,0);
+	int      textSize = 14;
 };
