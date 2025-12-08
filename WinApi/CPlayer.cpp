@@ -51,6 +51,7 @@ void CPlayer::Init()
 
 	animator = new CAnimator();
 
+#pragma region 애니메이션 생성
 	// IdleRight / IdleLeft (7프레임, 가로 배치 가정)
 	animator->CreateAnimation(TEXT("IdleRight"), rightImage,
 		0.1f, 6, true,
@@ -80,6 +81,8 @@ void CPlayer::Init()
 	animator->SetRatio(2.0f);
 	AddChild(animator);
 
+#pragma endregion
+
 	// 충돌 컴포넌트 추가
 	CCollider* collider = new CCollider();
 	collider->SetScale(scale);
@@ -90,6 +93,10 @@ void CPlayer::Init()
 	footstepSounds[0] = LOADSOUND(TEXT("Footsteps_Casual_Grass_01"), TEXT("Sound\\Footsteps_Casual_Grass_01.wav"));
 	footstepSounds[1] = LOADSOUND(TEXT("Footsteps_Casual_Grass_02"), TEXT("Sound\\Footsteps_Casual_Grass_02.wav"));
 	footstepSounds[2] = LOADSOUND(TEXT("Footsteps_Casual_Grass_03"), TEXT("Sound\\Footsteps_Casual_Grass_03.wav"));
+	// 피격음 로드
+	hitSound = LOADSOUND(TEXT("Player_Hit"), TEXT("Sound\\Blood_Splash_Quick_01.wav"));
+	// 경험치 획득음 로드
+	addExpSound = LOADSOUND(TEXT("Exp_Gain"), TEXT("Sound\\Coins (10).wav"));
 }
 
 void CPlayer::OnEnable()
@@ -322,6 +329,8 @@ void CPlayer::AddExp(int amount)
 		panel->Configure(this);            // 구성 정보 설정
 		GetScene()->SetPaused(true);
 	}
+	if (addExpSound)
+		SOUND->PlayOnce(addExpSound);
 }
 
 void CPlayer::AnimatorUpdate()
@@ -357,11 +366,12 @@ void CPlayer::OnCollisionEnter(CCollider* other)
 		{
 			CombatStats& attackerStats = monster->GetCombatStats();
 			COMBAT->ApplyDamage(monster, this, attackerStats, stats);
-
+			PlayHitSound();
 			// 1초 무적 (쿨다운 설정)
 			hitCooldown = 1.0f;
 		}
 	}
+
 }
 
 void CPlayer::OnCollisionStay(CCollider* other)
@@ -376,9 +386,15 @@ void CPlayer::OnCollisionStay(CCollider* other)
 		{
 			CombatStats& attackerStats = monster->GetCombatStats();
 			COMBAT->ApplyDamage(monster, this, attackerStats, stats);
-
+			PlayHitSound();
 			// 1초 무적 (쿨다운 설정)
 			hitCooldown = 1.0f;
 		}
 	}
+}
+
+void CPlayer::PlayHitSound()
+{
+	if (hitSound)
+		SOUND->PlayOnce(hitSound);
 }

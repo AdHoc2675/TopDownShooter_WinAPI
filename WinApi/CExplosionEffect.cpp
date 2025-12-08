@@ -130,20 +130,18 @@ void CExplosionEffect::OnCollisionEnter(CCollider* other)
         if (!victimStats.alive())
             return;
         
-        // 거리 기반 피해 감쇠 (선택사항)
+        // 거리 기반 피해 감쇠
         Vec2 diff = monster->GetWorldPos() - worldPos;
         float distance = diff.Length();
         float damageMultiplier = 1.0f;
         
-        // 중심에서 멀수록 피해 감소 (0%~50% 감소)
         if (distance > 0.f && explosionRadius > 0.f)
         {
             float distanceRatio = distance / explosionRadius;
-            damageMultiplier = 1.0f - (distanceRatio * 0.5f); // 최대 50% 감소
+            damageMultiplier = 1.0f - (distanceRatio * 0.5f);
             if (damageMultiplier < 0.5f) damageMultiplier = 0.5f;
         }
         
-        // 피해 적용
         CombatStats adjustedStats = stats;
         adjustedStats.attack *= damageMultiplier;
         
@@ -151,7 +149,6 @@ void CExplosionEffect::OnCollisionEnter(CCollider* other)
         bool crit = false;
         COMBAT->ApplyDamage(this, monster, adjustedStats, victimStats, &dealt, &crit);
         
-        // 피해 텍스트
         CDamageText* dt = new CDamageText();
         dt->Configure(monster->GetWorldPos(), (int)dealt, crit);
         EVENT->AddGameObject(GetScene(), dt);
@@ -162,6 +159,10 @@ void CExplosionEffect::OnCollisionEnter(CCollider* other)
         CPlayer* player = dynamic_cast<CPlayer*>(target);
         if (!player)
             return;
+        
+        // 플레이어 hitCooldown 체크 추가
+        if (player->IsHitCooldown())
+            return; // 쿨다운 중이면 피해 없음
         
         CombatStats& victimStats = player->GetCombatStats();
         if (!victimStats.alive())
@@ -185,5 +186,11 @@ void CExplosionEffect::OnCollisionEnter(CCollider* other)
         float dealt = 0.f;
         bool crit = false;
         COMBAT->ApplyDamage(this, player, adjustedStats, victimStats, &dealt, &crit);
+        
+        // 피격 후 쿨다운 설정
+        player->SetHitCooldown(1.0f);
+        
+        // 피격 사운드 재생
+        player->PlayHitSound();
     }
 }

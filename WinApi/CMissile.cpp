@@ -75,23 +75,31 @@ void CMissile::OnCollisionEnter(CCollider* other)
         }
     }
     // 적 미사일: 플레이어 충돌 시 피해 적용
-    else if (friendly == false && other->GetLayer() == Layer::Player)
+    else if (!friendly && other->GetLayer() == Layer::Player)
     {
         CGameObject* playerObj = other->GetOwner();
         CPlayer* player = dynamic_cast<CPlayer*>(playerObj);
         if (player)
         {
+            // 플레이어 hitCooldown 체크 추가
+            if (player->IsHitCooldown())
+            {
+                // 쿨다운 중이면 피해 없이 미사일만 제거
+                EVENT->Delete(GetScene(), this);
+                return;
+            }
+            
             CombatStats& victimStats = player->GetCombatStats();
             float dealt = 0.f;
             bool crit = false;
             COMBAT->ApplyDamage(this, player, stats, victimStats, &dealt, &crit);
-            // (플레이어가 피격 메시지 UI를 갖고 있다면 여기서 트리거할 수 있음)
+            
+            // 피격 후 쿨다운 설정
+            player->SetHitCooldown(1.0f);
+            
+            // 피격 사운드 재생
+            player->PlayHitSound();
         }
         EVENT->Delete(GetScene(), this);
-    }
-    else
-    {
-        //// 다른 것과 충돌 시 그냥 제거
-        //EVENT->Delete(GetScene(), this);
     }
 }

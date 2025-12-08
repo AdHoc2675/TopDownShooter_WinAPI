@@ -22,6 +22,6 @@ private:
     float explosionDamage = 1.f;
     
     bool isCountingDown = false;      // 카운트다운 중인지
-    float countdownTime = 0.7ㅁ5f;       // 카운트다운 시간
+    float countdownTime = 0.75f;       // 카운트다운 시간
     float countdownTimer = 0.f;       // 현재 카운트다운 타이머
 };

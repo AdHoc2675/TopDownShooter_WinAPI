@@ -19,6 +19,14 @@ public:
 	void	SetWeapon(CWeapon* w) { weapon = w; }
 	CWeapon* GetWeapon() const { return weapon; }
 
+	// 피해 쿨다운 관련 함수 추가
+	bool	IsHitCooldown() const { return hitCooldown > 0.f; }
+	void	SetHitCooldown(float time) { hitCooldown = time; }
+	float	GetHitCooldown() const { return hitCooldown; }
+
+	// 피격 사운드 재생
+	void	PlayHitSound();
+
 private:
 	void	Init()			override;
 	void	OnEnable()		override;
@@ -48,6 +56,8 @@ private:
 	CSound*		footstepSounds[3] = { nullptr, nullptr, nullptr };
 	float       footstepInterval;
 	float       footstepTimer;
+	CSound*		hitSound = nullptr;
+	CSound*		addExpSound = nullptr;
 
 	CWeapon*	weapon = nullptr;
 };
