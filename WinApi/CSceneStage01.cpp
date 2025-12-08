@@ -238,29 +238,31 @@ void CSceneStage01::Exit()
 {
     SOUND->Stop(TEXT("Wasteland Combat Loop"));
 
-    MONSTERPOOL->ReleaseAll();
-
+    // 1. 풀 몬스터를 씬에서 제거 (delete 없이)
+    // enemies 벡터를 복사하여 순회 (원본이 변경되므로)
+    std::vector<CMonster*> pooledMonsters;
     for (CMonster* m : enemies)
     {
         if (m && m->IsPooled())
         {
-            RemoveGameObject(m);
-            // delete는 하지 않음
+            pooledMonsters.push_back(m);
         }
     }
+    
+    for (CMonster* m : pooledMonsters)
+    {
+        RemoveGameObject(m);  // CScene의 public 메서드 사용
+    }
 
+    // 2. 풀로 반환
     MONSTERPOOL->ReleaseAll();
-    DeleteAllObject();
 
-    // 모든 UI 정리
-    DeleteAllUI();
-
-    // 참조 초기화
+    // 3. 참조 초기화
     player = nullptr;
     currentBoss = nullptr;
     enemies.clear();
 
-    // 상태 초기화
+    // 4. 상태 초기화
     gameEnded = false;
     monstersKilledCount = 0;
     playTime = 0.f;

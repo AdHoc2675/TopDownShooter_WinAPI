@@ -8,10 +8,13 @@ public:
     CRangedMonster();
     virtual ~CRangedMonster();
 
+    // 풀링용 Reset 오버라이드
+    void Reset() override;
+
 private:
     void Init() override;
     void Update() override;
-	void Render() override;
+    void Render() override;
 
     void TryFire();
     void SpawnMissile(const Vec2& dir);

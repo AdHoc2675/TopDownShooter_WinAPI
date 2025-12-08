@@ -172,21 +172,44 @@ void CSuicideBomberMonster::SelfDestruct()
     
     Logger::Debug(L"[CSuicideBomberMonster] Self-destruct!");
     
-    // 폭발 이펙트 생성
     CExplosionEffect* effect = new CExplosionEffect();
-    effect->Configure(
-        worldPos,           // 폭발 중심
-        explosionRadius,    // 반경
-        explosionDamage,    // 피해량
-        false,              // 적군 폭발 (플레이어에 피해)
-        0.5f                // 지속 시간
-    );
-    
+    effect->Configure(worldPos, explosionRadius, explosionDamage, false, 0.5f);
     EVENT->AddGameObject(GetScene(), effect);
     
-    // 경험치 드롭 (자폭 시에도)
     DropExpOrb(ExpValue, ExpCount);
+    droppedExpOrb = true;
     
-    // 자신은 삭제
-    EVENT->Delete(GetScene(), this);
+    // 풀 객체면 풀로 반환, 아니면 삭제
+    if (fromPool)
+    {
+        ReturnToPool();
+    }
+    else
+    {
+        EVENT->Delete(GetScene(), this);
+    }
+}
+
+// Reset 함수 추가
+void CSuicideBomberMonster::Reset()
+{
+    CMonster::Reset();  // 부모 Reset 호출
+    
+    // CSuicideBomberMonster 고유 멤버 초기화
+    CombatStats& st = GetCombatStats();
+    st.hp = 70.f;
+    st.maxHp = 70.f;
+    st.attack = 1.f;
+    st.speed = 100.f;
+    
+    ExpValue = 30;
+    ExpCount = 1;
+    
+    isCountingDown = false;
+    countdownTimer = 0.f;
+    
+    detonationRange = 70.f;
+    explosionRadius = 100.f;
+    explosionDamage = 1.f;
+    countdownTime = 0.75f;
 }

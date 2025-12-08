@@ -187,6 +187,16 @@ void CMonster::OnCollisionEnter(CCollider* other)
                 CSceneStage01* stage = dynamic_cast<CSceneStage01*>(s);
                 if (stage)
                     stage->AddMonsterKill();
+
+                // 풀 객체면 풀로 반환, 아니면 삭제
+                if (fromPool)
+                {
+                    ReturnToPool();
+                }
+                else
+                {
+                    EVENT->Delete(s, this);
+                }
             }
             return;
         }
@@ -208,6 +218,22 @@ void CMonster::OnCollisionEnter(CCollider* other)
             {
                 DropExpOrb(ExpValue, ExpCount);
                 droppedExpOrb = true;
+
+
+                CScene* s = GetScene();
+                CSceneStage01* stage = dynamic_cast<CSceneStage01*>(s);
+                if (stage)
+                    stage->AddMonsterKill();
+
+                // 풀 객체면 풀로 반환, 아니면 삭제
+                if (fromPool)
+                {
+                    ReturnToPool();
+                }
+                else
+                {
+                    EVENT->Delete(s, this);
+                }
             }
             return;
         }
@@ -287,6 +313,8 @@ void CMonster::Reset()
 
     ClearAllStatusEffects();
     
+    scene = nullptr;
+
     if (animator)
     {
         animator->Play(TEXT("MoveRight"), true);

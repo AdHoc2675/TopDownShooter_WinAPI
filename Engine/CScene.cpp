@@ -167,10 +167,15 @@ void CScene::SceneRelease()
 {
 	for (CGameObject* obj : objList)
 	{
-		obj->ComponentRelease();
-		delete obj;
+		// 풀 객체는 delete하지 않음
+		if (!obj->IsPooled())
+		{
+			obj->ComponentRelease();
+			delete obj;
+		}
 	}
 	objList.clear();
+	
 	for (CUI* ui : uiList)
 	{
 		ui->ComponentRelease();
