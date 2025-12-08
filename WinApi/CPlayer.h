@@ -27,6 +27,9 @@ public:
 	// 피격 사운드 재생
 	void	PlayHitSound();
 
+public:
+	int GetLevel() const { return level; }
+
 private:
 	void	Init()			override;
 	void	OnEnable()		override;

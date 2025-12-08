@@ -121,6 +121,7 @@
       <Filter>GameObject\UpgradeObject</Filter>
     </ClInclude>
     <ClInclude Include="CStatusEffect.h" />
+    <ClInclude Include="CResultPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -202,6 +203,7 @@
     <ClCompile Include="..\Engine\CIconTextButton.cpp">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClCompile>
+    <ClCompile Include="CResultPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

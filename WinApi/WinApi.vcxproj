@@ -172,6 +172,7 @@
     <ClInclude Include="CMonsterPoolManager.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CRangedMonster.h" />
+    <ClInclude Include="CResultPanel.h" />
     <ClInclude Include="CRocketLauncherWeapon.h" />
     <ClInclude Include="CSceneStage01.h" />
     <ClInclude Include="CSceneTitle.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="CMonster.cpp" />
     <ClCompile Include="CPlayer.cpp" />
     <ClCompile Include="CRangedMonster.cpp" />
+    <ClCompile Include="CResultPanel.cpp" />
     <ClCompile Include="CRocketLauncherWeapon.cpp" />
     <ClCompile Include="CSceneStage01.cpp" />
     <ClCompile Include="CSceneTitle.cpp" />

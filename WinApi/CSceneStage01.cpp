@@ -79,6 +79,45 @@ void CSceneStage01::Init()
 
 void CSceneStage01::Enter()
 {
+    // player가 nullptr이면 새로 생성
+    if (player == nullptr)
+    {
+        player = new CPlayer();
+        player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
+        AddGameObject(player);
+
+        CTiledBackground* bg = new CTiledBackground();
+        bg->SetPlayer(player);
+        AddGameObject(bg);
+
+        auto addMonster = [&](const Vec2& pos) {
+            CMonster* m = new CMonster();
+            m->SetPos(pos);
+            m->SetPlayer(player);
+            AddGameObject(m);
+            RegisterMonster(m);
+            };
+
+        addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
+        addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
+        addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
+
+        CCameraController* controller = new CCameraController();
+        controller->SetPlayer(player);
+        AddGameObject(controller);
+
+        CSoundController* sound = new CSoundController();
+        AddGameObject(sound);
+
+        CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::ExpOrb);
+        CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
+        CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Player);
+        CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::Monster);
+        CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster);
+
+        spawnTimer = spawnInterval;
+    }
+
     CAMERA->FadeIn(0.5f);
 
     CSound* bgm = LOADSOUND(TEXT("Wasteland Combat Loop"), TEXT("Sound\\Wasteland Combat Loop.wav"));
@@ -116,6 +155,9 @@ void CSceneStage01::Enter()
 
 void CSceneStage01::Update()
 {
+    if (gameEnded)
+        return;
+
 	playTime = playTime + DT;
 
     if (INPUT->ButtonDown(VK_ESCAPE, true))
@@ -125,6 +167,20 @@ void CSceneStage01::Update()
         return;
     }
     
+    // 플레이어 사망 체크
+    if (player && !player->GetCombatStats().alive())
+    {
+        EndGame(GameResult::Defeat);
+        return;
+    }
+
+    // 보스 처치 체크
+    if (currentBoss && !currentBoss->GetCombatStats().alive())
+    {
+        EndGame(GameResult::Victory);
+        return;
+    }
+
     // 보스 생존 여부 체크
     bool bossAlive = (currentBoss != nullptr && currentBoss->GetCombatStats().alive());
     
@@ -183,7 +239,37 @@ void CSceneStage01::Exit()
     SOUND->Stop(TEXT("Wasteland Combat Loop"));
 
     MONSTERPOOL->ReleaseAll();
-    currentBoss = nullptr;  // 보스 참조 초기화
+
+    for (CMonster* m : enemies)
+    {
+        if (m && m->IsPooled())
+        {
+            RemoveGameObject(m);
+            // delete는 하지 않음
+        }
+    }
+
+    MONSTERPOOL->ReleaseAll();
+    DeleteAllObject();
+
+    // 모든 UI 정리
+    DeleteAllUI();
+
+    // 참조 초기화
+    player = nullptr;
+    currentBoss = nullptr;
+    enemies.clear();
+
+    // 상태 초기화
+    gameEnded = false;
+    monstersKilledCount = 0;
+    playTime = 0.f;
+    spawnTimer = 0.f;
+    eliteWingSpawned = 0;
+    bossSpawned = 0;
+    eliteWingSpawnTriggerTime = 60.f;
+    bossSpawnTriggerTime = 5.f;
+    spawnInterval = 1.5f;
 }
 
 void CSceneStage01::Release()
@@ -313,4 +399,24 @@ void CSceneStage01::SpawnBossMonster()
 	RegisterMonster(boss);
     
     currentBoss = boss;  // 보스 참조 저장
+}
+
+// EndGame 함수 추가 (파일 끝에)
+void CSceneStage01::EndGame(GameResult result)
+{
+    if (gameEnded)
+        return;
+
+    gameEnded = true;
+
+    // 게임 일시정지
+    SetPaused(true);
+
+    // 결과 패널 생성
+    CResultPanel* resultPanel = new CResultPanel();
+    EVENT->AddUI(this, resultPanel);
+    resultPanel->Configure(result, playTime, player ? player->GetLevel() : 1, monstersKilledCount);
+
+    Logger::Debug(L"[CSceneStage01::EndGame] Game ended with result: " +
+        to_wstring(static_cast<int>(result)));
 }

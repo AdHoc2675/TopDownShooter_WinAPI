@@ -181,6 +181,12 @@ void CMonster::OnCollisionEnter(CCollider* other)
             {
                 DropExpOrb(ExpValue, ExpCount);
                 droppedExpOrb = true;
+
+                // 처치 카운트 증가
+                CScene* s = GetScene();
+                CSceneStage01* stage = dynamic_cast<CSceneStage01*>(s);
+                if (stage)
+                    stage->AddMonsterKill();
             }
             return;
         }
@@ -329,6 +335,10 @@ void CMonster::ApplyStatusEffect(StatusEffectType type, int stacks, float durati
         {
             // 중첩 추가 및 지속시간 갱신
             effect.stacks += stacks;
+            
+            if (effect.stacks > effect.maxStacks)
+				effect.stacks = effect.maxStacks;
+
             if (effect.duration < duration)
                 effect.duration = duration;
             return;
@@ -428,11 +438,23 @@ void CMonster::UpdateStatusEffects()
                 DropExpOrb(ExpValue, ExpCount);
                 droppedExpOrb = true;
 
+                // 처치 카운트 증가
+                CScene* s = GetScene();
+                CSceneStage01* stage = dynamic_cast<CSceneStage01*>(s);
+                if (stage)
+                    stage->AddMonsterKill();
+
                 ClearAllStatusEffects();
 
-                // 풀링 객체도 EVENT->Delete()로 삭제 예약
-                // CEventManager::ProgressDeleteObject()에서 처리되도록 함
-                EVENT->Delete(GetScene(), this);
+                if (fromPool)
+                {
+                    ReturnToPool();
+                }
+                else
+                {
+                    EVENT->Delete(s, this);
+                }
+                return;
                 return;
             }
         }

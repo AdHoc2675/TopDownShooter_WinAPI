@@ -1,9 +1,13 @@
 ﻿#pragma once
 #include "CMonster.h"
 #include "CBossMonster.h"
+#include "CResultPanel.h"
+
 class CPlayer;
 
 using namespace std;
+
+enum class GameResult;
 
 enum class WeaponChoice {
     Pistol = 0,
@@ -38,6 +42,13 @@ public:
 
 	float playTime = 0.f;          // 플레이 시간(초)
 
+    // 몬스터 처치 카운트 증가
+    void AddMonsterKill() { monstersKilledCount++; }
+    int GetMonstersKilled() const { return monstersKilledCount; }
+
+    // 게임 종료 처리
+    void EndGame(GameResult result);
+
 private:
     void SpawnMonster();
     void SpawnEliteWingedMonster();
@@ -58,6 +69,10 @@ private:
     int      eliteWingSpawned = 0;              // 엘리트 1회 소환 여부
     float    eliteWingSpawnTriggerTime = 60.f;  // 소환 트리거 시간(초)
 	int      bossSpawned = 0;                   // 보스 소환 여부
-	float    bossSpawnTriggerTime = 300.f;        // 보스 소환 트리거 시간(초)
+	float    bossSpawnTriggerTime = 5.f;        // 보스 소환 트리거 시간(초)
     CBossMonster* currentBoss = nullptr;  // 현재 활성 보스 참조
+
+    bool gameEnded = false;           // 게임 종료 여부
+    int monstersKilledCount = 0;      // 처치한 몬스터 수
+
 };
