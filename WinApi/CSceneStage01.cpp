@@ -18,7 +18,8 @@
 #include "CShotgunWeapon.h"
 #include "CSMGWeapon.h"
 #include "CSuicideBomberMonster.h"
-#include "CRocketLauncherWeapon.h"  // 헤더 추가
+#include "CRocketLauncherWeapon.h"
+#include "CMonsterPoolManager.h"
 
 WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
 
@@ -27,6 +28,8 @@ CSceneStage01::CSceneStage01()
     Logger::Debug(L"[CSceneStage01::Constructor] Creating Stage01 scene");
     Logger::Debug(L"[CSceneStage01::Constructor] Static sChosenWeapon = " +
         to_wstring(static_cast<int>(sChosenWeapon)));
+
+    MONSTERPOOL->Init(30, 10, 10);
 
 }
 
@@ -171,6 +174,8 @@ void CSceneStage01::Render()
 void CSceneStage01::Exit()
 {
     SOUND->Stop(TEXT("Wasteland Combat Loop"));
+
+    MONSTERPOOL->ReleaseAll();  // 모든 몬스터 풀로 반환
 }
 
 void CSceneStage01::Release()
@@ -184,19 +189,21 @@ void CSceneStage01::SpawnMonster()
 
     Vec2 spawnPos = GetSpawnPosPlayerDistance();
 
-    // 7% 확률로 원거리 몬스터
     int r = rand() % 100;
     CMonster* monster = nullptr;
+    
+    // 풀에서 획득 (new 대신)
     if (r < 7)
     {
-        monster = new CRangedMonster();
+        monster = MONSTERPOOL->AcquireRanged();
     }
-    else if (r < 12) {
-		monster = new CSuicideBomberMonster();
+    else if (r < 12)
+    {
+        monster = MONSTERPOOL->AcquireBomber();
     }
     else
     {
-        monster = new CMonster();
+        monster = MONSTERPOOL->AcquireNormal();
     }
 
     monster->SetPos(spawnPos);

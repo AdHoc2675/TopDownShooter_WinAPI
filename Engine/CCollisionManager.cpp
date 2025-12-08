@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CCollisionManager.h"
 
 CCollisionManager::CCollisionManager()
@@ -66,23 +66,23 @@ void CCollisionManager::CollisionUpdate(UINT left, UINT right)
 	{
 		for (CCollider* rightCollider : colliderList[right])
 		{
-			// ÀÚ±â ÀÚ½Å°úÀÇ Ãæµ¹À» ¹«½Ã
+			// ìžê¸° ìžì‹ ê³¼ì˜ ì¶©ëŒì„ ë¬´ì‹œ
 			if (leftCollider == rightCollider)
 				continue;
 
-			// Ãæµ¹Ã¼¿Í Ãæµ¹Ã¼ÀÇ ID È®ÀÎ
+			// ì¶©ëŒì²´ì™€ ì¶©ëŒì²´ì˜ ID í™•ì¸
 			UINT64 collisionID = CollisionID(leftCollider->GetID(), rightCollider->GetID());
-			// Ãæµ¹ Á¤º¸°¡ ¾ø¾ú´ø °æ¿ì, Ãæµ¹ÇÏÁö ¾ÊÀº »óÅÂ¸¦ Ãß°¡
+			// ì¶©ëŒ ì •ë³´ê°€ ì—†ì—ˆë˜ ê²½ìš°, ì¶©ëŒí•˜ì§€ ì•Šì€ ìƒíƒœë¥¼ ì¶”ê°€
 			if (prevCollision.find(collisionID) == prevCollision.end())
 				prevCollision.insert(make_pair(collisionID, false));
 
-			// Ãæµ¹Ã³¸® È®ÀÎ
+			// ì¶©ëŒì²˜ë¦¬ í™•ì¸
 			if (leftCollider->IsCollision(rightCollider))
 			{
-				// ÀÌÀü ÇÁ·¹ÀÓ O, ÇöÀç ÇÁ·¹ÀÓ O
+				// ì´ì „ í”„ë ˆìž„ O, í˜„ìž¬ í”„ë ˆìž„ O
 				if (prevCollision[collisionID])
 				{
-					// Ãæµ¹Ã¼ Áß ÇÏ³ª¶óµµ »èÁ¦¿¹Á¤ÀÎ °æ¿ì Ãæµ¹ ÇØÁ¦
+					// ì¶©ëŒì²´ ì¤‘ í•˜ë‚˜ë¼ë„ ì‚­ì œì˜ˆì •ì¸ ê²½ìš° ì¶©ëŒ í•´ì œ
 					if (leftCollider->IsReservedDelete() || rightCollider->IsReservedDelete())
 					{
 						leftCollider->OnCollisionExit(rightCollider);
@@ -96,10 +96,10 @@ void CCollisionManager::CollisionUpdate(UINT left, UINT right)
 						prevCollision[collisionID] = true;
 					}
 				}
-				// ÀÌÀü ÇÁ·¹ÀÓ X, ÇöÀç ÇÁ·¹ÀÓ O
+				// ì´ì „ í”„ë ˆìž„ X, í˜„ìž¬ í”„ë ˆìž„ O
 				else
 				{
-					// Ãæµ¹Ã¼ Áß ÇÏ³ª¶óµµ »èÁ¦¿¹Á¤ÀÎ °æ¿ì Ãæµ¹ ÁøÀÔÀ» ÇÏÁö ¾ÊÀ½
+					// ì¶©ëŒì²´ ì¤‘ í•˜ë‚˜ë¼ë„ ì‚­ì œì˜ˆì •ì¸ ê²½ìš° ì¶©ëŒ ì§„ìž…ì„ í•˜ì§€ ì•ŠìŒ
 					if (leftCollider->IsReservedDelete() || rightCollider->IsReservedDelete())
 					{
 						prevCollision[collisionID] = false;
@@ -114,16 +114,16 @@ void CCollisionManager::CollisionUpdate(UINT left, UINT right)
 			}
 			else
 			{
-				// ÀÌÀü ÇÁ·¹ÀÓ O, ÇöÀç ÇÁ·¹ÀÓ X
+				// ì´ì „ í”„ë ˆìž„ O, í˜„ìž¬ í”„ë ˆìž„ X
 				if (prevCollision[collisionID])
 				{
 					leftCollider->OnCollisionExit(rightCollider);
 					rightCollider->OnCollisionExit(leftCollider);
 				}
-				// ÀÌÀü ÇÁ·¹ÀÓ X, ÇöÀç ÇÁ·¹ÀÓ X
+				// ì´ì „ í”„ë ˆìž„ X, í˜„ìž¬ í”„ë ˆìž„ X
 				else
 				{
-					// ¾Æ¹«°Íµµ ÇÏÁö ¾ÊÀ½
+					// ì•„ë¬´ê²ƒë„ í•˜ì§€ ì•ŠìŒ
 				}
 				prevCollision[collisionID] = false;
 			}
@@ -146,4 +146,21 @@ UINT64 CCollisionManager::CollisionID(UINT leftID, UINT rightID)
 		result |= leftID;
 		return result;
 	}
+}
+
+// í’€ë¡œ ë°˜í™˜ ì‹œ ì¶©ëŒ ì •ë³´ ì •ë¦¬ í•„ìš”
+void CCollisionManager::ClearColliderHistory(CCollider* collider)
+{
+    UINT id = collider->GetID();
+    for (auto it = prevCollision.begin(); it != prevCollision.end(); )
+    {
+        UINT64 key = it->first;
+        UINT leftId = (UINT)(key >> 32);
+        UINT rightId = (UINT)(key & 0xFFFFFFFF);
+        
+        if (leftId == id || rightId == id)
+            it = prevCollision.erase(it);
+        else
+            ++it;
+    }
 }

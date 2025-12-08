@@ -9,6 +9,7 @@
 #include "CAnimator.h"
 #include "CScythe.h"
 #include "CDamageText.h"
+#include "CMonsterPoolManager.h"
 
 CMonster::CMonster() 
 {
@@ -100,6 +101,7 @@ void CMonster::OnDisable()
     if (stage)
         stage->UnregisterMonster(this);
 
+    // 풀링 객체면 추가 처리 없음 (ReturnToPool에서 처리)
 }
 
 void CMonster::Release()
@@ -242,4 +244,65 @@ void CMonster::OnCollisionStay(CCollider* other)
 
 void CMonster::OnCollisionExit(CCollider* other)
 {
+}
+
+void CMonster::Reset()
+{
+    // 전투 스탯 초기화
+    st.hp       = 100.f;
+    st.maxHp    = 100.f;
+    st.defense  = 0.f;
+    st.attack   = 1.f;
+    st.critChance = 0.f;
+    st.critMultiplier = 1.0f;
+    st.speed    = 100.f;
+
+    droppedExpOrb = false;
+    ExpValue = 15;
+    ExpCount = 1;
+    
+    // 삭제 예정 플래그 초기화
+    reservedDelete = false;
+    
+    pos = Vec2(0, 0);
+    worldPos = Vec2(0, 0);
+    player = nullptr;
+    
+    if (animator)
+    {
+        animator->Play(TEXT("MoveRight"), true);
+    }
+}
+
+void CMonster::ReturnToPool()
+{
+    CScene* s = GetScene();
+    
+    // 1. 씬의 몬스터 목록에서 제거
+    if (s)
+    {
+        CSceneStage01* stage = dynamic_cast<CSceneStage01*>(s);
+        if (stage)
+        {
+            stage->UnregisterMonster(this);
+        }
+    }
+    
+    // 2. 풀에서 온 객체면 풀로 반환
+    if (fromPool)
+    {
+        // 씬에서 제거 (삭제 대신)
+        if (s)
+        {
+            s->RemoveGameObject(this);
+        }
+        
+        // 풀로 반환
+        MONSTERPOOL->ReleaseMonster(this);
+    }
+    else
+    {
+        // 풀링되지 않은 객체는 기존 방식으로 삭제
+        EVENT->Delete(s, this);
+    }
 }

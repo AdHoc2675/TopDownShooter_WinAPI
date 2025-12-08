@@ -119,6 +119,7 @@
       <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="CRocketLauncherWeapon.h" />
+    <ClInclude Include="CMonsterPoolManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">

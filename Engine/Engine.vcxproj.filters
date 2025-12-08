@@ -123,6 +123,7 @@
     <ClInclude Include="CCombatSystem.h">
       <Filter>Manager</Filter>
     </ClInclude>
+    <ClInclude Include="CObjectPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

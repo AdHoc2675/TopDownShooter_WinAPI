@@ -175,6 +175,7 @@
     <ClInclude Include="CGameObject.h" />
     <ClInclude Include="CImage.h" />
     <ClInclude Include="CInputManager.h" />
+    <ClInclude Include="CObjectPool.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="CPanel.h" />
     <ClInclude Include="CPathManager.h" />

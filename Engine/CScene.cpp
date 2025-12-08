@@ -177,3 +177,9 @@ void CScene::SceneRelease()
 
 	Release();
 }
+
+void CScene::RemoveGameObject(CGameObject* obj)
+{
+	objList.remove(obj);
+	obj->SetScene(nullptr);
+}

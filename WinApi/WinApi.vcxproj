@@ -169,6 +169,7 @@
     <ClInclude Include="CGame.h" />
     <ClInclude Include="CMissile.h" />
     <ClInclude Include="CMonster.h" />
+    <ClInclude Include="CMonsterPoolManager.h" />
     <ClInclude Include="CPlayer.h" />
     <ClInclude Include="CRangedMonster.h" />
     <ClInclude Include="CRocketLauncherWeapon.h" />

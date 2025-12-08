@@ -1,4 +1,6 @@
 #pragma once
+#include "Component.h"
+#include "IRender.h"
 
 class CCollisionManager;
 
