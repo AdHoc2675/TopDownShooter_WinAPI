@@ -141,6 +141,12 @@ void CUpgradePanel::Configure(CPlayer* p)
         oneTimePool.push_back({ L"대전차탄: 피해량 + 25%, 관통 횟수 +2, 탄환 속도 -15%, 탄창 크기 -25%", UpgradeType::WeaponArmourPiercing });
 	}
 
+    if (gTakenOneTimeUpgrades.find(UpgradeType::SummonRanged) != gTakenOneTimeUpgrades.end())
+    {
+        oneTimePool.push_back({ L"소환수 화염탄: 소환수 투사체 관통 +1 및 화상 1스택 부여", UpgradeType::SummonRangedBurn });
+        oneTimePool.push_back({ L"소환수 공격 강화: 관통 * 3만큼 투사체 피해 증가", UpgradeType::SummonRangedAtkUp });
+    }
+
     // 아직 획득하지 않은 반복 불가능 옵션만 추림
     vector<pair<wstring, UpgradeType>> oneTimeCandidates;
     oneTimeCandidates.reserve(oneTimePool.size());
@@ -249,6 +255,36 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         EVENT->AddGameObject(GetScene(), ally);
         break;
     }
+    case UpgradeType::SummonRangedBurn:
+    {
+        // 한 번만 획득
+        gTakenOneTimeUpgrades.insert(UpgradeType::SummonRangedBurn);
+
+        // 플레이어 소유의 모든 CMissileTurret에 적용
+        for (CMissileTurret* turret : CMissileTurret::GetAll())
+        {
+            if (turret && turret->GetOwnerPlayer() == player)
+            {
+                turret->AddPierce(1);               // 관통 +1
+                turret->AddBurn(1);                 // 화상 스택 +1
+            }
+        }
+        break;
+    }
+    case UpgradeType::SummonRangedAtkUp:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::SummonRangedAtkUp);
+
+        // 플레이어 소유의 모든 CMissileTurret에 적용
+        for (CMissileTurret* turret : CMissileTurret::GetAll())
+        {
+            if (turret && turret->GetOwnerPlayer() == player)
+            {
+                turret->EnablePierceDamageBonus(); // 투사체 피해 += 관통 * 3
+            }
+        }
+        break;
+    }
     case UpgradeType::SummonScythe:
     {
         // 반복 불가능 옵션: 획득 상태 기록
@@ -264,6 +300,16 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         EVENT->AddGameObject(GetScene(), s2);
         break;
 	}
+    case UpgradeType::ScytheSpeedUp:
+    {
+        // 모든 활성 낫에 일괄 적용
+        for (CScythe* scythe : CScythe::GetAll())
+        {
+            if (scythe) scythe->SetAngularSpeed(scythe->GetAngularSpeed() * 2.0f);
+        }
+        gTakenOneTimeUpgrades.insert(UpgradeType::ScytheSpeedUp);
+        break;
+    }
     case UpgradeType::WeaponDoubleShot_T1:
     {
         gTakenOneTimeUpgrades.insert(UpgradeType::WeaponDoubleShot_T1);
@@ -310,16 +356,6 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         CWeapon* w = player->GetWeapon();
         if (w)
             w->ApplyUpgrade_Burn();
-        break;
-    }
-    case UpgradeType::ScytheSpeedUp:
-    {
-        // 모든 활성 낫에 일괄 적용
-        for (CScythe* scythe : CScythe::GetAll())
-        {
-            if (scythe) scythe->SetAngularSpeed(scythe->GetAngularSpeed() * 2.0f);
-        }
-        gTakenOneTimeUpgrades.insert(UpgradeType::ScytheSpeedUp);
         break;
     }
     case UpgradeType::AimingDownSight:

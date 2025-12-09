@@ -112,7 +112,6 @@
     <ClInclude Include="CExplosionEffect.h">
       <Filter>GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="CRocketLauncherWeapon.h" />
     <ClInclude Include="CMonsterPoolManager.h" />
     <ClInclude Include="CUpgradePanel.h">
       <Filter>GameObject\UpgradeObject</Filter>
@@ -122,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="CStatusEffect.h" />
     <ClInclude Include="CResultPanel.h" />
+    <ClInclude Include="CRocketLauncherWeapon.h">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -196,7 +198,6 @@
     <ClCompile Include="CExplosionEffect.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="CRocketLauncherWeapon.cpp" />
     <ClCompile Include="CUpgradePanel.cpp">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClCompile>
@@ -204,6 +205,9 @@
       <Filter>GameObject\UpgradeObject</Filter>
     </ClCompile>
     <ClCompile Include="CResultPanel.cpp" />
+    <ClCompile Include="CRocketLauncherWeapon.cpp">
+      <Filter>GameObject\UpgradeObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

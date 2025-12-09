@@ -27,9 +27,9 @@ void CExpOrb::Init()
     col->SetScale(scale);
     col->SetLayer(Layer::ExpOrb); // Layer::ExpOrb 추가 필요
     AddChild(col);
-	CExpOrb_image1 = LOADIMAGE(TEXT("ExpOrb"), TEXT("Image\\ExpOrb1.bmp"));
-    CExpOrb_image2 = LOADIMAGE(TEXT("ExpOrb"), TEXT("Image\\ExpOrb2.bmp"));
-    CExpOrb_image3 = LOADIMAGE(TEXT("ExpOrb"), TEXT("Image\\ExpOrb3.bmp"));
+	CExpOrb_image1 = LOADIMAGE(TEXT("ExpOrb1"), TEXT("Image\\ExpOrb1.bmp"));
+    CExpOrb_image2 = LOADIMAGE(TEXT("ExpOrb2"), TEXT("Image\\ExpOrb2.bmp"));
+    CExpOrb_image3 = LOADIMAGE(TEXT("ExpOrb3"), TEXT("Image\\ExpOrb3.bmp"));
 
     if (value >= 100) {
         CurrentImage = CExpOrb_image3;
@@ -42,9 +42,7 @@ void CExpOrb::Init()
 	}
 }
 
-void CExpOrb::OnEnable()
-{
-}
+void CExpOrb::OnEnable(){}
 
 void CExpOrb::Update()
 {
@@ -96,6 +94,19 @@ void CExpOrb::OnDisable()
 
 void CExpOrb::Release()
 {
+}
+
+void CExpOrb::UpdateImage()
+{
+    if (value >= 100) {
+        CurrentImage = CExpOrb_image3;
+    }
+    else if (value >= 30) {
+        CurrentImage = CExpOrb_image2;
+    }
+    else {
+        CurrentImage = CExpOrb_image1;
+    }
 }
 
 void CExpOrb::OnCollisionEnter(CCollider* other)

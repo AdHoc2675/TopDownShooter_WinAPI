@@ -20,7 +20,10 @@ enum class UpgradeType
     WeaponAimingDownSight,
     WeaponBurn,
     ScytheSpeedUp,
-    AimingDownSight
+    AimingDownSight,
+    SummonRangedBurn,  // 소환수의 투사체에 관통 +1, 화상 1스택 부여
+    SummonRangedAtkUp,  // 소환수 투사체의 기본 피해량 += 관통 * 3
+
 };
 
 class CUpgradePanel : public CPanel

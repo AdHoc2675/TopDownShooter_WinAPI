@@ -11,7 +11,7 @@ public:
     virtual ~CExpOrb();
 
     void SetPlayer(CPlayer* player) { this->player = player; }
-    void SetValue(int value) { this->value = value; }
+    void SetValue(int value) { this->value = value;  }
 
 private:
     void Init()         override;
@@ -20,6 +20,7 @@ private:
     void Render()       override;
     void OnDisable()    override;
     void Release()      override;
+    void UpdateImage();
 
     void OnCollisionEnter(CCollider* other) override;
 

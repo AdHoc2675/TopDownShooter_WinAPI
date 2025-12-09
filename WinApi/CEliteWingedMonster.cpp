@@ -38,7 +38,7 @@ CEliteWingedMonster::CEliteWingedMonster()
 	chargePrepTimer = 0.f;
 	chargePreparing = false;
 	charging = false;
-	chargeSpeed = 600.f;
+	chargeSpeed = 1000.f;
 	chargeTriggerRange = 500.f;
 
 	lastMoveDir = Vec2(0.f, 0.f);
@@ -261,8 +261,8 @@ void CEliteWingedMonster::ChargeAttack()
 		// 같은 위치일 때 기본 방향으로 설정
 		v = Vec2(0.f, -1.f);
 	}
-	// 목표 = M + 2*(P - M)
-	Vec2 target = currentMonster + v * 2.0f;
+	// 목표 = M + 1.5*(P - M)
+	Vec2 target = currentMonster + v * 1.5f;
 	chargeTargetPos = target; // 실제 돌진 목표점으로 재설정
 
 	charging = true;

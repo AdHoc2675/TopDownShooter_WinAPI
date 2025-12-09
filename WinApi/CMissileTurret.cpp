@@ -4,6 +4,10 @@
 #include "CMonster.h"
 #include "CMissile.h"
 #include "CSceneStage01.h"
+#include <algorithm>
+
+// 정적 멤버 정의
+std::vector<CMissileTurret*> CMissileTurret::s_instances;
 
 CMissileTurret::CMissileTurret()
 {
@@ -27,29 +31,93 @@ CMissileTurret::CMissileTurret()
 
     missileSpeed   = 450.f;
     missileLife    = 1.0f;
+
+    isFiring       = false;
+    fireAnimTime   = 0.f;
+
+    // 기본 소환수 발사체 세팅
+    missilePierce = 3;
+    missileAppliesBurn = false;
+    missileBurnStacks = 0;
+    missileBurnDuration = 5.0f;
+    missileBurnChance = 1.0f;
+    missilePierceDamageBonusEnabled = false;
+
+    // 인스턴스 목록에 등록
+    s_instances.push_back(this);
 }
 
-CMissileTurret::~CMissileTurret() {}
+CMissileTurret::~CMissileTurret()
+{
+    // 인스턴스 목록에서 제거
+    auto it = std::find(s_instances.begin(), s_instances.end(), this);
+    if (it != s_instances.end())
+        s_instances.erase(it);
+}
 
 void CMissileTurret::Init()
 {
+    animator = new CAnimator();
 
+    CImage* moveRight = LOADIMAGE(TEXT("T_GhostPet0"), TEXT("Image\\T_GhostPet0.bmp"));
+    animator->CreateAnimation(TEXT("MoveRight"), moveRight,
+        0.15f, 6, true,
+        Vec2(0.f, 0.f),        // 첫 프레임 시작 위치
+        Vec2(16.f, 16.f),      // 프레임 크기
+        Vec2(16.f, 0.f));      // 프레임 간 이동(가로)
+
+    // 좌측 이동: T_GhostMonster1 (64x64 / 7프레임)
+    CImage* moveLeft = LOADIMAGE(TEXT("T_GhostPet1"), TEXT("Image\\T_GhostPet1.bmp"));
+    animator->CreateAnimation(TEXT("MoveLeft"), moveLeft,
+        0.15f, 6, true,
+        Vec2(0.f, 0.f),        // 첫 프레임 시작 위치
+        Vec2(16.f, 16.f),      // 프레임 크기
+        Vec2(16.f, 0.f));      // 프레임 간 이동(가로)
+
+    CImage* fireRight = LOADIMAGE(TEXT("T_GhostPet0"), TEXT("Image\\T_GhostPet0.bmp"));
+    animator->CreateAnimation(TEXT("FireRight"), fireRight,
+        0.15f, 4, false,       // 반복 없이 한 번만 재생
+        Vec2(0.f, 16.f),
+        Vec2(16.f, 16.f),
+        Vec2(16.f, 0.f));
+
+    CImage* fireLeft = LOADIMAGE(TEXT("T_GhostPet1"), TEXT("Image\\T_GhostPet1.bmp"));
+    animator->CreateAnimation(TEXT("FireLeft"), fireLeft,
+        0.15f, 4, false,       // 반복 없이 한 번만 재생
+        Vec2(32.f, 16.f),
+        Vec2(16.f, 16.f),
+        Vec2(16.f, 0.f));
+
+    AddChild(animator);
+    animator->Play(TEXT("MoveRight"), true);
+    animator->SetRatio(2.0f);
 }
 
 void CMissileTurret::OnEnable() {}
 
 void CMissileTurret::Update()
 {
+    Vec2 targetPos = ownerPlayer->GetWorldPos();
+    Vec2 toPlayer = targetPos - worldPos;
+    float dist = toPlayer.Length();
+    Vec2 playerDir = toPlayer.Normalized();
+
     // 플레이어 추적 (고정 거리 유지)
     if (ownerPlayer)
     {
-        Vec2 targetPos = ownerPlayer->GetWorldPos();
-        Vec2 to = targetPos - worldPos;
-        float dist = to.Length();
         if (dist > followDistance)
         {
-            Vec2 dir = to.Normalized();
-            pos += dir * moveSpeed * DT;
+            pos += playerDir * moveSpeed * DT;
+        }
+    }
+
+    // Fire 애니메이션 타이머 업데이트
+    if (isFiring)
+    {
+        fireAnimTime -= DT;
+        if (fireAnimTime <= 0.f)
+        {
+            isFiring = false;
         }
     }
 
@@ -65,27 +133,38 @@ void CMissileTurret::Update()
         {
             Vec2 from = worldPos;
             Vec2 to   = target->GetWorldPos();
-            Vec2 dir  = (to - from).Normalized();
+            Vec2 fireDir = (to - from).Normalized();
 
             // 발사 위치(앞쪽 약간)
-            Vec2 spawnPos = from + dir * (scale.y * 0.5f + 8.f);
-            SpawnMissile(spawnPos, dir);
+            Vec2 spawnPos = from + fireDir * (scale.y * 0.5f + 8.f);
+            SpawnMissile(spawnPos, fireDir);
 
             fireCooldown = fireInterval;
+
+            // Fire 애니메이션 시작
+            isFiring = true;
+            fireAnimTime = 0.15f * 4;  // 프레임당 시간 * 프레임 수
+
+            if (fireDir.x < -0.01f)
+                animator->Play(TEXT("FireLeft"), true);
+            else
+                animator->Play(TEXT("FireRight"), true);
         }
+    }
+
+    // Fire 애니메이션 중이 아닐 때만 Move 애니메이션 재생
+    if (!isFiring)
+    {
+        if (playerDir.x < -0.01f)
+            animator->Play(TEXT("MoveLeft"), false);
+        else
+            animator->Play(TEXT("MoveRight"), false);
     }
 }
 
 void CMissileTurret::Render()
 {
-    // 심플 렌더(원형)
-    RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
-    RENDER->SetBrush(BrushType::Solid, RGB(200, 230, 255));
-    RENDER->Ellipse(
-        renderPos.x - scale.x * 0.5f,
-        renderPos.y - scale.y * 0.5f,
-        renderPos.x + scale.x * 0.5f,
-        renderPos.y + scale.y * 0.5f);
+
 }
 
 void CMissileTurret::OnDisable() {}
@@ -97,15 +176,25 @@ void CMissileTurret::SpawnMissile(const Vec2& spawnPos, const Vec2& dir)
     m->SetPos(spawnPos);
     m->SetDir(dir);
 
-    // 공격 관련 수치만 상속 (속도/수명은 소환수 고유 설정으로 덮음)
-    m->GetCombatStats().attack        = stats.attack;
-    m->GetCombatStats().defense        = stats.defense;
-    m->GetCombatStats().critChance     = stats.critChance;
-    m->GetCombatStats().critMultiplier = stats.critMultiplier;
-    m->GetCombatStats().speed = missileSpeed;
+    // 기본 공격력: 터렛의 stats.attack 에 더해 관통 기반 보너스를 적용할 수 있음
+    float baseAttack = stats.attack;
+    if (missilePierceDamageBonusEnabled)
+    {
+        baseAttack += static_cast<float>(missilePierce) * 3.f; // 관통 * 3 만큼 추가 피해
+    }
 
-    // 관통 횟수 3으로 설정
-    m->SetPierceCount(3);
+    m->GetCombatStats().attack        = baseAttack;
+    m->GetCombatStats().defense       = stats.defense;
+    m->GetCombatStats().critChance    = stats.critChance;
+    m->GetCombatStats().critMultiplier= stats.critMultiplier;
+    m->GetCombatStats().speed         = missileSpeed;
+
+    // 관통 횟수 설정
+    m->SetPierceCount(missilePierce);
+
+    // 화상 설정 전달
+    if (missileAppliesBurn)
+        m->SetAppliesBurn(true, missileBurnStacks, missileBurnDuration, missileBurnChance);
 
     EVENT->AddGameObject(GetScene(), m);
 }
