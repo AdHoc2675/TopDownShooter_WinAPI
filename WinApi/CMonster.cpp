@@ -188,20 +188,22 @@ void CMonster::OnCollisionEnter(CCollider* other)
                 if (stage)
                     stage->AddMonsterKill();
 
+                EVENT->Delete(GetScene(), this);
+
                 // 풀 객체면 풀로 반환, 아니면 삭제
-                if (fromPool)
-                {
-                    ReturnToPool();
-                }
-                else
-                {
-                    EVENT->Delete(s, this);
-                }
+                //if (fromPool)
+                //{
+                //    ReturnToPool();
+                //}
+                //else
+                //{
+                //    EVENT->Delete(GetScene(), this);
+                //}
             }
             return;
         }
 
-        // 2) 소환수(CScythe) 처리 - 기존 코드 그대로 유지
+        // 2) 소환수(CScythe) 처리
         if (CScythe* scythe = dynamic_cast<CScythe*>(attackerObj))
         {
             CombatStats attackerStats = scythe->GetCombatStats();
@@ -225,15 +227,17 @@ void CMonster::OnCollisionEnter(CCollider* other)
                 if (stage)
                     stage->AddMonsterKill();
 
+                EVENT->Delete(GetScene(), this);
+
                 // 풀 객체면 풀로 반환, 아니면 삭제
-                if (fromPool)
-                {
-                    ReturnToPool();
-                }
-                else
-                {
-                    EVENT->Delete(s, this);
-                }
+                //if (fromPool)
+                //{
+                //    ReturnToPool();
+                //}
+                //else
+                //{
+                //    EVENT->Delete(GetScene(), this);
+                //}
             }
             return;
         }
@@ -474,15 +478,18 @@ void CMonster::UpdateStatusEffects()
 
                 ClearAllStatusEffects();
 
-                if (fromPool)
-                {
-                    ReturnToPool();
-                }
-                else
-                {
-                    EVENT->Delete(s, this);
-                }
-                return;
+                EVENT->Delete(GetScene(), this);
+
+                // 풀 객체면 풀로 반환, 아니면 삭제
+                //if (fromPool)
+                //{
+                //    ReturnToPool();
+                //}
+                //else
+                //{
+                //    EVENT->Delete(GetScene(), this);
+                //}
+
                 return;
             }
         }

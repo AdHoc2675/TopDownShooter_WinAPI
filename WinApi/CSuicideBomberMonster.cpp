@@ -179,15 +179,17 @@ void CSuicideBomberMonster::SelfDestruct()
     DropExpOrb(ExpValue, ExpCount);
     droppedExpOrb = true;
     
+    EVENT->Delete(GetScene(), this);
+
     // 풀 객체면 풀로 반환, 아니면 삭제
-    if (fromPool)
-    {
-        ReturnToPool();
-    }
-    else
-    {
-        EVENT->Delete(GetScene(), this);
-    }
+    //if (fromPool)
+    //{
+    //    ReturnToPool();
+    //}
+    //else
+    //{
+    //    EVENT->Delete(GetScene(), this);
+    //}
 }
 
 // Reset 함수 추가

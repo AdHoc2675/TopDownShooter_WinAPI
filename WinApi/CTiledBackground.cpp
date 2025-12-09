@@ -29,8 +29,8 @@ void CTiledBackground::Init()
     elems.clear();
     elems.reserve(400);
 
-    // 맵 영역: 화면의 6배 범위에 분포
-    const Vec2 mapHalf = CGame::WINSIZE * 3.f;
+    // 맵 영역
+    const Vec2 mapHalf = CGame::WINSIZE * 10.f;
 
     auto rndf = [](float minv, float maxv) -> float {
         return minv + (float)(rand()) / (float)RAND_MAX * (maxv - minv);

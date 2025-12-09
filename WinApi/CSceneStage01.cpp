@@ -49,17 +49,17 @@ void CSceneStage01::Init()
 	bg->SetPlayer(player);
     AddGameObject(bg);
 
-    auto addMonster = [&](const Vec2& pos) {
-        CMonster* m = new CMonster();
-        m->SetPos(pos);
-        m->SetPlayer(player);
-        AddGameObject(m);
-        RegisterMonster(m);
-    };
+    //auto addMonster = [&](const Vec2& pos) {
+    //    CMonster* m = new CMonster();
+    //    m->SetPos(pos);
+    //    m->SetPlayer(player);
+    //    AddGameObject(m);
+    //    RegisterMonster(m);
+    //};
 
-    addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
-    addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
-    addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
+    //addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
+    //addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
+    //addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
 
     CCameraController* controller = new CCameraController();
     controller->SetPlayer(player);
@@ -90,17 +90,17 @@ void CSceneStage01::Enter()
         bg->SetPlayer(player);
         AddGameObject(bg);
 
-        auto addMonster = [&](const Vec2& pos) {
-            CMonster* m = new CMonster();
-            m->SetPos(pos);
-            m->SetPlayer(player);
-            AddGameObject(m);
-            RegisterMonster(m);
-            };
+        //auto addMonster = [&](const Vec2& pos) {
+        //    CMonster* m = new CMonster();
+        //    m->SetPos(pos);
+        //    m->SetPlayer(player);
+        //    AddGameObject(m);
+        //    RegisterMonster(m);
+        //    };
 
-        addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
-        addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
-        addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
+        //addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
+        //addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
+        //addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
 
         CCameraController* controller = new CCameraController();
         controller->SetPlayer(player);
@@ -315,6 +315,7 @@ void CSceneStage01::RegisterMonster(CMonster* m)
 void CSceneStage01::UnregisterMonster(CMonster* m)
 {
     if (!m) return;
+
     auto it = std::find(enemies.begin(), enemies.end(), m);
     if (it != enemies.end())
         enemies.erase(it);

@@ -29,8 +29,8 @@ void CResultPanel::Configure(GameResult res, float time, int level, int killed)
 
 void CResultPanel::Init()
 {
-    const float panelW = 500.f;
-    const float panelH = 400.f;
+    const float panelW = 750.f;
+    const float panelH = 450.f; 
     SetScale(Vec2(panelW, panelH));
     SetPos(Vec2(CGame::WINSIZE.x * 0.5f - panelW * 0.5f,
                 CGame::WINSIZE.y * 0.5f - panelH * 0.5f));
@@ -43,13 +43,17 @@ void CResultPanel::OnEnable()
 
     const float btnW = 180.f;
     const float btnH = 50.f;
-    const float btnY = 300.f;
-    const float gap = 40.f;
+    const float btnY = 280.f;
+    const float gap = 20.f;
 
-    // 재시작 버튼
+    // 버튼 3개를 가로로 배치
+    float totalWidth = btnW * 3.f + gap * 2.f;
+    float startX = (scale.x - totalWidth) * 0.5f;
+
+    // 다시하기 버튼
     auto* retryBtn = new CIconTextButton();
     retryBtn->SetName(TEXT("RetryButton"));
-    retryBtn->SetPos(Vec2(scale.x * 0.5f - btnW - gap * 0.5f, btnY));
+    retryBtn->SetPos(Vec2(startX, btnY));
     retryBtn->SetScale(Vec2(btnW, btnH));
     retryBtn->SetLabel(L"다시 시작");
     retryBtn->SetLabelSize(18);
@@ -60,13 +64,24 @@ void CResultPanel::OnEnable()
     // 타이틀 버튼
     auto* titleBtn = new CIconTextButton();
     titleBtn->SetName(TEXT("TitleButton"));
-    titleBtn->SetPos(Vec2(scale.x * 0.5f + gap * 0.5f, btnY));
+    titleBtn->SetPos(Vec2(startX + btnW + gap, btnY));
     titleBtn->SetScale(Vec2(btnW, btnH));
     titleBtn->SetLabel(L"타이틀로");
     titleBtn->SetLabelSize(18);
     titleBtn->SetLabelColor(RGB(20, 20, 20));
     titleBtn->SetClickCallback(&CResultPanel::OnTitleClicked, (DWORD_PTR)this, 0);
     EVENT->AddChild(this, titleBtn);
+
+    // 종료 버튼
+    auto* exitBtn = new CIconTextButton();
+    exitBtn->SetName(TEXT("ExitButton"));
+    exitBtn->SetPos(Vec2(startX + (btnW + gap) * 2.f, btnY));
+    exitBtn->SetScale(Vec2(btnW, btnH));
+    exitBtn->SetLabel(L"게임 종료");
+    exitBtn->SetLabelSize(18);
+    exitBtn->SetLabelColor(RGB(150, 30, 30));  // 빨간색 텍스트
+    exitBtn->SetClickCallback(&CResultPanel::OnExitClicked, (DWORD_PTR)this, 0);
+    EVENT->AddChild(this, exitBtn);
 }
 
 void CResultPanel::Update()
@@ -75,10 +90,9 @@ void CResultPanel::Update()
 
 void CResultPanel::Render()
 {
-    // 반투명 배경 오버레이 (전체 화면)
+    // 반투명 어두운 배경 (전체 화면)
     RENDER->SetPen(PenType::Null, RGB(0, 0, 0), 0);
     RENDER->SetBrush(BrushType::Solid, RGB(0, 0, 0));
-    // 패널 외곽에도 어둡게 처리하려면 별도로
 
     // 패널 배경
     COLORREF bgColor = (result == GameResult::Victory) ? RGB(220, 240, 220) : RGB(240, 220, 220);
@@ -103,7 +117,7 @@ void CResultPanel::Render()
     }
     y += 60.f;
 
-    // 통계 정보
+    // 결과 정보
     RENDER->SetText(20, RGB(0, 0, 0), TextAlign::Center);
 
     // 플레이 시간
@@ -169,4 +183,10 @@ void CResultPanel::OnTitleClicked(DWORD_PTR param1, DWORD_PTR param2)
         CAMERA->FadeOut(0.5f);
         EVENT->ChangeScene(SceneType::Title, 0.5f);
     }
+}
+
+void CResultPanel::OnExitClicked(DWORD_PTR param1, DWORD_PTR param2)
+{
+    // 프로그램 종료
+    PostQuitMessage(0);
 }

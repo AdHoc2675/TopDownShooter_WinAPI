@@ -29,6 +29,7 @@ private:
     // 버튼 클릭 콜백
     static void OnRetryClicked(DWORD_PTR param1, DWORD_PTR param2);
     static void OnTitleClicked(DWORD_PTR param1, DWORD_PTR param2);
+    static void OnExitClicked(DWORD_PTR param1, DWORD_PTR param2);  // 종료 버튼 추가
 
     GameResult result;
     float playTime;
