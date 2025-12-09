@@ -7,8 +7,8 @@ public:
     CSuicideBomberMonster();
     virtual ~CSuicideBomberMonster();
     
-    // 풀링용 Reset 오버라이드
-    void Reset() override;
+    //// 풀링용 Reset 오버라이드
+    //void Reset() override;
     
 protected:
     void Init() override;

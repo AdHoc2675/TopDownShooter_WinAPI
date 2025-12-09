@@ -116,13 +116,13 @@ void CEventManager::ProgressDeleteObject()
 	objList.remove_if([&](CGameObject* obj) {
 		if (obj->IsReservedDelete())
 		{
-			// 풀 객체는 delete하지 않고 리스트에서만 제거
-			if (obj->IsPooled())
-			{
-				if (curScene->active) obj->ComponentOnDisable();
-				obj->SetScene(nullptr);
-				return true;  // delete 없이 리스트에서만 제거
-			}
+			//// 풀 객체는 delete하지 않고 리스트에서만 제거
+			//if (obj->IsPooled())
+			//{
+			//	if (curScene->active) obj->ComponentOnDisable();
+			//	obj->SetScene(nullptr);
+			//	return true;  // delete 없이 리스트에서만 제거
+			//}
 
 			if (curScene->active) obj->ComponentOnDisable();
 			obj->ComponentRelease();

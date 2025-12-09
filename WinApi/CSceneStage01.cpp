@@ -19,7 +19,6 @@
 #include "CSMGWeapon.h"
 #include "CSuicideBomberMonster.h"
 #include "CRocketLauncherWeapon.h"
-#include "CMonsterPoolManager.h"
 
 WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
 
@@ -29,7 +28,6 @@ CSceneStage01::CSceneStage01()
     Logger::Debug(L"[CSceneStage01::Constructor] Static sChosenWeapon = " +
         to_wstring(static_cast<int>(sChosenWeapon)));
 
-    MONSTERPOOL->Init(75, 25, 25);
 
 }
 
@@ -163,7 +161,7 @@ void CSceneStage01::Update()
     if (INPUT->ButtonDown(VK_ESCAPE, true))
     {
         CAMERA->FadeOut(0.5f);
-        EVENT->ChangeScene(SceneType::Title, 0.5f);
+        EVENT->ChangeScene(SceneType::Title, 1.0f);
         return;
     }
     
@@ -237,41 +235,6 @@ void CSceneStage01::Render()
 void CSceneStage01::Exit()
 {
     SOUND->Stop(TEXT("Wasteland Combat Loop"));
-
-    // 1. 풀 몬스터를 씬에서 제거 (delete 없이)
-    // enemies 벡터를 복사하여 순회 (원본이 변경되므로)
-    std::vector<CMonster*> pooledMonsters;
-    for (CMonster* m : enemies)
-    {
-        if (m && m->IsPooled())
-        {
-            pooledMonsters.push_back(m);
-        }
-    }
-    
-    for (CMonster* m : pooledMonsters)
-    {
-        RemoveGameObject(m);  // CScene의 public 메서드 사용
-    }
-
-    // 2. 풀로 반환
-    MONSTERPOOL->ReleaseAll();
-
-    // 3. 참조 초기화
-    player = nullptr;
-    currentBoss = nullptr;
-    enemies.clear();
-
-    // 4. 상태 초기화
-    gameEnded = false;
-    monstersKilledCount = 0;
-    playTime = 0.f;
-    spawnTimer = 0.f;
-    eliteWingSpawned = 0;
-    bossSpawned = 0;
-    eliteWingSpawnTriggerTime = 60.f;
-    bossSpawnTriggerTime = 5.f;
-    spawnInterval = 1.5f;
 }
 
 void CSceneStage01::Release()
@@ -290,15 +253,15 @@ void CSceneStage01::SpawnMonster()
     
     if (r < 7)
     {
-        monster = MONSTERPOOL->AcquireRanged();
+        monster = new CRangedMonster();
     }
     else if (r < 12)
     {
-        monster = MONSTERPOOL->AcquireBomber();
+        monster = new CSuicideBomberMonster();
     }
     else
     {
-        monster = MONSTERPOOL->AcquireNormal();
+        monster = new CMonster();
     }
 
     monster->SetPos(spawnPos);

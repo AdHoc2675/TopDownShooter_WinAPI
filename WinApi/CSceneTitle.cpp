@@ -59,7 +59,7 @@ void CSceneTitle::Update()
         Logger::Debug(L"[CSceneTitle] Set weapon to: " + to_wstring(static_cast<int>(current)));
 
         CAMERA->FadeOut(0.5f);
-        EVENT->ChangeScene(SceneType::Stage01, 0.5f);
+        EVENT->ChangeScene(SceneType::Stage01, 1.0f);
     }
 }
 

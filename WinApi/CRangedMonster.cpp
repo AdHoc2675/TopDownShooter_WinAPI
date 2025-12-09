@@ -147,25 +147,25 @@ void CRangedMonster::SpawnMissile(const Vec2& dir)
     EVENT->AddGameObject(GetScene(), m);
 }
 
-void CRangedMonster::Reset()
-{
-    CMonster::Reset();  // 부모 Reset 호출
-    
-    // CRangedMonster 고유 멤버 초기화
-    CombatStats& st = GetCombatStats();
-    st.hp             = 80.f;
-    st.maxHp          = 80.f;
-    st.attack         = 1.f;
-    st.defense        = 0.f;
-    st.critChance     = 0.00f;
-    st.critMultiplier = 1.0f;
-    st.speed          = 70.f;
-
-    fireInterval  = 1.8f;
-    fireCooldown  = 0.f;
-    missileSpeed  = 100.f;
-    attackRange   = 650.f;
-
-    ExpValue = 20;
-    ExpCount = 1;
-}
+//void CRangedMonster::Reset()
+//{
+//    CMonster::Reset();  // 부모 Reset 호출
+//    
+//    // CRangedMonster 고유 멤버 초기화
+//    CombatStats& st = GetCombatStats();
+//    st.hp             = 80.f;
+//    st.maxHp          = 80.f;
+//    st.attack         = 1.f;
+//    st.defense        = 0.f;
+//    st.critChance     = 0.00f;
+//    st.critMultiplier = 1.0f;
+//    st.speed          = 70.f;
+//
+//    fireInterval  = 1.8f;
+//    fireCooldown  = 0.f;
+//    missileSpeed  = 100.f;
+//    attackRange   = 650.f;
+//
+//    ExpValue = 20;
+//    ExpCount = 1;
+//}

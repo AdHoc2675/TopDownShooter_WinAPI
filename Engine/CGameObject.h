@@ -22,8 +22,8 @@ public:
 	void			SetPos(const Vec2& pos)			{ this->pos = pos; }
 	void			SetScale(const Vec2& scale)		{ this->scale = scale; }
 
-	// 오브젝트 풀링 여부 반환
-	virtual bool IsPooled() const { return false; }
+	 //오브젝트 풀링 여부 반환
+	//virtual bool IsPooled() const { return false; }
 
 protected:
 	wstring			name;

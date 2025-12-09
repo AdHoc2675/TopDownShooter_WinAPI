@@ -192,26 +192,26 @@ void CSuicideBomberMonster::SelfDestruct()
     //}
 }
 
-// Reset 함수 추가
-void CSuicideBomberMonster::Reset()
-{
-    CMonster::Reset();  // 부모 Reset 호출
-    
-    // CSuicideBomberMonster 고유 멤버 초기화
-    CombatStats& st = GetCombatStats();
-    st.hp = 70.f;
-    st.maxHp = 70.f;
-    st.attack = 1.f;
-    st.speed = 100.f;
-    
-    ExpValue = 30;
-    ExpCount = 1;
-    
-    isCountingDown = false;
-    countdownTimer = 0.f;
-    
-    detonationRange = 70.f;
-    explosionRadius = 100.f;
-    explosionDamage = 1.f;
-    countdownTime = 0.75f;
-}
+//// Reset 함수 추가
+//void CSuicideBomberMonster::Reset()
+//{
+//    CMonster::Reset();  // 부모 Reset 호출
+//    
+//    // CSuicideBomberMonster 고유 멤버 초기화
+//    CombatStats& st = GetCombatStats();
+//    st.hp = 70.f;
+//    st.maxHp = 70.f;
+//    st.attack = 1.f;
+//    st.speed = 100.f;
+//    
+//    ExpValue = 30;
+//    ExpCount = 1;
+//    
+//    isCountingDown = false;
+//    countdownTimer = 0.f;
+//    
+//    detonationRange = 70.f;
+//    explosionRadius = 100.f;
+//    explosionDamage = 1.f;
+//    countdownTime = 0.75f;
+//}

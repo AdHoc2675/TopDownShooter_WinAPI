@@ -19,11 +19,11 @@ public:
     CombatStats& GetCombatStats() { return st; }
     CAnimator* GetAnimator() const { return animator; }
 
-    // ===== 오브젝트 풀링 관련 =====
-    virtual void Reset();
-    void ReturnToPool();
-    bool IsPooled() const { return fromPool; }
-    void SetPooled(bool value) { fromPool = value; }
+    //// ===== 오브젝트 풀링 관련 =====
+    //virtual void Reset();
+    //void ReturnToPool();
+    //bool IsPooled() const { return fromPool; }
+    //void SetPooled(bool value) { fromPool = value; }
 
     // ===== 상태이상 관련 =====
     void ApplyStatusEffect(StatusEffectType type, int stacks = 1, float duration = 5.0f);
@@ -53,8 +53,8 @@ protected:
     // 상태이상 목록
     std::vector<StatusEffect> statusEffects;
 
-    // 풀링 관련 멤버 변수
-    bool fromPool = false;
+    //// 풀링 관련 멤버 변수
+    //bool fromPool = false;
 
 private:
     void Init()         override;

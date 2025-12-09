@@ -50,32 +50,32 @@ void CResultPanel::OnEnable()
     float totalWidth = btnW * 3.f + gap * 2.f;
     float startX = (scale.x - totalWidth) * 0.5f;
 
-    // 다시하기 버튼
-    auto* retryBtn = new CIconTextButton();
-    retryBtn->SetName(TEXT("RetryButton"));
-    retryBtn->SetPos(Vec2(startX, btnY));
-    retryBtn->SetScale(Vec2(btnW, btnH));
-    retryBtn->SetLabel(L"다시 시작");
-    retryBtn->SetLabelSize(18);
-    retryBtn->SetLabelColor(RGB(20, 20, 20));
-    retryBtn->SetClickCallback(&CResultPanel::OnRetryClicked, (DWORD_PTR)this, 0);
-    EVENT->AddChild(this, retryBtn);
+    //// 다시하기 버튼
+    //auto* retryBtn = new CIconTextButton();
+    //retryBtn->SetName(TEXT("RetryButton"));
+    //retryBtn->SetPos(Vec2(startX, btnY));
+    //retryBtn->SetScale(Vec2(btnW, btnH));
+    //retryBtn->SetLabel(L"다시 시작");
+    //retryBtn->SetLabelSize(18);
+    //retryBtn->SetLabelColor(RGB(20, 20, 20));
+    //retryBtn->SetClickCallback(&CResultPanel::OnRetryClicked, (DWORD_PTR)this, 0);
+    //EVENT->AddChild(this, retryBtn);
 
-    // 타이틀 버튼
-    auto* titleBtn = new CIconTextButton();
-    titleBtn->SetName(TEXT("TitleButton"));
-    titleBtn->SetPos(Vec2(startX + btnW + gap, btnY));
-    titleBtn->SetScale(Vec2(btnW, btnH));
-    titleBtn->SetLabel(L"타이틀로");
-    titleBtn->SetLabelSize(18);
-    titleBtn->SetLabelColor(RGB(20, 20, 20));
-    titleBtn->SetClickCallback(&CResultPanel::OnTitleClicked, (DWORD_PTR)this, 0);
-    EVENT->AddChild(this, titleBtn);
+    //// 타이틀 버튼
+    //auto* titleBtn = new CIconTextButton();
+    //titleBtn->SetName(TEXT("TitleButton"));
+    //titleBtn->SetPos(Vec2(startX + btnW + gap, btnY));
+    //titleBtn->SetScale(Vec2(btnW, btnH));
+    //titleBtn->SetLabel(L"타이틀로");
+    //titleBtn->SetLabelSize(18);
+    //titleBtn->SetLabelColor(RGB(20, 20, 20));
+    //titleBtn->SetClickCallback(&CResultPanel::OnTitleClicked, (DWORD_PTR)this, 0);
+    //EVENT->AddChild(this, titleBtn);
 
     // 종료 버튼
     auto* exitBtn = new CIconTextButton();
     exitBtn->SetName(TEXT("ExitButton"));
-    exitBtn->SetPos(Vec2(startX + (btnW + gap) * 2.f, btnY));
+    exitBtn->SetPos(Vec2(startX + btnW + gap, btnY));
     exitBtn->SetScale(Vec2(btnW, btnH));
     exitBtn->SetLabel(L"게임 종료");
     exitBtn->SetLabelSize(18);
@@ -169,7 +169,7 @@ void CResultPanel::OnRetryClicked(DWORD_PTR param1, DWORD_PTR param2)
         panel->GetScene()->SetPaused(false);
         SOUND->Stop(TEXT("Wasteland Combat Loop"));
         CAMERA->FadeOut(0.5f);
-        EVENT->ChangeScene(SceneType::Stage01, 0.5f);
+        EVENT->ChangeScene(SceneType::Stage01, 1.0f);
     }
 }
 
@@ -181,7 +181,7 @@ void CResultPanel::OnTitleClicked(DWORD_PTR param1, DWORD_PTR param2)
         panel->GetScene()->SetPaused(false);
         SOUND->Stop(TEXT("Wasteland Combat Loop"));
         CAMERA->FadeOut(0.5f);
-        EVENT->ChangeScene(SceneType::Title, 0.5f);
+        EVENT->ChangeScene(SceneType::Title, 1.0f);
     }
 }
 

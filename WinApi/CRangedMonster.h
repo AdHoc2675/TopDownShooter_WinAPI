@@ -8,8 +8,8 @@ public:
     CRangedMonster();
     virtual ~CRangedMonster();
 
-    // 풀링용 Reset 오버라이드
-    void Reset() override;
+    //// 풀링용 Reset 오버라이드
+    //void Reset() override;
 
 private:
     void Init() override;

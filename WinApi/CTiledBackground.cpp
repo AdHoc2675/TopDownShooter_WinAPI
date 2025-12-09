@@ -48,7 +48,7 @@ void CTiledBackground::Init()
     };
 
     // 배경 요소 기본 분포
-    for (int i = 0; i < 220; ++i)
+    for (int i = 0; i < 500; ++i)
     {
         Vec2 wp(
             (float)((rand() % (int)(mapHalf.x * 2)) - (int)mapHalf.x),
