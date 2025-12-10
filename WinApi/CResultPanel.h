@@ -16,7 +16,7 @@ public:
     virtual ~CResultPanel();
 
     // 결과 화면 설정
-    void Configure(GameResult result, float playTime, int level, int monstersKilled = 0);
+    void Configure(GameResult result, float playTime, int level, int monstersKilled = 0, int reward = 0);
 
 private:
     void Init() override;
@@ -35,5 +35,6 @@ private:
     float playTime;
     int playerLevel;
     int monstersKilled;
+    int earnedReward = 0;
     bool buttonsCreated;
 };

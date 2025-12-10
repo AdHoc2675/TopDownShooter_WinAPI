@@ -162,6 +162,7 @@
     <ClInclude Include="..\Engine\CIconTextButton.h" />
     <ClInclude Include="CBossMonster.h" />
     <ClInclude Include="CCameraController.h" />
+    <ClInclude Include="CCurrencyManager.h" />
     <ClInclude Include="CDamageText.h" />
     <ClInclude Include="CExplosionEffect.h" />
     <ClInclude Include="CExplosiveMissile.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="..\Engine\CIconTextButton.cpp" />
     <ClCompile Include="CBossMonster.cpp" />
     <ClCompile Include="CCameraController.cpp" />
+    <ClCompile Include="CCurrencyManager.cpp" />
     <ClCompile Include="CExplosionEffect.cpp" />
     <ClCompile Include="CExplosiveMissile.cpp" />
     <ClCompile Include="CExpOrb.cpp" />

@@ -173,7 +173,7 @@ void CPlayerDiamond::Update()
     if (dashCooldown > 0.f) dashCooldown -= DT;
     if (INPUT->ButtonDown(VK_SHIFT, true) && dashCooldown <= 0.f)
     {
-        // 대시 로직 (간단 예시)
+        // 대시 로직
         pos.x = pos.x + moveDir.x * 100.f;
         pos.y = pos.y - moveDir.y * 100.f;
         dashCooldown = 1.0f;

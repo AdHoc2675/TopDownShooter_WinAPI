@@ -20,6 +20,7 @@
 #include "CSuicideBomberMonster.h"
 #include "CRocketLauncherWeapon.h"
 #include "CPlayerDiamond.h"
+#include "CCurrencyManager.h"
 
 WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
 CharacterChoice CSceneStage01::sChosenCharacter = CharacterChoice::Shana;
@@ -359,15 +360,23 @@ void CSceneStage01::EndGame(GameResult result)
         return;
 
     gameEnded = true;
-
-    // 게임 일시정지
     SetPaused(true);
+
+    // 보상 계산 및 지급
+    int playerLevel = player ? player->GetLevel() : 1;
+    int reward = CCurrencyManager::CalculateReward(monstersKilledCount, playTime, playerLevel);
+    CURRENCY->AddCurrency(reward);
+
+    Logger::Debug(L"[CSceneStage01::EndGame] Reward: " + to_wstring(reward) +
+        L" (Kills:" + to_wstring(monstersKilledCount) +
+        L" Time:" + to_wstring((int)playTime) +
+        L" Lv:" + to_wstring(playerLevel) + L")");
 
     // 결과 패널 생성
     CResultPanel* resultPanel = new CResultPanel();
     EVENT->AddUI(this, resultPanel);
-    resultPanel->Configure(result, playTime, player ? player->GetLevel() : 1, monstersKilledCount);
+    resultPanel->Configure(result, playTime, playerLevel, monstersKilledCount, reward);
 
-    Logger::Debug(L"[CSceneStage01::EndGame] Game ended with result: " +
+    Logger::Debug(L"[CSceneStage01::EndGame] Game ended: " +
         to_wstring(static_cast<int>(result)));
 }

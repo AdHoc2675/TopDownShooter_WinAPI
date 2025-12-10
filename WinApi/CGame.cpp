@@ -6,6 +6,8 @@
 #include "CSceneTitle.h"
 #include "CSceneStage01.h"
 
+#include "CCurrencyManager.h"
+
 const Vec2 CGame::WINSTART	= Vec2(100, 100);
 const Vec2 CGame::WINSIZE	= Vec2(1600, 900);
 
@@ -71,6 +73,9 @@ void CGame::Init(HINSTANCE hInstance)
 	SINGLE(CSoundManager)->Init();
 	SINGLE(CUIManager)->Init();
 
+	// 재화 매니저 초기화
+	CURRENCY->Init();
+
 	// TODO : 리소스 경로 설정
 	SINGLE(CResourceManager)->SetResourceFolder(PATH + TEXT("\\..\\Resource\\"));
 
@@ -98,6 +103,10 @@ void CGame::Run()
 void CGame::Release()
 {
 	// 게임의 마무리 진행
+
+	// 재화 매니저 마무리
+	CURRENCY->Release();
+	CCurrencyManager::DestroyInstance();
 
 	// 게임엔진 마무리
 	SINGLE(CEngine)->Release();

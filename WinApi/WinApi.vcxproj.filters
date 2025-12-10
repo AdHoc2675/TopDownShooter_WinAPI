@@ -125,6 +125,7 @@
       <Filter>GameObject\UpgradeObject</Filter>
     </ClInclude>
     <ClInclude Include="CPlayerDiamond.h" />
+    <ClInclude Include="CCurrencyManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -210,6 +211,7 @@
       <Filter>GameObject\UpgradeObject</Filter>
     </ClCompile>
     <ClCompile Include="CPlayerDiamond.cpp" />
+    <ClCompile Include="CCurrencyManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

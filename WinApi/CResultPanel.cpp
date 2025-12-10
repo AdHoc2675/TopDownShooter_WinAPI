@@ -2,6 +2,7 @@
 #include "CResultPanel.h"
 #include "CGame.h"
 #include "CIconTextButton.h"
+#include "CCurrencyManager.h"
 
 CResultPanel::CResultPanel()
 {
@@ -9,6 +10,7 @@ CResultPanel::CResultPanel()
     playTime = 0.f;
     playerLevel = 1;
     monstersKilled = 0;
+    earnedReward = 0;
     buttonsCreated = false;
     SetName(TEXT("ResultPanel"));
     SetScreenFixed(true);
@@ -18,12 +20,13 @@ CResultPanel::~CResultPanel()
 {
 }
 
-void CResultPanel::Configure(GameResult res, float time, int level, int killed)
+void CResultPanel::Configure(GameResult res, float time, int level, int killed, int reward)
 {
     result = res;
     playTime = time;
     playerLevel = level;
     monstersKilled = killed;
+    earnedReward = reward;
     buttonsCreated = false;
 }
 
@@ -43,7 +46,7 @@ void CResultPanel::OnEnable()
 
     const float btnW = 180.f;
     const float btnH = 50.f;
-    const float btnY = 280.f;
+    const float btnY = 380.f;
     const float gap = 20.f;
 
     // 버튼 3개를 가로로 배치
@@ -139,6 +142,19 @@ void CResultPanel::Render()
         RENDER->Text(cx, y, killStr);
         y += 35.f;
     }
+
+    // 획득 보상 표시
+    y += 10.f;
+    RENDER->SetText(22, RGB(180, 140, 40), TextAlign::Center);
+    wstring rewardStr = L"획득 보상: +" + to_wstring(earnedReward) + L" G";
+    RENDER->Text(cx, y, rewardStr);
+    y += 30.f;
+
+    // 총 보유 재화 표시
+    RENDER->SetText(16, RGB(80, 80, 80), TextAlign::Center);
+    wstring totalStr = L"보유 재화: " + to_wstring(CURRENCY->GetCurrency()) + L" G";
+    RENDER->Text(cx, y, totalStr);
+    y += 35.f;
 
     // 결과 메시지
     y += 20.f;
