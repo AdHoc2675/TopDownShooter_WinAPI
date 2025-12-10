@@ -46,8 +46,8 @@ void CPlayer::Init()
 	heartEmptyImage = LOADIMAGE(TEXT("HeartEmpty"), TEXT("Image\\CPlayer_hpEmpty.bmp"));
 	heartFullImage = LOADIMAGE(TEXT("HeartFull"), TEXT("Image\\CPlayer_hpFull.bmp"));
 
-	CImage* rightImage = LOADIMAGE(TEXT("PlayerMoveRight"), TEXT("Image\\T_Shana0.bmp"));
-	CImage* leftImage  = LOADIMAGE(TEXT("PlayerMoveLeft"),  TEXT("Image\\T_Shana1.bmp"));
+	CImage* rightImage = LOADIMAGE(TEXT("PlayerRight"), TEXT("Image\\T_Shana0.bmp"));
+	CImage* leftImage  = LOADIMAGE(TEXT("PlayerLeft"),  TEXT("Image\\T_Shana1.bmp"));
 
 	animator = new CAnimator();
 

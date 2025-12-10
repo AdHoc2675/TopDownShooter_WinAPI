@@ -42,7 +42,7 @@ protected:
 	void	OnCollisionEnter(CCollider* other) override;
 	void	OnCollisionStay(CCollider* other) override;
 
-	CAnimator*	animator;
+	CAnimator*	animator = nullptr;
 	CombatStats stats;
 	CImage*		heartFullImage;
 	CImage*		heartEmptyImage;

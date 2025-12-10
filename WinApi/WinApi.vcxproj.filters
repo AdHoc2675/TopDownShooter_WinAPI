@@ -124,6 +124,7 @@
     <ClInclude Include="CRocketLauncherWeapon.h">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClInclude>
+    <ClInclude Include="CPlayerDiamond.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -208,6 +209,7 @@
     <ClCompile Include="CRocketLauncherWeapon.cpp">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClCompile>
+    <ClCompile Include="CPlayerDiamond.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

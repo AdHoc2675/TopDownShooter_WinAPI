@@ -19,8 +19,10 @@
 #include "CSMGWeapon.h"
 #include "CSuicideBomberMonster.h"
 #include "CRocketLauncherWeapon.h"
+#include "CPlayerDiamond.h"
 
 WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
+CharacterChoice CSceneStage01::sChosenCharacter = CharacterChoice::Shana;
 
 CSceneStage01::CSceneStage01()
 {
@@ -37,84 +39,68 @@ CSceneStage01::~CSceneStage01()
 
 void CSceneStage01::Init()
 {
-    Logger::Debug(L"[CSceneStage01::Init] Initializing Stage01 scene");
+ //   Logger::Debug(L"[CSceneStage01::Init] Initializing Stage01 scene");
 
-    player = new CPlayer();
-    player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
-    AddGameObject(player);
-    
-    CTiledBackground* bg = new CTiledBackground();
-	bg->SetPlayer(player);
-    AddGameObject(bg);
+ //   // 선택된 캐릭터에 따라 생성
+ //   if (sChosenCharacter == CharacterChoice::Diamond)
+ //       player = new CPlayerDiamond();
+ //   else
+ //       player = new CPlayer();
 
-    //auto addMonster = [&](const Vec2& pos) {
-    //    CMonster* m = new CMonster();
-    //    m->SetPos(pos);
-    //    m->SetPlayer(player);
-    //    AddGameObject(m);
-    //    RegisterMonster(m);
-    //};
+ //   player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
+ //   AddGameObject(player);
+ //   
+ //   CTiledBackground* bg = new CTiledBackground();
+	//bg->SetPlayer(player);
+ //   AddGameObject(bg);
 
-    //addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
-    //addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
-    //addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
+ //   CCameraController* controller = new CCameraController();
+ //   controller->SetPlayer(player);
+ //   AddGameObject(controller);
 
-    CCameraController* controller = new CCameraController();
-    controller->SetPlayer(player);
-    AddGameObject(controller);
+ //   CSoundController* sound = new CSoundController();
+ //   AddGameObject(sound);
 
-    CSoundController* sound = new CSoundController();
-    AddGameObject(sound);
-
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::ExpOrb);
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Player);
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::Monster);
-    CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster);
-    
-    spawnTimer = spawnInterval;
+ //   CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::ExpOrb);
+ //   CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
+ //   CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Player);
+ //   CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::Monster);
+ //   CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster);
+ //   
+ //   spawnTimer = spawnInterval;
 }
 
 void CSceneStage01::Enter()
 {
     // player가 nullptr이면 새로 생성
-    if (player == nullptr)
-    {
-        player = new CPlayer();
-        player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
-        AddGameObject(player);
 
-        CTiledBackground* bg = new CTiledBackground();
-        bg->SetPlayer(player);
-        AddGameObject(bg);
+	if (sChosenCharacter == CharacterChoice::Diamond)
+		player = new CPlayerDiamond();
+	else
+		player = new CPlayer();
 
-        //auto addMonster = [&](const Vec2& pos) {
-        //    CMonster* m = new CMonster();
-        //    m->SetPos(pos);
-        //    m->SetPlayer(player);
-        //    AddGameObject(m);
-        //    RegisterMonster(m);
-        //    };
+	player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
+	AddGameObject(player);
 
-        //addMonster(Vec2(CGame::WINSIZE.x * 0.2f, CGame::WINSIZE.y * 0.8f));
-        //addMonster(Vec2(CGame::WINSIZE.x * 0.4f, -CGame::WINSIZE.y * 0.8f));
-        //addMonster(Vec2(-CGame::WINSIZE.x * 0.9f, CGame::WINSIZE.y * 0.8f));
+	CTiledBackground* bg = new CTiledBackground();
+	bg->SetPlayer(player);
+	AddGameObject(bg);
 
-        CCameraController* controller = new CCameraController();
-        controller->SetPlayer(player);
-        AddGameObject(controller);
+	CCameraController* controller = new CCameraController();
+	controller->SetPlayer(player);
+	AddGameObject(controller);
 
-        CSoundController* sound = new CSoundController();
-        AddGameObject(sound);
+	CSoundController* sound = new CSoundController();
+	AddGameObject(sound);
 
-        CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::ExpOrb);
-        CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
-        CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Player);
-        CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::Monster);
-        CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster);
+	CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::ExpOrb);
+	CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Monster);
+	CCollisionManager::GetInstance()->CheckLayer(Layer::Missile, Layer::Player);
+	CCollisionManager::GetInstance()->CheckLayer(Layer::Player, Layer::Monster);
+	CCollisionManager::GetInstance()->CheckLayer(Layer::Monster, Layer::Monster);
 
-        spawnTimer = spawnInterval;
-    }
+	spawnTimer = spawnInterval;
+    
 
     CAMERA->FadeIn(0.5f);
 
@@ -367,7 +353,6 @@ void CSceneStage01::SpawnBossMonster()
     currentBoss = boss;  // 보스 참조 저장
 }
 
-// EndGame 함수 추가 (파일 끝에)
 void CSceneStage01::EndGame(GameResult result)
 {
     if (gameEnded)

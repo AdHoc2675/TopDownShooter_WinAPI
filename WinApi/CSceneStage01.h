@@ -16,6 +16,11 @@ enum class WeaponChoice {
     RocketLauncher = 3 
 };
 
+enum class CharacterChoice {
+    Shana = 0,
+    Diamond = 1
+};
+
 class CSceneStage01 : public CScene
 {
 public:
@@ -39,6 +44,9 @@ public:
     static void SetChosenWeapon(WeaponChoice c) { sChosenWeapon = c; };
     static WeaponChoice GetChosenWeapon() { return sChosenWeapon; };
 
+    // 캐릭터 선택 정적 메서드 추가
+    static void SetChosenCharacter(CharacterChoice c) { sChosenCharacter = c; };
+    static CharacterChoice GetChosenCharacter() { return sChosenCharacter; };
 
 	float playTime = 0.f;          // 플레이 시간(초)
 
@@ -57,6 +65,7 @@ private:
 
 private:
     static WeaponChoice sChosenWeapon;
+    static CharacterChoice sChosenCharacter;
 
     vector<CMonster*> enemies;
     CPlayer* player = nullptr;           // 플레이어 참조

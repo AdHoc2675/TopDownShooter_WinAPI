@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CScene.h"
 #include "CAnimator.h"
 
@@ -15,22 +15,32 @@ public:
     void Exit()   override;
     void Release() override;
 
-    void RenderWeaponDescription();  // ÇÏ´Ü ¼³¸í¶õ ·»´õ¸µ
-    void StartGame();                // °ÔÀÓ ½ÃÀÛ Ã³¸®
+    void RenderWeaponDescription();
+    void RenderCharacterDescription();  // ìºë¦­í„° ì„¤ëª…ë€ ì¶”ê°€
+    void StartGame();
 
 private:
-    int selected = 0;      // ÇöÀç ¼±ÅÃµÈ ¹«±â ÀÎµ¦½º
-    int hoveredIndex = -1; // ¸¶¿ì½º È£¹ö ÁßÀÎ ¹Ú½º ÀÎµ¦½º
+    // ë¬´ê¸° ì„ íƒ
+    int selectedWeapon = 0;
+    int hoveredWeaponIndex = -1;
 
-    // ¹«±â ¹Ú½º ¿µ¿ª (¸¶¿ì½º Å¬¸¯ °¨Áö¿ë)
+    // ìºë¦­í„° ì„ íƒ ì¶”ê°€
+    int selectedCharacter = 0;
+    int hoveredCharacterIndex = -1;
+
     struct BoxRect {
         float left, top, right, bottom;
     };
     BoxRect weaponBoxes[3];
+    BoxRect characterBoxes[2];  // ìºë¦­í„° 2ê°œ
 
-    // ¹«±â ÀÌ¹ÌÁö
+    // ë¬´ê¸° ì´ë¯¸ì§€
     CImage* pistolImage = nullptr;
     CImage* shotgunImage = nullptr;
     CImage* smgImage = nullptr;
+
+    // ìºë¦­í„° ì´ë¯¸ì§€
+    CImage* shanaImage = nullptr;
+    CImage* diamondImage = nullptr;
 };
 
