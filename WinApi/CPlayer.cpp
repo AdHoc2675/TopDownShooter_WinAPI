@@ -15,8 +15,8 @@ CPlayer::CPlayer()
 	heartEmptyImage = nullptr;
 	
 	stats.speed		= 200.f;
-	stats.hp = 5.f;
-	stats.maxHp = 5.f;
+	stats.hp = 6.f;
+	stats.maxHp = 6.f;
 	stats.defense = 0.f;
 	stats.attack = 20.f;
 	stats.critChance = 0.f;
