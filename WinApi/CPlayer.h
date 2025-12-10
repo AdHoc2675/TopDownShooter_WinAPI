@@ -30,7 +30,7 @@ public:
 public:
 	int GetLevel() const { return level; }
 
-private:
+protected:
 	void	Init()			override;
 	void	OnEnable()		override;
 	void	Update()		override;
@@ -38,7 +38,6 @@ private:
 	void	OnDisable()		override;
 	void	Release()		override;
 
-private:
 	void	AnimatorUpdate();
 	void	OnCollisionEnter(CCollider* other) override;
 	void	OnCollisionStay(CCollider* other) override;

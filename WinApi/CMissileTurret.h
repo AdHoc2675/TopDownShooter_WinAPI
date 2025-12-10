@@ -51,7 +51,7 @@ private:
     float       fireInterval = 1.0f;   // 발사 간격(초)
     float       fireCooldown = 0.f;   // 남은 쿨타임
     float       missileSpeed = 450.f;   // 투사체 이동속도
-    float       missileLife = 1.0f;    // 투사체 수명
+    float       missileLife = 2.0f;    // 투사체 수명
 
     CAnimator* animator = nullptr;
 
