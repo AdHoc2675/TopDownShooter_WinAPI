@@ -91,6 +91,7 @@ protected:
 	float   curChamberSize; // 현재 남은 탄창 크기
 	float   reloadTime;     // 재장전 시간(초)
 	float   curReloadTime;
+	float   lifeTime;       // 발사체 생존 시간(초)
 
     int     projectileCount;   // 한 번 발사 시 생성할 발사체 수
     float   spreadAngleDeg;    // 부채꼴 총 각도(도)

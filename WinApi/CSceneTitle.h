@@ -16,7 +16,7 @@ public:
     void Release() override;
 
     void RenderWeaponDescription();
-    void RenderCharacterDescription();  // 캐릭터 설명란 추가
+    void RenderCharacterDescription();
     void StartGame();
 
 private:
@@ -42,5 +42,7 @@ private:
     // 캐릭터 이미지
     CImage* shanaImage = nullptr;
     CImage* diamondImage = nullptr;
+
+	CSound* UIClickSound = nullptr;
 };
 

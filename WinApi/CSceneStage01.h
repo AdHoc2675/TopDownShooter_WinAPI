@@ -78,7 +78,7 @@ private:
     int      eliteWingSpawned = 0;              // 엘리트 1회 소환 여부
     float    eliteWingSpawnTriggerTime = 60.f;  // 소환 트리거 시간(초)
 	int      bossSpawned = 0;                   // 보스 소환 여부
-	float    bossSpawnTriggerTime = 5.f;        // 보스 소환 트리거 시간(초)
+	float    bossSpawnTriggerTime = 300.f;        // 보스 소환 트리거 시간(초)
     CBossMonster* currentBoss = nullptr;  // 현재 활성 보스 참조
 
     bool gameEnded = false;           // 게임 종료 여부

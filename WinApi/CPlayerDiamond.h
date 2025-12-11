@@ -13,7 +13,5 @@ protected:
     void Update() override;
     void Release() override;
 
-	void AnimatorUpdate();
-
     float dashCooldown = 0.f;
 };

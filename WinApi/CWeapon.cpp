@@ -21,6 +21,7 @@ CWeapon::CWeapon()
 	damage = 15.f;  // 무기 대미지 기본값
 	pierceCount = 0; 		 // 미사일 관통 횟수
 	missileSpeedMultiplier = 1.f; // 미사일 이동속도 배율
+	lifeTime = 1.5f;			 // 미사일 수명
 }
 
 CWeapon::~CWeapon()
@@ -279,6 +280,7 @@ void CWeapon::CreateMissile(const Vec2& spawnPos, const Vec2& dir)
 
 	missile->SetPierceCount(pierceCount);
 	missile->SetMoveSpeed(500.f * missileSpeedMultiplier);
+	missile->SetLifeTime(lifeTime);
 
 	// 발화 설정 전달 (확률 포함)
 	if (appliesBurn)

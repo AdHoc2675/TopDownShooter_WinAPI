@@ -1,25 +1,27 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CShotgunWeapon.h"
 
 CShotgunWeapon::CShotgunWeapon()
 {
-    // Ç¥½Ã ÀÌ¸§
-    name = TEXT("¼¦°Ç");
-    // ¿ÜÇü(»ç°¢Çü ·»´õ ±âÁØ) ±âº» Å©±â
+    // í‘œì‹œ ì´ë¦„
+    name = TEXT("ìƒ·ê±´");
+    // ì™¸í˜•(ì‚¬ê°í˜• ë Œë” ê¸°ì¤€) ê¸°ë³¸ í¬ê¸°
     scale = Vec2(12.f, 28.f);
 
-    // ±âº» ¼º´É
-    damage = 10.f;               // ÇÇÇØ
-    fireCooldown = 0.2f;         // ¿¬»ç ¼Óµµ(ÃÊ)
-    projectileCount = 4;         // ¹ß»çÃ¼ ¼ö
-    maxChamberSize = 2.f;        // ÃÖ´ë ÅºÃ¢
+    // ê¸°ë³¸ ì„±ëŠ¥
+    damage = 10.f;               // í”¼í•´
+    fireCooldown = 0.2f;         // ì—°ì‚¬ ì†ë„(ì´ˆ)
+    projectileCount = 4;         // ë°œì‚¬ì²´ ìˆ˜
+    maxChamberSize = 2.f;        // ìµœëŒ€ íƒ„ì°½
     curChamberSize = maxChamberSize;
-    reloadTime = 1.0f;           // ÀçÀåÀü ½Ã°£(ÃÊ)
-    pierceCount = 1;             // ±âº» °üÅë 1È¸
+    reloadTime = 1.0f;           // ì¬ì¥ì „ ì‹œê°„(ì´ˆ)
+    pierceCount = 1;             // ê¸°ë³¸ ê´€í†µ 1íšŒ
     spreadAngleDeg = 10.f;
     missileSpeedMultiplier = 1.f;
 
-    // ³»ºÎ Äğ´Ù¿î/ÀçÀåÀü Å¸ÀÌ¸Ó ÃÊ±âÈ­
+    // ë‚´ë¶€ ì¿¨ë‹¤ìš´/ì¬ì¥ì „ íƒ€ì´ë¨¸ ì´ˆê¸°í™”
     curCooldown = 0.f;
     curReloadTime = 0.f;
+
+    lifeTime = 0.5f;
 }

@@ -19,6 +19,8 @@ void CSceneTitle::Init()
 
     const float cx = CGame::WINSIZE.x * 0.5f;
 
+	UIClickSound = LOADSOUND(TEXT("UI_Click"), TEXT("Sound\\UI Click 36.wav"));
+
     // ===== 캐릭터 박스 영역 (상단) =====
     const float charBoxW = 150.f;
     const float charBoxH = 150.f;
@@ -74,76 +76,105 @@ void CSceneTitle::Update()
     Vec2 mousePos = INPUT->MouseScreenPos();
 
     // ===== 캐릭터 선택 (키보드: 1, 2) =====
-    if (INPUT->ButtonDown('1', true)) selectedCharacter = 0;
-    if (INPUT->ButtonDown('2', true)) selectedCharacter = 1;
-
-    // ===== 무기 선택 (키보드: 좌/우) =====
-    if (INPUT->ButtonDown(VK_LEFT, true) || INPUT->ButtonDown('A', true))
-    {
-        selectedWeapon--;
-        if (selectedWeapon < 0) selectedWeapon = 2;
-    }
-    else if (INPUT->ButtonDown(VK_RIGHT, true) || INPUT->ButtonDown('D', true))
-    {
-        selectedWeapon++;
-        if (selectedWeapon > 2) selectedWeapon = 0;
-    }
-
-    // ===== 마우스 클릭으로 선택 =====
-    if (INPUT->ButtonDown(VK_LBUTTON, true))
-    {
-        // 캐릭터 박스 클릭
-        for (int i = 0; i < 2; ++i)
-        {
-            if (mousePos.x >= characterBoxes[i].left  && mousePos.x <= characterBoxes[i].right &&
-                mousePos.y >= characterBoxes[i].top   && mousePos.y <= characterBoxes[i].bottom)
-            {
-                selectedCharacter = i;
-                break;
-            }
-        }
-
-        // 무기 박스 클릭
-        for (int i = 0; i < 3; ++i)
-        {
-            if (mousePos.x >= weaponBoxes[i].left  && mousePos.x <= weaponBoxes[i].right &&
-                mousePos.y >= weaponBoxes[i].top   && mousePos.y <= weaponBoxes[i].bottom)
-            {
-                selectedWeapon = i;
-                break;
-            }
+    if (INPUT->ButtonDown('1', true)) {
+        selectedCharacter = 0;
+        if (UIClickSound) {
+            SOUND->PlayOnce(UIClickSound);
         }
     }
 
-    // ===== 마우스 호버 =====
-    hoveredCharacterIndex = -1;
-    for (int i = 0; i < 2; ++i)
-    {
-        if (mousePos.x >= characterBoxes[i].left  && mousePos.x <= characterBoxes[i].right &&
-            mousePos.y >= characterBoxes[i].top   && mousePos.y <= characterBoxes[i].bottom)
-        {
-            hoveredCharacterIndex = i;
-            break;
+    if (INPUT->ButtonDown('2', true)) {
+        selectedCharacter = 1;
+        if (UIClickSound) {
+            SOUND->PlayOnce(UIClickSound);
         }
     }
 
-    hoveredWeaponIndex = -1;
-    for (int i = 0; i < 3; ++i)
-    {
-        if (mousePos.x >= weaponBoxes[i].left  && mousePos.x <= weaponBoxes[i].right &&
-            mousePos.y >= weaponBoxes[i].top   && mousePos.y <= weaponBoxes[i].bottom)
-        {
-            hoveredWeaponIndex = i;
-            break;
-        }
-    }
 
-    // ===== 게임 시작 =====
-    if (INPUT->ButtonDown(VK_SPACE, true) || INPUT->ButtonDown(VK_RETURN, true))
-    {
-        StartGame();
-    }
+	// ===== 무기 선택 (키보드: 좌/우) =====
+	if (INPUT->ButtonDown(VK_LEFT, true) || INPUT->ButtonDown('A', true))
+	{
+		selectedWeapon--;
+		if (selectedWeapon < 0) selectedWeapon = 2;
+
+		if (UIClickSound) {
+			SOUND->PlayOnce(UIClickSound);
+		}
+	}
+	else if (INPUT->ButtonDown(VK_RIGHT, true) || INPUT->ButtonDown('D', true))
+	{
+		selectedWeapon++;
+		if (selectedWeapon > 2) selectedWeapon = 0;
+
+		if (UIClickSound) {
+			SOUND->PlayOnce(UIClickSound);
+		}
+	}
+
+	// ===== 마우스 클릭으로 선택 =====
+	if (INPUT->ButtonDown(VK_LBUTTON, true))
+	{
+		// 캐릭터 박스 클릭
+		for (int i = 0; i < 2; ++i)
+		{
+			if (mousePos.x >= characterBoxes[i].left && mousePos.x <= characterBoxes[i].right &&
+				mousePos.y >= characterBoxes[i].top && mousePos.y <= characterBoxes[i].bottom)
+			{
+				selectedCharacter = i;
+				if (UIClickSound) {
+					SOUND->PlayOnce(UIClickSound);
+				}
+
+				break;
+			}
+		}
+
+		// 무기 박스 클릭
+		for (int i = 0; i < 3; ++i)
+		{
+			if (mousePos.x >= weaponBoxes[i].left && mousePos.x <= weaponBoxes[i].right &&
+				mousePos.y >= weaponBoxes[i].top && mousePos.y <= weaponBoxes[i].bottom)
+			{
+				selectedWeapon = i;
+				if (UIClickSound) {
+					SOUND->PlayOnce(UIClickSound);
+				}
+
+				break;
+			}
+		}
+	}
+
+	// ===== 마우스 호버 =====
+	hoveredCharacterIndex = -1;
+	for (int i = 0; i < 2; ++i)
+	{
+		if (mousePos.x >= characterBoxes[i].left && mousePos.x <= characterBoxes[i].right &&
+			mousePos.y >= characterBoxes[i].top && mousePos.y <= characterBoxes[i].bottom)
+		{
+			hoveredCharacterIndex = i;
+			break;
+		}
+	}
+
+	hoveredWeaponIndex = -1;
+	for (int i = 0; i < 3; ++i)
+	{
+		if (mousePos.x >= weaponBoxes[i].left && mousePos.x <= weaponBoxes[i].right &&
+			mousePos.y >= weaponBoxes[i].top && mousePos.y <= weaponBoxes[i].bottom)
+		{
+			hoveredWeaponIndex = i;
+			break;
+		}
+	}
+
+	// ===== 게임 시작 =====
+	if (INPUT->ButtonDown(VK_SPACE, true) || INPUT->ButtonDown(VK_RETURN, true))
+	{
+		StartGame();
+	}
 }
+
 
 void CSceneTitle::Render()
 {
@@ -171,6 +202,7 @@ void CSceneTitle::Render()
         wstring name;
         CImage* image;
     };
+
     CharacterInfo characters[2] = {
         { TEXT("Shana"),   shanaImage },
         { TEXT("Diamond"), diamondImage }

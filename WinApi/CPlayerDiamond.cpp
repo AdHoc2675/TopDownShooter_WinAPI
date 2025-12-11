@@ -184,23 +184,3 @@ void CPlayerDiamond::Release()
 {
     CPlayer::Release();
 }
-
-void CPlayerDiamond::AnimatorUpdate()
-{
-    // 이동 중이면 현재 이동 방향을 기준으로 바라보는 방향 업데이트
-    if (moveDir.Length() > 0)
-        lookDir = moveDir;
-
-    // 애니메이션 베이스(Idle/Move)
-    wstring base = isMove ? TEXT("Move") : TEXT("Idle");
-
-    // 좌우 판단: x가 0이면 직전 바라보기를 유지
-    wstring dir = TEXT("");
-    if (lookDir.x > 0)      dir = TEXT("Right");
-    else if (lookDir.x < 0) dir = TEXT("Left");
-    else                    dir = TEXT("Right"); // 기본값: Right
-
-    // 최종 애니메이션 키
-    wstring key = base + dir;
-    animator->Play(key, false);
-}
