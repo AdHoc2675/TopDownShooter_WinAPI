@@ -337,16 +337,3 @@ void CWeapon::OnReloadComplete()
 		}
 	}
 }
-
-void CWeapon::ApplyUpgrade_DamageBoostOnReload()
-{
-	damageBoostOnReload = true;
-	damageBoostMultiplier = 1.5f;
-	damageBoostShots = 3;
-}
-
-void CWeapon::ApplyUpgrade_SpawnVolleyOnReload()
-{
-	spawnVolleyOnReload = true;
-	spawnVolleyCount = 6;
-}

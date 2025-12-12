@@ -1,30 +1,31 @@
-#pragma once
+ï»¿#pragma once
 #include "CPanel.h"
 
 class CPlayer;
 
 enum class UpgradeType
 {
-	AtkUp,                  // °ø°İ·Â +10%
-	MaxHpUpHeal,            // ÃÖ´ë Ã¼·Â +2 ¹× Áï½Ã +2 È¸º¹
-	CritChanceUp,           // Ä¡¸íÅ¸ È®·ü +0.05
-	SpdUp,                  // ÀÌµ¿ ¼Óµµ +0.05
-	CritDmgUp,              // Ä¡¸íÅ¸ ÇÇÇØ ¹èÀ² +0.1
-	SummonRanged,           // ²¿¸¶ È¥·É
-	SummonScythe,           // È¸Àü ³´
-	WeaponDoubleShot_T1,    // ´õºí¼¦
-	WeaponQuickHands_T1,    // ºü¸¥ ¼Õ
-	WeaponRapidFire_T1,     // ¼Ó»ç
-	WeaponPenetration,      // °üÅëÅº
-	WeaponArmourPiercing,   // ´ëÀüÂ÷Åº
-	WeaponAimingDownSight,  // Á¤Á¶ÁØ
-	WeaponBurn,             // ¹ßÈ­Åº
-	ScytheSpeedUp,          // ³´ È¸Àü ¼Óµµ 2¹è
-	AimingDownSight,        // Ä¡¸íÅ¸ È®·ü +20%
-    SummonRangedBurn,       // ¼ÒÈ¯¼öÀÇ Åõ»çÃ¼¿¡ °üÅë +1, È­»ó 1½ºÅÃ ºÎ¿©
-    SummonRangedAtkUp,      // ¼ÒÈ¯¼ö Åõ»çÃ¼ÀÇ ±âº» ÇÇÇØ·® += °üÅë * 3
-    WeaponDamageBoostOnReload,   // ÀçÀåÀü ½Ã ´ÙÀ½ N¹ß ÇÇÇØ Áõ°¡
-	WeaponSpawnVolleyOnReload,   // ÀçÀåÀü ½Ã ÁÖº¯¿¡ Åõ»çÃ¼ ¹ß»ç
+	AtkUp,                  // ê³µê²©ë ¥ +10%
+	MaxHpUpHeal,            // ìµœëŒ€ ì²´ë ¥ +2 ë° ì¦‰ì‹œ +2 íšŒë³µ
+	Heal, 					// ì¦‰ì‹œ ì²´ë ¥ +2 íšŒë³µ
+	CritChanceUp,           // ì¹˜ëª…íƒ€ í™•ë¥  +0.05
+	SpdUp,                  // ì´ë™ ì†ë„ +0.05
+	CritDmgUp,              // ì¹˜ëª…íƒ€ í”¼í•´ ë°°ìœ¨ +0.1
+	SummonRanged,           // ê¼¬ë§ˆ í˜¼ë ¹
+	SummonScythe,           // íšŒì „ ë‚«
+	WeaponDoubleShot_T1,    // ë”ë¸”ìƒ·
+	WeaponQuickHands_T1,    // ë¹ ë¥¸ ì†
+	WeaponRapidFire_T1,     // ì†ì‚¬
+	WeaponPenetration,      // ê´€í†µíƒ„
+	WeaponArmourPiercing,   // ëŒ€ì „ì°¨íƒ„
+	WeaponAimingDownSight,  // ì •ì¡°ì¤€
+	WeaponBurn,             // ë°œí™”íƒ„
+	ScytheSpeedUp,          // ë‚« íšŒì „ ì†ë„ 2ë°°
+	AimingDownSight,        // ì¹˜ëª…íƒ€ í™•ë¥  +20%
+    SummonRangedBurn,       // ì†Œí™˜ìˆ˜ì˜ íˆ¬ì‚¬ì²´ì— ê´€í†µ +1, í™”ìƒ 1ìŠ¤íƒ ë¶€ì—¬
+    SummonRangedAtkUp,      // ì†Œí™˜ìˆ˜ íˆ¬ì‚¬ì²´ì˜ ê¸°ë³¸ í”¼í•´ëŸ‰ += ê´€í†µ * 3
+    WeaponDamageBoostOnReload,   // ì¬ì¥ì „ ì‹œ ë‹¤ìŒ Në°œ í”¼í•´ ì¦ê°€
+	WeaponSpawnVolleyOnReload,   // ì¬ì¥ì „ ì‹œ ì£¼ë³€ì— íˆ¬ì‚¬ì²´ ë°œì‚¬
 
 };
 
@@ -34,7 +35,7 @@ public:
     CUpgradePanel();
     virtual ~CUpgradePanel();
 
-    // ÇÃ·¹ÀÌ¾î¿Í ¼±ÅÃÁö ±¸¼º
+    // í”Œë ˆì´ì–´ì™€ ì„ íƒì§€ êµ¬ì„±
     void Configure(CPlayer* player);
 
 private:
@@ -45,7 +46,7 @@ private:
     void OnDisable() override;
     void Release() override;
 
-    // ¹öÆ° Å¬¸¯ Äİ¹é(static ¡æ paramÀ¸·Î this Àü´Ş)
+    // ë²„íŠ¼ í´ë¦­ ì½œë°±(static â†’ paramìœ¼ë¡œ this ì „ë‹¬)
     static void OnButtonClicked(DWORD_PTR param1, DWORD_PTR param2);
     void ApplyUpgrade(UpgradeType type);
 

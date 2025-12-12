@@ -58,20 +58,20 @@ void CUpgradePanel::OnEnable()
         btn->SetLabelSize(12);
         btn->SetLabelColor(RGB(20, 20, 20));
 
-        CImage* icon = nullptr;
-        if (o.type == UpgradeType::AtkUp)
-            icon = LOADIMAGE(TEXT("IconAtk"), TEXT("Image\\IconAtkUp.bmp"));
-        else if (o.type == UpgradeType::MaxHpUpHeal)
-            icon = LOADIMAGE(TEXT("IconHP"), TEXT("Image\\IconMaxHpUpHeal.bmp"));
-        else if (o.type == UpgradeType::CritChanceUp)
-            icon = LOADIMAGE(TEXT("IconCrit"), TEXT("Image\\IconCritChanceUp.bmp"));
-        else if (o.type == UpgradeType::SummonRanged)
-            icon = LOADIMAGE(TEXT("IconSummon"), TEXT("Image\\IconSummonRanged.bmp"));
+        //CImage* icon = nullptr;
+        //if (o.type == UpgradeType::AtkUp)
+        //    icon = LOADIMAGE(TEXT("IconAtk"), TEXT("Image\\IconAtkUp.bmp"));
+        //else if (o.type == UpgradeType::MaxHpUpHeal)
+        //    icon = LOADIMAGE(TEXT("IconHP"), TEXT("Image\\IconMaxHpUpHeal.bmp"));
+        //else if (o.type == UpgradeType::CritChanceUp)
+        //    icon = LOADIMAGE(TEXT("IconCrit"), TEXT("Image\\IconCritChanceUp.bmp"));
+        //else if (o.type == UpgradeType::SummonRanged)
+        //    icon = LOADIMAGE(TEXT("IconSummon"), TEXT("Image\\IconSummonRanged.bmp"));
 
-        if (icon) {
-            btn->SetIcon(icon);
-            btn->SetIconTransparent(RGB(255,0,255));
-        }
+        //if (icon) {
+        //    btn->SetIcon(icon);
+        //    btn->SetIconTransparent(RGB(255,0,255));
+        //}
 
         EVENT->AddChild(this, btn);
     }
@@ -119,12 +119,13 @@ void CUpgradePanel::Configure(CPlayer* p)
         { L"정조준: 치명타 확률 +20%", UpgradeType::AimingDownSight},
         { L"발화탄: 30초 확률로 적에게 발화 부여 (초당 3 피해, 5초, 최대 20중첩)", UpgradeType::WeaponBurn },
         { L"강화탄창: 재장전 완료 시 다음 3발 피해량 25% 증가", UpgradeType::WeaponDamageBoostOnReload },
+        { L"최대 체력 +2 및 즉시 +2 회복",    UpgradeType::MaxHpUpHeal },
     };
 
     // 반복 가능한 옵션
     vector<pair<wstring, UpgradeType>> repeatablePool = {
         { L"(반복) 공격력 +10% (최소 1)",                      UpgradeType::AtkUp },
-        { L"(반복) 최대 체력 +2 및 즉시 +2 회복",    UpgradeType::MaxHpUpHeal },
+		{ L"(반복) 즉시 체력 +2 회복",    UpgradeType::Heal },
         { L"(반복) 치명타 확률 +5%",               UpgradeType::CritChanceUp },
         { L"(반복) 이동 속도 +5%",                 UpgradeType::SpdUp },
         { L"(반복) 치명타 피해 배율 +0.1",              UpgradeType::CritDmgUp },
@@ -235,6 +236,9 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         s.maxHp += 2.f;
         s.hp = min(s.hp + 2.f, s.maxHp);
         break;
+	case UpgradeType::Heal:
+        s.hp = min(s.hp + 2.f, s.maxHp);
+		break;
     case UpgradeType::CritChanceUp:
         s.critChance = min(1.f, s.critChance + 0.05f);
         break;
