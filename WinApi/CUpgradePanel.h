@@ -5,24 +5,26 @@ class CPlayer;
 
 enum class UpgradeType
 {
-    AtkUp,
-    MaxHpUpHeal,
-    CritChanceUp,
-    SpdUp,
-    CritDmgUp,
-    SummonRanged,
-    SummonScythe,
-	WeaponDoubleShot_T1,
-	WeaponQuickHands_T1,
-	WeaponRapidFire_T1,
-	WeaponPenetration,
-    WeaponArmourPiercing,
-    WeaponAimingDownSight,
-    WeaponBurn,
-    ScytheSpeedUp,
-    AimingDownSight,
-    SummonRangedBurn,  // 소환수의 투사체에 관통 +1, 화상 1스택 부여
-    SummonRangedAtkUp,  // 소환수 투사체의 기본 피해량 += 관통 * 3
+	AtkUp,                  // 공격력 +10%
+	MaxHpUpHeal,            // 최대 체력 +2 및 즉시 +2 회복
+	CritChanceUp,           // 치명타 확률 +0.05
+	SpdUp,                  // 이동 속도 +0.05
+	CritDmgUp,              // 치명타 피해 배율 +0.1
+	SummonRanged,           // 꼬마 혼령
+	SummonScythe,           // 회전 낫
+	WeaponDoubleShot_T1,    // 더블샷
+	WeaponQuickHands_T1,    // 빠른 손
+	WeaponRapidFire_T1,     // 속사
+	WeaponPenetration,      // 관통탄
+	WeaponArmourPiercing,   // 대전차탄
+	WeaponAimingDownSight,  // 정조준
+	WeaponBurn,             // 발화탄
+	ScytheSpeedUp,          // 낫 회전 속도 2배
+	AimingDownSight,        // 치명타 확률 +20%
+    SummonRangedBurn,       // 소환수의 투사체에 관통 +1, 화상 1스택 부여
+    SummonRangedAtkUp,      // 소환수 투사체의 기본 피해량 += 관통 * 3
+    WeaponDamageBoostOnReload,   // 재장전 시 다음 N발 피해 증가
+	WeaponSpawnVolleyOnReload,   // 재장전 시 주변에 투사체 발사
 
 };
 

@@ -28,6 +28,8 @@ CWeapon::~CWeapon()
 {
 }
 
+
+
 void CWeapon::Init()
 {
 	fireSound = LOADSOUND(TEXT("GunFire"), TEXT("Sound\\gun_fire.wav"));
@@ -56,6 +58,8 @@ void CWeapon::Update()
 		{
 			curReloadTime = 0.f;
 			curChamberSize = maxChamberSize; // 재장전 완료
+			// 재장전 완료 시 효과 발동
+			OnReloadComplete();
 		}
 		return; // 재장전 중에는 발사 불가
 	}
@@ -275,7 +279,16 @@ void CWeapon::CreateMissile(const Vec2& spawnPos, const Vec2& dir)
 	{
 		missile->InheritCombat(player->GetCombatStats());
 		CombatStats& mstats = missile->GetCombatStats();
-		mstats.attack = damage;
+
+		// 남은 강화샷이 있으면 해당 발사체의 공격력만 보정
+		float actualDamage = damage;
+		if (remainingBoostedShots > 0)
+		{
+			actualDamage = damage * damageBoostMultiplier;
+			remainingBoostedShots = max(0, remainingBoostedShots - 1);
+		}
+
+		mstats.attack = actualDamage;
 	}
 
 	missile->SetPierceCount(pierceCount);
@@ -289,4 +302,51 @@ void CWeapon::CreateMissile(const Vec2& spawnPos, const Vec2& dir)
 	}
 
 	EVENT->AddGameObject(GetScene(), missile);
+}
+
+void CWeapon::OnReloadComplete()
+{
+	if (!player) return;
+
+	// 피해 증가: 다음 damageBoostShots 발에 적용
+	if (damageBoostOnReload && damageBoostShots > 0)
+	{
+		remainingBoostedShots = damageBoostShots;
+	}
+
+	// 재장전 시 주변 투사체 소환 (간단한 원형 분사)
+	if (spawnVolleyOnReload && spawnVolleyCount > 0)
+	{
+		Vec2 center = player->GetWorldPos();
+		const float TWO_PI = 6.2831853f;
+		for (int i = 0; i < spawnVolleyCount; ++i)
+		{
+			// 일정 각도로 분산하여 발사
+			float angle = (TWO_PI * i) / spawnVolleyCount;
+			Vec2 dir;
+			dir.x = cosf(angle);
+			dir.y = sinf(angle);
+			dir = dir.Normalized();
+
+			// 스폰 위치는 플레이어 바로 앞
+			Vec2 spawnPos = center + dir * 30.f;
+			CreateMissile(spawnPos, dir);
+
+			if (fireSound)
+				SOUND->PlayOnce(fireSound);
+		}
+	}
+}
+
+void CWeapon::ApplyUpgrade_DamageBoostOnReload()
+{
+	damageBoostOnReload = true;
+	damageBoostMultiplier = 1.5f;
+	damageBoostShots = 3;
+}
+
+void CWeapon::ApplyUpgrade_SpawnVolleyOnReload()
+{
+	spawnVolleyOnReload = true;
+	spawnVolleyCount = 6;
 }

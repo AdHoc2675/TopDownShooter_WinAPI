@@ -51,6 +51,22 @@ public:
         burnDuration = 5.0f;
     }
 
+    // --- 재장전 완료 효과 (enum 대신 변수 사용) ---
+    // 다음 N발 피해 증가
+    void ApplyUpgrade_DamageBoostOnReload()
+    {
+        damageBoostOnReload = true;
+        damageBoostMultiplier = 1.25f; // 피해 1.25배
+        damageBoostShots = 3;         // 다음 3발
+    }
+
+    // 재장전 완료 시 주변에 작은 투사체를 소환
+    void ApplyUpgrade_SpawnVolleyOnReload()
+    {
+        spawnVolleyOnReload = true;
+        spawnVolleyCount = 6;
+    }
+
 #pragma region Set/Get
     void    SetPlayer(CPlayer* player) { this->player = player; }
     void    SetFireCooldown(float cooldown) { fireCooldown = (cooldown < 0.f) ? 0.01f : cooldown; }
@@ -71,6 +87,9 @@ public:
     float   GetMissileSpeedMultiplier() const { return missileSpeedMultiplier; }  // 추가
     bool    GetAppliesBurn() const { return appliesBurn; }
 
+    // 재장전 완료 시 효과 발동
+    void    OnReloadComplete();
+
 #pragma endregion
 
 protected:
@@ -84,6 +103,8 @@ protected:
     void    FireToCursor(); // 마우스 지점으로 1발
     void    FireSpreadToCursor(int count, float spreadAngleDeg); // 부채꼴 다발 사격
     void    CreateMissile(const Vec2& spawnPos, const Vec2& dir);
+
+    // --- 무기 기본 스탯 ---
 
     float   fireCooldown;   // 발사 간 최소 간격(초)
     float   curCooldown;
@@ -100,10 +121,23 @@ protected:
     int     pierceCount;           // 미사일 관통 횟수
     float   missileSpeedMultiplier; // 미사일 이동속도 배율
 
+    // --- 상태이상 효과 관련 ---
+
     bool appliesBurn = false;
     int burnStacks = 1;
     float burnDuration = 5.0f;
     float burnChance = 0.3f;  // 30% 확률
+
+    // --- 재장전 효과용) ---
+    // 피해 증가(다음 N발)
+    bool  damageBoostOnReload = false;
+    float damageBoostMultiplier = 1.0f;
+    int   damageBoostShots = 0;
+    int   remainingBoostedShots = 0;
+
+    // 재장전 시 주변 투사체 소환
+    bool  spawnVolleyOnReload = false;
+    int   spawnVolleyCount = 0;
 
 	CSound* fireSound = nullptr;
 	CSound* reloadSound = nullptr;

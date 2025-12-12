@@ -23,6 +23,9 @@
     <Filter Include="GameObject\UpgradeObject">
       <UniqueIdentifier>{c6448680-5e94-4ece-8c8b-4606e6e0fa03}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Player">
+      <UniqueIdentifier>{df18e2a4-8af8-4432-abfa-8dca0978547a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApi.h">
@@ -51,9 +54,6 @@
     </ClInclude>
     <ClInclude Include="Enum.h">
       <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="CPlayer.h">
-      <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="CMissile.h">
       <Filter>GameObject</Filter>
@@ -124,8 +124,13 @@
     <ClInclude Include="CRocketLauncherWeapon.h">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClInclude>
-    <ClInclude Include="CPlayerDiamond.h" />
     <ClInclude Include="CCurrencyManager.h" />
+    <ClInclude Include="CPlayer.h">
+      <Filter>GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CPlayerDiamond.h">
+      <Filter>GameObject\Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinApi.cpp">
@@ -142,9 +147,6 @@
     </ClCompile>
     <ClCompile Include="CSceneTitle.cpp">
       <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="CPlayer.cpp">
-      <Filter>GameObject</Filter>
     </ClCompile>
     <ClCompile Include="CMissile.cpp">
       <Filter>GameObject</Filter>
@@ -210,8 +212,13 @@
     <ClCompile Include="CRocketLauncherWeapon.cpp">
       <Filter>GameObject\UpgradeObject</Filter>
     </ClCompile>
-    <ClCompile Include="CPlayerDiamond.cpp" />
     <ClCompile Include="CCurrencyManager.cpp" />
+    <ClCompile Include="CPlayer.cpp">
+      <Filter>GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CPlayerDiamond.cpp">
+      <Filter>GameObject\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinApi.rc">

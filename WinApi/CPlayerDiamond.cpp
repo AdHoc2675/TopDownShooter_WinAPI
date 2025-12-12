@@ -11,8 +11,8 @@ CPlayerDiamond::CPlayerDiamond()
     heartEmptyImage = nullptr;
 
     stats.speed  = 150.f;
-    stats.maxHp  = 5.f;
-    stats.hp     = 5.f;
+    stats.maxHp  = 7.f;
+    stats.hp     = 7.f;
     stats.attack = 20.f;
     stats.critChance = 0.f;
     stats.critMultiplier = 1.5f;

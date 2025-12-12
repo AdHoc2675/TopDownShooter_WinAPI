@@ -118,7 +118,7 @@ void CUpgradePanel::Configure(CPlayer* p)
         { L"관통탄: 관통 횟수 +1, 탄환 속도 +15%", UpgradeType::WeaponPenetration},
         { L"정조준: 치명타 확률 +20%", UpgradeType::AimingDownSight},
         { L"발화탄: 30초 확률로 적에게 발화 부여 (초당 3 피해, 5초, 최대 20중첩)", UpgradeType::WeaponBurn },
-
+        { L"강화탄창: 재장전 완료 시 다음 3발 피해량 25% 증가", UpgradeType::WeaponDamageBoostOnReload },
     };
 
     // 반복 가능한 옵션
@@ -146,6 +146,12 @@ void CUpgradePanel::Configure(CPlayer* p)
         oneTimePool.push_back({ L"소환수 화염탄: 소환수 투사체 관통 +1 및 화상 1스택 부여", UpgradeType::SummonRangedBurn });
         oneTimePool.push_back({ L"소환수 공격 강화: 관통 * 3만큼 투사체 피해 증가", UpgradeType::SummonRangedAtkUp });
     }
+
+
+    if (gTakenOneTimeUpgrades.find(UpgradeType::WeaponDamageBoostOnReload) != gTakenOneTimeUpgrades.end())
+    {
+        oneTimePool.push_back({ L"난사: 재장전 완료 시 전 방향으로 6발 발사", UpgradeType::WeaponSpawnVolleyOnReload });
+	}
 
     // 아직 획득하지 않은 반복 불가능 옵션만 추림
     vector<pair<wstring, UpgradeType>> oneTimeCandidates;
@@ -362,6 +368,22 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         s.critChance = min(1.f, s.critChance + 0.20f);
         gTakenOneTimeUpgrades.insert(UpgradeType::AimingDownSight);
 		break;
+    case UpgradeType::WeaponDamageBoostOnReload:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponDamageBoostOnReload);
+        CWeapon* w = player->GetWeapon();
+        if (w)
+            w->ApplyUpgrade_DamageBoostOnReload();
+        break;
+    }
+    case UpgradeType::WeaponSpawnVolleyOnReload:
+    {
+        gTakenOneTimeUpgrades.insert(UpgradeType::WeaponSpawnVolleyOnReload);
+        CWeapon* w = player->GetWeapon();
+        if (w)
+            w->ApplyUpgrade_SpawnVolleyOnReload();
+        break;
+    }
     default:
         break;
     }
