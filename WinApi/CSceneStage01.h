@@ -63,6 +63,9 @@ private:
 	void SpawnBossMonster();
     Vec2 GetSpawnPosPlayerDistance() const;
 
+    // 타이틀 업그레이드 로드 및 적용
+    void ApplyTitleUpgrades();
+
 private:
     static WeaponChoice sChosenWeapon;
     static CharacterChoice sChosenCharacter;

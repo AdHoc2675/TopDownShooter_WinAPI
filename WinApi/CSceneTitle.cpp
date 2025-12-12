@@ -4,6 +4,9 @@
 #include "CGame.h"
 #include "CSceneStage01.h"
 
+#include "CCurrencyManager.h" // CURRENCY
+#include <fstream>
+
 CSceneTitle::CSceneTitle()
 {
 }
@@ -52,6 +55,29 @@ void CSceneTitle::Init()
         weaponBoxes[i].right  = weaponBoxes[i].left + boxW;
         weaponBoxes[i].bottom = weaponBoxes[i].top + boxH;
     }
+
+    // 업그레이드 UI 박스 위치
+    // 무기 박스 하단과 무기 설명 상단 사이 중앙
+    const float uiW = 260.f;
+    const float uiH = 80.f;
+    const float uiXLeft = cx - uiW - 20.f;
+    const float uiXRight = cx + 20.f;
+
+    const float weaponsBottom = boxY + boxH;                 // 무기 박스 하단
+    const float descTop = CGame::WINSIZE.y - 220.f;           // 무기 설명 상단
+    
+    float centerBetween = weaponsBottom + (descTop - weaponsBottom) * 0.5f;
+    float uiTop = centerBetween - uiH * 0.5f;
+
+    upgradeDummyBox.left = uiXLeft;
+    upgradeDummyBox.top = uiTop;
+    upgradeDummyBox.right = uiXLeft + uiW;
+    upgradeDummyBox.bottom = uiTop + uiH;
+
+    upgradeSpeedBox.left = uiXRight;
+    upgradeSpeedBox.top = uiTop; 
+    upgradeSpeedBox.right = uiXRight + uiW;
+    upgradeSpeedBox.bottom = uiTop + uiH;
 }
 
 void CSceneTitle::Enter()
@@ -69,6 +95,9 @@ void CSceneTitle::Enter()
     // 캐릭터 이미지 로드
     shanaImage   = LOADIMAGE(TEXT("T_Shana"),   TEXT("Image\\T_Shana0.bmp"));
     diamondImage = LOADIMAGE(TEXT("T_Diamond"), TEXT("Image\\T_Diamond0.bmp"));
+
+    // 업그레이드 상태 불러오기 (영구 저장)
+    LoadTitleUpgrades();
 }
 
 void CSceneTitle::Update()
@@ -167,6 +196,92 @@ void CSceneTitle::Update()
 			break;
 		}
 	}
+
+    // ===== 업그레이드 UI 입력 처리 (아이콘 1초 홀드) =====
+    bool mouseInDummy = (mousePos.x >= upgradeDummyBox.left && mousePos.x <= upgradeDummyBox.right &&
+                         mousePos.y >= upgradeDummyBox.top  && mousePos.y <= upgradeDummyBox.bottom);
+
+    bool mouseInSpeed = (mousePos.x >= upgradeSpeedBox.left && mousePos.x <= upgradeSpeedBox.right &&
+                         mousePos.y >= upgradeSpeedBox.top  && mousePos.y <= upgradeSpeedBox.bottom);
+
+    // 시작 홀드
+    if (INPUT->ButtonDown(VK_LBUTTON, true))
+    {
+        purchasedThisHold = false;
+        if (mouseInDummy) {
+            isHolding = true;
+            holdingIndex = 0;
+            holdTimer = 0.f;
+        }
+        else if (mouseInSpeed) {
+            isHolding = true;
+            holdingIndex = 1;
+            holdTimer = 0.f;
+        }
+        else {
+            // 클릭 외부: 취소
+            isHolding = false;
+            holdingIndex = -1;
+            holdTimer = 0.f;
+        }
+    }
+
+    // 홀드 중
+    if (isHolding && INPUT->ButtonStay(VK_LBUTTON))
+    {
+        // 마우스가 박스 안에 유지되는지 확인 (같은 박스)
+        bool stillOver = (holdingIndex == 0) ? mouseInDummy : mouseInSpeed;
+        if (!stillOver) {
+            // 마우스가 벗어나면 취소
+            isHolding = false;
+            holdingIndex = -1;
+            holdTimer = 0.f;
+        } else {
+            holdTimer += DT;
+            // 1초 경과 시 구매 시도 (한 번만)
+            if (holdTimer >= 1.0f && !purchasedThisHold)
+            {
+                if (holdingIndex == 0)
+                {
+                    // dummy upgrade (무한, 비용 500)
+                    if (CURRENCY->CanAfford(kDummyCost))
+                    {
+                        CURRENCY->SpendCurrency(kDummyCost);
+                        dummyUpgradeCount++;
+                        if (UIClickSound) SOUND->PlayOnce(UIClickSound);
+                        SaveTitleUpgrades();
+                    }
+                }
+                else if (holdingIndex == 1)
+                {
+                    // speed upgrade (max 3, 비용 계단)
+                    if (speedUpgradeLevel < 3)
+                    {
+                        int cost = speedCosts[speedUpgradeLevel];
+                        if (CURRENCY->CanAfford(cost))
+                        {
+                            CURRENCY->SpendCurrency(cost);
+                            speedUpgradeLevel++;
+                            if (UIClickSound) SOUND->PlayOnce(UIClickSound);
+                            SaveTitleUpgrades();
+                        }
+                    }
+                }
+
+                purchasedThisHold = true;
+                // require release before another purchase
+            }
+        }
+    }
+
+    // 마우스 버튼 업이면 홀드 상태 초기화
+    if (INPUT->ButtonUp(VK_LBUTTON, true))
+    {
+        isHolding = false;
+        holdingIndex = -1;
+        holdTimer = 0.f;
+        purchasedThisHold = false;
+    }
 
 	// ===== 게임 시작 =====
 	if (INPUT->ButtonDown(VK_SPACE, true) || INPUT->ButtonDown(VK_RETURN, true))
@@ -335,6 +450,9 @@ void CSceneTitle::Render()
     RenderCharacterDescription();
     RenderWeaponDescription();
 
+    // 업그레이드 UI 렌더
+    RenderUpgradeUI();
+
     // 시작 안내
     RENDER->SetText(20, RGB(30, 30, 30), TextAlign::Center);
     RENDER->Text(cx, CGame::WINSIZE.y - 30.f, TEXT("스페이스 또는 엔터로 시작"));
@@ -446,6 +564,99 @@ void CSceneTitle::RenderWeaponDescription()
     RENDER->Text(descX + descW * 0.5f, textY, ws.special);
 }
 
+void CSceneTitle::RenderUpgradeUI()
+{
+    // Dummy upgrade (무한, 비용 500G)
+    RENDER->SetPen(PenType::Solid, RGB(80, 80, 80), 2);
+    RENDER->SetBrush(BrushType::Solid, RGB(40, 40, 50));
+    RENDER->Rect(upgradeDummyBox.left, upgradeDummyBox.top, upgradeDummyBox.right, upgradeDummyBox.bottom);
+
+    RENDER->SetText(14, RGB(30, 30, 30), TextAlign::Left);
+    RENDER->SetTextBackMode(TextBackMode::Null);
+    const float pad = 12.f;
+    RENDER->Text(upgradeDummyBox.left + pad, upgradeDummyBox.top + 12.f, L"재화 소비용 업그레이드");
+    RENDER->SetText(12, RGB(60, 60, 60), TextAlign::Left);
+    RENDER->Text(upgradeDummyBox.left + pad, upgradeDummyBox.top + 36.f, (L"레벨: " + to_wstring(dummyUpgradeCount)).c_str());
+
+    // 우측 텍스트 대신 고정 비용 표시
+    RENDER->SetText(12, RGB(180, 180, 40), TextAlign::Right);
+    RENDER->Text(upgradeDummyBox.right - pad, upgradeDummyBox.top + 12.f, (L"Cost: " + to_wstring((int)kDummyCost) + L"G").c_str());
+
+    // 홀드 진행 표시
+    Vec2 mouse = INPUT->MouseScreenPos();
+    bool hoveringDummy = (mouse.x >= upgradeDummyBox.left && mouse.x <= upgradeDummyBox.right &&
+                          mouse.y >= upgradeDummyBox.top && mouse.y <= upgradeDummyBox.bottom);
+
+    if (isHolding && holdingIndex == 0)
+    {
+        float prog = min(1.f, holdTimer / 1.0f);
+        float barW = (upgradeDummyBox.right - upgradeDummyBox.left) - pad * 2;
+        float barX = upgradeDummyBox.left + pad;
+        float barY = upgradeDummyBox.bottom - 18.f;
+        RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+        RENDER->SetBrush(BrushType::Null);
+        RENDER->Rect(barX, barY, barX + barW, barY + 12.f);
+        RENDER->SetBrush(BrushType::Solid, RGB(120, 200, 120));
+        RENDER->Rect(barX + 1.f, barY + 1.f, barX + 1.f + (barW - 2.f) * prog, barY + 11.f);
+    }
+    else if (hoveringDummy)
+    {
+        RENDER->SetText(12, RGB(70, 70, 70), TextAlign::Center);
+        RENDER->Text((upgradeDummyBox.left + upgradeDummyBox.right) * 0.5f, upgradeDummyBox.bottom - 18.f, L"꾹 누르면 구매 (1초)");
+    }
+
+    // Speed upgrade (최대 3회: +10 이동속도 each)
+    RENDER->SetPen(PenType::Solid, RGB(80, 80, 80), 2);
+    RENDER->SetBrush(BrushType::Solid, RGB(40, 40, 50));
+    RENDER->Rect(upgradeSpeedBox.left, upgradeSpeedBox.top, upgradeSpeedBox.right, upgradeSpeedBox.bottom);
+
+    RENDER->SetText(14, RGB(30, 30, 30), TextAlign::Left);
+    RENDER->SetTextBackMode(TextBackMode::Null);
+    RENDER->Text(upgradeSpeedBox.left + pad, upgradeSpeedBox.top + 12.f, L"이동속도 업그레이드");
+    RENDER->SetText(12, RGB(60, 60, 60), TextAlign::Left);
+    RENDER->Text(upgradeSpeedBox.left + pad, upgradeSpeedBox.top + 36.f, (L"레벨: " + to_wstring(speedUpgradeLevel) + L" / 3").c_str());
+
+    // 비용 텍스트
+    RENDER->SetText(12, RGB(180, 180, 40), TextAlign::Right);
+    int nextCost = (speedUpgradeLevel < 3) ? speedCosts[speedUpgradeLevel] : 0;
+    if (speedUpgradeLevel < 3)
+        RENDER->Text(upgradeSpeedBox.right - pad, upgradeSpeedBox.top + 12.f, (L"Cost: " + to_wstring(nextCost) + L"G").c_str());
+    else
+        RENDER->Text(upgradeSpeedBox.right - pad, upgradeSpeedBox.top + 12.f, L"최대 레벨");
+
+    bool hoveringSpeed = (mouse.x >= upgradeSpeedBox.left && mouse.x <= upgradeSpeedBox.right &&
+                          mouse.y >= upgradeSpeedBox.top && mouse.y <= upgradeSpeedBox.bottom);
+
+    if (isHolding && holdingIndex == 1)
+    {
+        float prog = min(1.f, holdTimer / 1.0f);
+        float barW = (upgradeSpeedBox.right - upgradeSpeedBox.left) - pad * 2;
+        float barX = upgradeSpeedBox.left + pad;
+        float barY = upgradeSpeedBox.bottom - 18.f;
+        RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
+        RENDER->SetBrush(BrushType::Null);
+        RENDER->Rect(barX, barY, barX + barW, barY + 12.f);
+        RENDER->SetBrush(BrushType::Solid, RGB(120, 180, 220));
+        RENDER->Rect(barX + 1.f, barY + 1.f, barX + 1.f + (barW - 2.f) * prog, barY + 11.f);
+    }
+    else if (hoveringSpeed)
+    {
+        RENDER->SetText(12, RGB(70, 70, 70), TextAlign::Center);
+        RENDER->Text((upgradeSpeedBox.left + upgradeSpeedBox.right) * 0.5f, upgradeSpeedBox.bottom - 18.f, L"꾹 누르면 구매 (1초)");
+    }
+
+    // 재화 표시: 무기 박스 하단과 업그레이드 박스 상단 사이의 중앙에 배치 (가운데 정렬)
+    wchar_t buf[64];
+    swprintf_s(buf, L"Gold: %d G", CURRENCY->GetCurrency());
+    float weaponsBottom = weaponBoxes[0].bottom;
+    float descTop = CGame::WINSIZE.y - 220.f;
+    float centerBetween = weaponsBottom + (descTop - weaponsBottom) * 0.5f;
+    float uiTop = centerBetween - 80.f * 0.5f; // uiH == 80
+    float currencyY = weaponsBottom + (uiTop - weaponsBottom) * 0.5f;
+    RENDER->SetText(16, RGB(240, 220, 80), TextAlign::Center);
+    RENDER->Text(CGame::WINSIZE.x * 0.5f, currencyY, buf);
+}
+
 void CSceneTitle::StartGame()
 {
     // 무기 선택 적용
@@ -469,8 +680,55 @@ void CSceneTitle::StartGame()
 void CSceneTitle::Exit()
 {
     SOUND->Stop(TEXT("Title_BGM"));
+    // 씬 종료 시 저장
+    SaveTitleUpgrades();
 }
 
 void CSceneTitle::Release()
 {
+    // 저장
+    SaveTitleUpgrades();
+}
+
+// --- 업그레이드 저장/로드 ---
+// 파일: PATH\title_upgrades.dat
+void CSceneTitle::SaveTitleUpgrades()
+{
+    std::wstring path = PATH + std::wstring(L"\\title_upgrades.dat");
+    std::ofstream ofs(path, std::ios::binary);
+    if (ofs.is_open())
+    {
+        ofs.write(reinterpret_cast<const char*>(&dummyUpgradeCount), sizeof(dummyUpgradeCount));
+        ofs.write(reinterpret_cast<const char*>(&speedUpgradeLevel), sizeof(speedUpgradeLevel));
+        ofs.close();
+        Logger::Debug(L"[CSceneTitle] Saved upgrades: dummy=" + to_wstring(dummyUpgradeCount) + L", speed=" + to_wstring(speedUpgradeLevel));
+    }
+    else
+    {
+        Logger::Debug(L"[CSceneTitle] Failed to save upgrades");
+    }
+}
+
+void CSceneTitle::LoadTitleUpgrades()
+{
+    std::wstring path = PATH + std::wstring(L"\\title_upgrades.dat");
+    std::ifstream ifs(path, std::ios::binary);
+    if (ifs.is_open())
+    {
+        ifs.read(reinterpret_cast<char*>(&dummyUpgradeCount), sizeof(dummyUpgradeCount));
+        ifs.read(reinterpret_cast<char*>(&speedUpgradeLevel), sizeof(speedUpgradeLevel));
+        ifs.close();
+        // 안전 범위 검사
+        if (speedUpgradeLevel < 0) speedUpgradeLevel = 0;
+        if (speedUpgradeLevel > 3) speedUpgradeLevel = 3;
+        if (dummyUpgradeCount < 0) dummyUpgradeCount = 0;
+        Logger::Debug(L"[CSceneTitle] Loaded upgrades: dummy=" + to_wstring(dummyUpgradeCount) + L", speed=" + to_wstring(speedUpgradeLevel));
+    }
+    else
+    {
+        // 파일 없음: 기본값 사용
+        dummyUpgradeCount = 0;
+        speedUpgradeLevel = 0;
+        Logger::Debug(L"[CSceneTitle] No upgrade save found, defaults applied");
+    }
 }

@@ -22,6 +22,8 @@
 #include "CPlayerDiamond.h"
 #include "CCurrencyManager.h"
 
+#include <fstream>
+
 WeaponChoice CSceneStage01::sChosenWeapon = WeaponChoice::Pistol;
 CharacterChoice CSceneStage01::sChosenCharacter = CharacterChoice::Shana;
 
@@ -82,6 +84,9 @@ void CSceneStage01::Enter()
 
 	player->SetPos(Vec2(CGame::WINSIZE.x * 0.5f, CGame::WINSIZE.y * 0.5f));
 	AddGameObject(player);
+
+    // 타이틀에서 구매한 영구 업그레이드 적용
+    ApplyTitleUpgrades();
 
 	CTiledBackground* bg = new CTiledBackground();
 	bg->SetPlayer(player);
@@ -379,4 +384,38 @@ void CSceneStage01::EndGame(GameResult result)
 
     Logger::Debug(L"[CSceneStage01::EndGame] Game ended: " +
         to_wstring(static_cast<int>(result)));
+}
+
+void CSceneStage01::ApplyTitleUpgrades()
+{
+    if (!player) return;
+
+    // title_upgrades.dat 파일에서 업그레이드 레벨 읽기
+    std::wstring path = PATH + std::wstring(L"\\title_upgrades.dat");
+    std::ifstream ifs(path, std::ios::binary);
+
+    int dummyUpgradeCount = 0;
+    int speedUpgradeLevel = 0;
+
+    if (ifs.is_open())
+    {
+        ifs.read(reinterpret_cast<char*>(&dummyUpgradeCount), sizeof(dummyUpgradeCount));
+        ifs.read(reinterpret_cast<char*>(&speedUpgradeLevel), sizeof(speedUpgradeLevel));
+        ifs.close();
+
+        // 범위 검사
+        if (speedUpgradeLevel < 0) speedUpgradeLevel = 0;
+        if (speedUpgradeLevel > 3) speedUpgradeLevel = 3;
+    }
+
+    // 이동속도 업그레이드 적용: 레벨당 +10
+    if (speedUpgradeLevel > 0)
+    {
+        CombatStats& stats = player->GetCombatStats();
+        float speedBonus = static_cast<float>(speedUpgradeLevel) * 10.f;
+        stats.speed += speedBonus;
+
+        Logger::Debug(L"[CSceneStage01] Applied title speed upgrade: +" + 
+                     to_wstring((int)speedBonus) + L" (level " + to_wstring(speedUpgradeLevel) + L")");
+    }
 }
