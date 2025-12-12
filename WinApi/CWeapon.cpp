@@ -149,17 +149,6 @@ void CWeapon::Update()
 
 void CWeapon::Render()
 {
-
-	// 무기 본체 렌더링 (흰색 사각형)
-	RENDER->SetPen(PenType::Solid, RGB(0, 0, 0), 1);
-	RENDER->SetBrush(BrushType::Solid, RGB(255, 255, 255));
-
-	RENDER->Rect(
-		renderPos.x - scale.x * 0.5f,
-		renderPos.y - scale.y * 0.5f,
-		renderPos.x + scale.x * 0.5f,
-		renderPos.y + scale.y * 0.5f);
-	
 	// 남은 탄 수 표시
 	int textSize = 24;
 	RENDER->SetText(textSize, RGB(20, 20, 20), TextAlign::Left);
