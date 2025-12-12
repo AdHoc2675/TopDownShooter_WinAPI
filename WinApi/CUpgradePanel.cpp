@@ -233,6 +233,7 @@ void CUpgradePanel::ApplyUpgrade(UpgradeType type)
         s.attack += increase;
         break;
     case UpgradeType::MaxHpUpHeal:
+        gTakenOneTimeUpgrades.insert(UpgradeType::MaxHpUpHeal);
         s.maxHp += 2.f;
         s.hp = min(s.hp + 2.f, s.maxHp);
         break;

@@ -653,7 +653,7 @@ void CSceneTitle::RenderUpgradeUI()
     float centerBetween = weaponsBottom + (descTop - weaponsBottom) * 0.5f;
     float uiTop = centerBetween - 80.f * 0.5f; // uiH == 80
     float currencyY = weaponsBottom + (uiTop - weaponsBottom) * 0.5f;
-    RENDER->SetText(16, RGB(240, 220, 80), TextAlign::Center);
+    RENDER->SetText(16, RGB(180, 180, 80), TextAlign::Center);
     RENDER->Text(CGame::WINSIZE.x * 0.5f, currencyY, buf);
 }
 
